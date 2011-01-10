@@ -2,9 +2,9 @@
 
 class Version(object):
     "Version management class for flexibility in project versioning metadata."
-    number = '0.0'
-    name = ''
-    notice = ''
+    number = '0.1'
+    name = 'Basico'
+    notice = 'dev' # Set to '' on release.
     maintainer = 'Ron DuPlain'
     maintainer_email = 'ron.duplain@willowtreeapps.com'
 
