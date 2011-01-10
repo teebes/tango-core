@@ -2,11 +2,16 @@
 
 from setuptools import setup, find_packages
 
+from tango.manage import version
+
 setup(
     name='Tango',
-    version='0.0',
+    version=version.number,
+    url='http://www.willowtreeapps.com',
     description='mobile web optimization framework',
     long_description=__doc__,
+    maintainer=version.maintainer,
+    maintainer_email=version.maintainer_email,
     packages=find_packages(),
     namespace_packages=['tango', 'tango.site'],
     install_requires=[
