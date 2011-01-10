@@ -1,0 +1,14 @@
+*~
+*.swp
+*.pyc
+*.db
+*.sqlite
+*.sqlite3
+.DS_Store
+__MACOSX
+*.egg
+*.egg-info/
+public/index.html
+public/a
+public/b
+public/i
