@@ -2,6 +2,8 @@
 
 all: flakes test todo
 
+setup = python setup.py
+
 clean:
 	find . -name '*.py[co]' -delete
 	rm -f develop
@@ -11,7 +13,7 @@ develop: setup.py
 	easy_install pip
 	pip install nose minimock
 	pip install pyflakes
-	python setup.py develop
+	$(setup) develop
 	touch develop
 
 flakes: develop
@@ -22,6 +24,10 @@ test: develop
 
 smoke: develop
 	python -W ignore::DeprecationWarning setup.py nosetests --stop
+
+distribute: develop
+	$(setup) sdist
+	ls -1rt ./dist/ | tail -1
 
 # Here is a custom todo tool, documented clearly so you know it works.
 # If we write capital tee oh dee oh literally, `make todo` will list Makefile.
