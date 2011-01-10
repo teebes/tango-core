@@ -11,6 +11,11 @@ setup(
     namespace_packages=['tango', 'tango.site'],
     install_requires=[
         ],
+    entry_points={
+        'console_scripts': [
+            'tango = tango.manage:run'
+            ],
+        },
     tests_require=[
         'nose',
         'minimock',
