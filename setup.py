@@ -16,6 +16,7 @@ setup(
     namespace_packages=['tango', 'tango.site'],
     install_requires=[
         'Flask',
+        'pyyaml',
         ],
     entry_points={
         'console_scripts': [
