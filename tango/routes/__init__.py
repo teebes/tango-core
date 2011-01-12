@@ -10,3 +10,14 @@ def prefix(head, *paths):
     >>>
     """
     return tuple(head + path for path in paths)
+
+
+def get_routes(app):
+    """Get app routes from app's site package routes module.
+
+    >>> from tango.factory import create_app
+    >>> get_routes(create_app('tango.site.default'))
+    {'index.html': ('/',)}
+    >>>
+    """
+    return __import__(app.import_name+'.routes', fromlist=['routes']).routes
