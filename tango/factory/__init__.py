@@ -1,6 +1,7 @@
 "Package to instantiate a Tango object from a Tango site package."
 
 from ..app import Tango
+from ..routes import get_routes
 
 
 def create_app(import_name):
@@ -14,4 +15,7 @@ def create_app(import_name):
     """
     app = Tango(import_name)
     app.config.from_object(import_name + '.config')
+    for template, urls in get_routes(app).items():
+        "Stitch together context, template, and url."
+        pass
     return app
