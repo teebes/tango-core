@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="utf-8">
+	<meta name="apple-mobile-web-app-capable" content="yes">
+	<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0">
+	{% block extra_head %}{% endblock %}
+	{% block title %}{{ title }}{% endblock %}
+</head>
+<body {% block body_id %}{% endblock %} {% block body_class %}{% endblock %}>
+
+	<section class="main">
+		{% block main %}{% endblock %}
+	</section><!--/.main-->
+</body>
+</html>
