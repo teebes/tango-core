@@ -1,7 +1,7 @@
 "Package to instantiate a Tango object from a Tango site package."
 
-from ..app import Tango
-from ..routes import get_routes
+from tango.app import Tango
+from tango.routes import get_routes
 
 
 def create_app(import_name):
