@@ -6,13 +6,14 @@ setup = python setup.py
 
 clean:
 	find . -name '*.py[co]' -delete
-	rm -f develop
+	rm -f develop README.html
 	rm -fr *.egg *.egg-info dist build
 
 develop: setup.py
 	easy_install pip
 	pip install nose minimock
 	pip install pyflakes
+	pip install docutils
 	$(setup) develop
 	touch develop
 
@@ -28,6 +29,10 @@ smoke: develop
 distribute: develop
 	$(setup) sdist
 	ls -1rt ./dist/ | tail -1
+
+README.html: README.rst
+	rst2html README.rst > README.html
+
 
 # Here is a custom todo tool, documented clearly so you know it works.
 # If we write capital tee oh dee oh literally, `make todo` will list Makefile.
