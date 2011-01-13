@@ -18,7 +18,7 @@ develop: setup.py
 	touch develop
 
 flakes: develop
-	find . -name '*.py' -exec pyflakes {} ';'
+	find . -name '*.py' | xargs pyflakes | grep -v local_config; echo -n
 
 test: develop
 	python -W ignore::DeprecationWarning setup.py nosetests
