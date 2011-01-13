@@ -46,7 +46,34 @@ def discover_modules(package):
 
 
 def pull_context(module):
-    "Pull dict template context from module, parsing it's header."
+    """Pull dict template context from module, parsing it's header.
+
+    Example:
+    >>> from tango.site.default.content import index, multiple
+    >>> pull_context(index)
+    {'default': {'/': {'title': 'MobileTango Starter'}}}
+    >>> pull_context(multiple) # doctest:+NORMALIZE_WHITESPACE
+    {'default': {'/path1': {'count': 2, 'name': 'multiple.py context',
+    'sequence': [4, 5, 6]}, '/path2': {'count': 2, 'name':
+    'multiple.py context', 'sequence': [4, 5, 6]}}}
+    >>>
+
+    :param module: Tango site content package module object
+    :type module: module
+    """
+    header = parse_header(module)
+    if header is None:
+        return None
+
+    path_context = {}
+    for name in header['export']:
+        path_context[name] = getattr(module, name)
+
+    site_context = {}
+    for path in header['path']:
+        site_context[path] = path_context
+
+    return {header['site']: site_context}
 
 
 def parse_header(module):
