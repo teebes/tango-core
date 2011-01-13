@@ -30,6 +30,8 @@ distribute: develop
 	$(setup) sdist
 	ls -1rt ./dist/ | tail -1
 
+doc: README.html
+
 README.html: README.rst
 	rst2html README.rst > README.html
 

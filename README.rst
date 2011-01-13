@@ -44,6 +44,7 @@ namespaces, and supports building static sites.
 
 Further development beyond Tango Basico will support:
 
+* utilities determining whether URL is internal or external to the mobile site.
 * arguments in site routes.
 * view functions in addition to exporting static template contexts.
 
