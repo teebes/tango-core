@@ -9,6 +9,9 @@ clean:
 	rm -f develop README.html
 	rm -fr *.egg *.egg-info dist build
 
+install:
+	$(setup) install
+
 develop: setup.py
 	easy_install pip
 	pip install nose minimock
