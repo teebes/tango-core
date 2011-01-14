@@ -1,7 +1,19 @@
 "Package to instantiate a Tango object from a Tango site package."
 
+from flask import render_template
+
 from tango.app import Tango
 from tango.routes import get_routes
+
+from context import build_package_context
+
+
+def build_view(app, path, template, context):
+    def view(*args, **kwargs):
+        return template + ' ' + str(context)
+        # TODO: return render_template(template, **context)
+    view.__name__ = path
+    return app.route(path)(view)
 
 
 def create_app(import_name):
@@ -13,9 +25,21 @@ def create_app(import_name):
     'default'
     >>>
     """
+    # Initialize application.
     app = Tango(import_name)
     app.config.from_object(import_name + '.config')
-    for template, urls in get_routes(app).items():
-        "Stitch together context, template, and url."
-        pass
+
+    # Get routes.
+    routes = get_routes(app)
+
+    # Build template context.
+    package = __import__(import_name)
+    package_context = build_package_context(package)
+    site_context = package_context.get(app.config['SITE'])
+
+    # Stitch together context, template, and path.
+    for template, paths in routes.items():
+        for path in paths:
+            build_view(app, path, template, site_context[path])
+
     return app
