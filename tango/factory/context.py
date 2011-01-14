@@ -8,7 +8,7 @@ import yaml
 HINT_DELIMITER = '<-'
 
 
-def build_site_context(package):
+def build_package_context(package):
     """Pull contexts from site package, discovering modules & parsing headers.
 
     Structure of site context:
@@ -17,7 +17,7 @@ def build_site_context(package):
     site_context['site']['pathN'] is a standard template context dict.
 
     >>> import tango.site.default.content
-    >>> build_site_context(tango.site.default.content)
+    >>> build_package_context(tango.site.default.content)
     ... # doctest: +ELLIPSIS, +NORMALIZE_WHITESPACE
     {'default': {'/path1': {'count': 2, 'name': '...', 'sequence': [4, 5, 6]},
     '/path2': {'count': 2, 'name': '...', 'sequence': [4, 5, 6]},
@@ -27,21 +27,21 @@ def build_site_context(package):
     :param package: Tango site content package object
     :type package: module
     """
-    site_context = {}
+    package_context = {}
 
     for module in discover_modules(package):
         context = pull_context(module)
         if context is None:
             continue
-        for sitekey in context:
-            site = site_context.get(sitekey, {})
-            for pathkey in context[sitekey]:
-                path = site.get(pathkey, {})
+        for site in context:
+            site_context = package_context.get(site, {})
+            for path in context[site]:
+                path_context = site_context.get(path, {})
                 # TODO: Warn on path context overwrite.
-                path.update(context[sitekey][pathkey])
-                site[pathkey] = path
-            site_context[sitekey] = site
-    return site_context
+                path_context.update(context[site][path])
+                site_context[path] = path_context
+            package_context[site] = site_context
+    return package_context
 
 
 def discover_modules(package):
