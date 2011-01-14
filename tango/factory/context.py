@@ -144,6 +144,10 @@ def parse_header(module):
         # Not an error or a warning, just a module without a docstring.
         return None
 
+    if not isinstance(rawheader, dict):
+        # module has a docstring, but it's not yaml.
+        return None
+
     header = {'site': rawheader['site']}
 
     if isinstance(rawheader['path'], basestring):
@@ -159,6 +163,11 @@ def parse_header(module):
         rawexport = list(rawheader['export'])
     for exportstmt in rawexport:
         # TODO: Warn about duplicates here, reporting module.__name__.
-        name, hint = [x.strip() for x in exportstmt.split(HINT_DELIMITER)]
-        header['export'][name] = hint
+        try:
+            name, hint = [x.strip() for x in exportstmt.split(HINT_DELIMITER)]
+            header['export'][name] = hint
+        except ValueError:
+            # TODO: Warn of bad export, reporting exportstmt, module.__name__.
+            continue
+
     return header
