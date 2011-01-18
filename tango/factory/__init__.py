@@ -10,8 +10,7 @@ from context import build_package_context
 
 def build_view(app, path, template, context):
     def view(*args, **kwargs):
-        return template + ' ' + str(context)
-        # TODO: return render_template(template, **context)
+        return render_template(template, **context)
     view.__name__ = path
     return app.route(path)(view)
 
