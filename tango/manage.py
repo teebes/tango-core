@@ -26,7 +26,10 @@ commands = []
 
 
 def create_app(site):
-    return tango.factory.create_app(site)
+    try:
+        return tango.factory.create_app('tango.site.' + site)
+    except ImportError:
+        return tango.factory.create_app(site)
 
 
 def command(function):
