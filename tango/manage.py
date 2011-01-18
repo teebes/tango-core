@@ -1,5 +1,7 @@
 "Console entry point and management & development tasks for Tango framework."
 
+from functools import update_wrapper
+
 from flaskext.script import Manager
 
 from tango.app import Tango
@@ -50,6 +52,21 @@ def register_command(name):
     return decorator
 
 
+def require_site(function):
+    """Decorator to mark a function as requiring a Tango site package.
+
+    The first argument of the decorated function is translated from a Tango
+    package name into a Tango app instance, i.e.
+
+    tango.site.default -> Tango('tango.site.default')
+    """
+    def wrapper(site, *args, **kwargs):
+        app = create_app(site)
+        return function(app, *args, **kwargs)
+    update_wrapper(wrapper, function)
+    return wrapper
+
+
 @register_command('version')
 def print_version():
     'Display this version of Tango.'
@@ -57,22 +74,26 @@ def print_version():
 
 
 @command
-def snapshot(site):
+@require_site
+def snapshot(app):
     "Build context from a Tango site package and store it into an image file."
 
 
 @command
-def build(site):
+@require_site
+def build(app):
     "Build a Tango site into a collection of static files."
 
 
 @command
-def serve(site):
+@require_site
+def serve(app):
     "Run a Tango site on the local machine, for development."
 
 
 @command
-def shell(site):
+@require_site
+def shell(app):
     "Open an interactive interpreter within a Tango site request context."
 
 
