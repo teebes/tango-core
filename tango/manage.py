@@ -2,7 +2,8 @@
 
 from functools import update_wrapper
 
-from flaskext.script import Manager
+from flaskext.script import Manager, Option
+from flaskext.script import Server as BaseServer
 
 from tango.app import Tango
 import tango.factory
@@ -87,19 +88,35 @@ def build(app):
 
 @command
 @require_site
-def serve(app):
-    "Run a Tango site on the local machine, for development."
-
-
-@command
-@require_site
 def shell(app):
     "Open an interactive interpreter within a Tango site request context."
 
 
+class Server(BaseServer):
+    description = "Run a Tango site on the local machine, for development."
+
+    def get_options(self):
+        return (Option('site'),) + BaseServer.get_options(self)
+
+    def handle(self, _, site, host, port, use_debugger, use_reloader):
+        app = create_app(site)
+        app.run(host=host, port=port, debug=use_debugger,
+                use_debugger=use_debugger, use_reloader=use_reloader,
+                **self.server_options)
+
+
 def run():
+    # Keep usage to just basename of program, i.e. tango not path/to/tango.
+    # sys.argv[0] = os.path.basename(sys.argv[0])
+
+    # Create a Manager instance to parse arguments & marshal commands.
     manager = Manager(Tango(__name__), with_default_commands=False)
 
-    for registered_command in commands:
-        manager.command(registered_command)
+    manager.add_command('serve', Server())
+    for cmd in commands:
+        manager.command(cmd)
     manager.run()
+
+
+if __name__ == '__main__':
+    run()
