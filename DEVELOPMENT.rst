@@ -41,9 +41,11 @@ Build a test harness.
 
 Mock system-level details.
 
->>> from minimock import mock
+>>> from minimock import Mock, mock
+>>> import code
 >>> import tango.app
 >>> mock('sys.exit', tracker=None)
+>>> mock('code.interact')
 >>> mock('tango.app.Tango.run')
 
 
@@ -52,9 +54,9 @@ Call: tango
 >>> call()
 ... # doctest:+NORMALIZE_WHITESPACE
   snapshot  Build context from a Tango site package and store it into an image file.
-  shell     Open an interactive interpreter within a Tango site request context.
-  version   Display this version of Tango.
+  shell     Runs a Python shell inside Tango application context.
   serve     Run a Tango site on the local machine, for development.
+  version   Display this version of Tango.
   build     Build a Tango site into a collection of static files.
 
 
@@ -87,8 +89,37 @@ Called tango.app.Tango.run(
     use_reloader=True)
 
 
-Call: tango shell default
+Call: tango shell --no-ipython default
 
->>> call('shell default')
+>>> call('shell --no-ipython default')
+... # doctest:+ELLIPSIS
+Called code.interact('', local={'app': <tango.app.Tango object at 0x...>})
 
 
+Call: tango shell default # if ipython installed
+
+>>> try:
+...     import IPython
+...     IPython.Shell.IPShellEmbed = Mock('IPython.Shell.IPShellEmbed')
+...     IPython.Shell.IPShellEmbed.mock_returns = Mock('sh')
+...     call('shell default')
+... except ImportError:
+...     print "Called IPython.Shell.IPShellEmbed(banner='')"
+...     print ("Called sh(global_ns={}, local_ns={'app':"
+...            " <tango.app.Tango object at 0x...>})")
+... # doctest:+ELLIPSIS
+Called IPython.Shell.IPShellEmbed(banner='')
+Called sh(global_ns={}, local_ns={'app': <tango.app.Tango object at 0x...>})
+
+
+Call: tango shell default # without ipython installed
+
+>>> try:
+...     import IPython
+...     IPython = sys.modules.pop('IPython')
+...     call('shell default')
+...     sys.modules['IPython'] = IPython
+... except:
+...     call('shell default')
+... # doctest:+ELLIPSIS
+Called code.interact('', local={'app': <tango.app.Tango object at 0x...>})

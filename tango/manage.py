@@ -2,8 +2,9 @@
 
 from functools import update_wrapper
 
-from flaskext.script import Manager, Option
+from flaskext.script import Command, Manager, Option
 from flaskext.script import Server as BaseServer
+from flaskext.script import Shell as BaseShell
 
 from tango.app import Tango
 import tango.factory
@@ -71,12 +72,6 @@ def build(app):
     "Build a Tango site into a collection of static files."
 
 
-@command
-@require_site
-def shell(app):
-    "Open an interactive interpreter within a Tango site request context."
-
-
 class Server(BaseServer):
     description = "Run a Tango site on the local machine, for development."
 
@@ -90,6 +85,17 @@ class Server(BaseServer):
                 **self.server_options)
 
 
+class Shell(BaseShell):
+    description = 'Runs a Python shell inside Tango application context.'
+
+    def get_options(self):
+        return (Option('site'),) + BaseShell.get_options(self)
+
+    def handle(self, _, site, *args, **kwargs):
+        app = create_app(site)
+        Command.handle(self, app, *args, **kwargs)
+
+
 def run():
     # Keep usage to just basename of program, i.e. tango not path/to/tango.
     # sys.argv[0] = os.path.basename(sys.argv[0])
@@ -98,6 +104,7 @@ def run():
     manager = Manager(Tango(__name__), with_default_commands=False)
 
     manager.add_command('serve', Server())
+    manager.add_command('shell', Shell())
     for cmd in commands:
         manager.command(cmd)
     manager.run()
