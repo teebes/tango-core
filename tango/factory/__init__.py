@@ -26,6 +26,7 @@ def create_app(import_name):
     """
     # Initialize application.
     app = Tango(import_name)
+    app.config.from_object('tango.config')
     app.config.from_object(import_name + '.config')
 
     # Get routes.
