@@ -6,6 +6,7 @@ from tango.app import Tango
 from tango.routes import get_routes
 
 from context import build_package_context
+from snapshot import get_snapshot
 
 
 def build_view(app, path, template, context):

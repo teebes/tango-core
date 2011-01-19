@@ -8,6 +8,7 @@ clean:
 	find . -name '*.py[co]' -delete
 	rm -f develop README.html
 	rm -fr *.egg *.egg-info dist build
+	rm -f *.dat
 
 install:
 	$(setup) install
