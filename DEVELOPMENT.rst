@@ -49,7 +49,7 @@ Mock system-level details.
 >>> mock('tango.app.Tango.run')
 
 
-Call: tango
+Command line: ``tango``
 
 >>> call()
 ... # doctest:+NORMALIZE_WHITESPACE
@@ -60,7 +60,7 @@ Call: tango
   build     Build a Tango site into a collection of static files.
 
 
-Call: tango version
+Command line: ``tango version``
 
 >>> call('version')
 ... # doctest:+ELLIPSIS
@@ -68,17 +68,17 @@ Tango ...
 Maintainer: ...
 
 
-Call: tango snapshot default
+Command line: ``tango snapshot default``
 
 >>> call('snapshot default')
 
 
-Call: tango build default
+Command line: ``tango build default``
 
 >>> call('build default')
 
 
-Call: tango serve default
+Command line: ``tango serve default``
 
 >>> call('serve default')
 Called tango.app.Tango.run(
@@ -89,14 +89,14 @@ Called tango.app.Tango.run(
     use_reloader=True)
 
 
-Call: tango shell --no-ipython default
+Command line: ``tango shell --no-ipython default``
 
 >>> call('shell --no-ipython default')
 ... # doctest:+ELLIPSIS
 Called code.interact('', local={'app': <tango.app.Tango object at 0x...>})
 
 
-Call: tango shell default # if ipython installed
+Command line: ``tango shell default`` with ipython option
 
 >>> try:
 ...     import IPython
@@ -112,7 +112,7 @@ Called IPython.Shell.IPShellEmbed(banner='')
 Called sh(global_ns={}, local_ns={'app': <tango.app.Tango object at 0x...>})
 
 
-Call: tango shell default # without ipython installed
+Command line: ``tango shell default`` without ipython installed
 
 >>> try:
 ...     import IPython
