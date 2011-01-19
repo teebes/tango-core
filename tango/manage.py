@@ -1,8 +1,10 @@
 "Console entry point and management & development tasks for Tango framework."
 
 from functools import update_wrapper
+import os.path
 
-from flaskext.script import Command, Manager, Option
+from flaskext.script import Command, Option
+from flaskext.script import Manager as BaseManager
 from flaskext.script import Server as BaseServer
 from flaskext.script import Shell as BaseShell
 
@@ -72,6 +74,13 @@ def build(app):
     "Build a Tango site into a collection of static files."
 
 
+class Manager(BaseManager):
+    def handle(self, prog, *args, **kwargs):
+        # Chop off full path to program name in argument parsing.
+        prog = os.path.basename(prog)
+        return BaseManager.handle(self, prog, *args, **kwargs)
+
+
 class Server(BaseServer):
     description = "Run a Tango site on the local machine, for development."
 
@@ -97,9 +106,6 @@ class Shell(BaseShell):
 
 
 def run():
-    # Keep usage to just basename of program, i.e. tango not path/to/tango.
-    # sys.argv[0] = os.path.basename(sys.argv[0])
-
     # Create a Manager instance to parse arguments & marshal commands.
     manager = Manager(Tango(__name__), with_default_commands=False)
 
