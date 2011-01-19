@@ -2,16 +2,17 @@
 
 from setuptools import setup, find_packages
 
-from tango.manage import version
+from tango import version
+
 
 setup(
     name='Tango',
-    version=version.number,
+    version=version.info.number,
     url='http://www.willowtreeapps.com',
     description='mobile web optimization framework',
     long_description=__doc__,
-    maintainer=version.maintainer,
-    maintainer_email=version.maintainer_email,
+    maintainer=version.info.maintainer,
+    maintainer_email=version.info.maintainer_email,
     packages=find_packages(),
     # Include package data, disable zipping to allow Jinja2 to find templates.
     include_package_data=True,

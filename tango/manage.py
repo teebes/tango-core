@@ -7,24 +7,9 @@ from flaskext.script import Server as BaseServer
 
 from tango.app import Tango
 import tango.factory
+import tango.version
 
 
-class Version(object):
-    "Version management class for flexibility in project versioning metadata."
-    number = '0.1'
-    name = 'Basico'
-    notice = 'dev' # Set to '' on release.
-    maintainer = 'Ron DuPlain'
-    maintainer_email = 'ron.duplain@willowtreeapps.com'
-
-    @property
-    def label(self):
-        return ('Tango %(number)s (%(name)s) %(notice)s\n'
-                'Maintainer: %(maintainer)s <%(maintainer_email)s>'
-                % type(self).__dict__)
-
-
-version = Version()
 commands = []
 
 
@@ -68,10 +53,10 @@ def require_site(function):
     return wrapper
 
 
-@register_command('version')
-def print_version():
+@command
+def version():
     'Display this version of Tango.'
-    print version.label
+    print tango.version.info.label
 
 
 @command
