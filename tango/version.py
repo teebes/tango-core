@@ -10,10 +10,17 @@ class Version(object):
     maintainer_email = 'ron.duplain@willowtreeapps.com'
 
     @property
-    def label(self):
-        return ('Tango %(number)s (%(name)s) %(notice)s\n'
-                'Maintainer: %(maintainer)s <%(maintainer_email)s>'
+    def banner(self):
+        return 'Tango %(number)s (%(name)s) %(notice)s' % type(self).__dict__
+
+    @property
+    def maintainer_info(self):
+        return ('Maintainer: %(maintainer)s <%(maintainer_email)s>'
                 % type(self).__dict__)
+
+    @property
+    def label(self):
+        return '%s\n%s' % (self.banner, self.maintainer_info)
 
 
 info = Version()
