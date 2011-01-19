@@ -15,11 +15,11 @@ def build_view(app, path, template, context):
     return app.route(path)(view)
 
 
-def create_app(import_name):
+def build_app(import_name):
     """Create a Tango application object from a Python import name.
 
     Example, using the default site package in this project:
-    >>> app = create_app('tango.site.default')
+    >>> app = build_app('tango.site.default')
     >>> app.config['SITE']
     'default'
     >>>

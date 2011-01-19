@@ -16,11 +16,11 @@ import tango.version
 commands = []
 
 
-def create_app(site):
+def build_app(site):
     try:
-        return tango.factory.create_app('tango.site.' + site)
+        return tango.factory.build_app('tango.site.' + site)
     except ImportError:
-        return tango.factory.create_app(site)
+        return tango.factory.build_app(site)
 
 
 def command(function):
@@ -50,7 +50,7 @@ def require_site(function):
     tango.site.default -> Tango('tango.site.default')
     """
     def wrapper(site, *args, **kwargs):
-        app = create_app(site)
+        app = build_app(site)
         return function(app, *args, **kwargs)
     update_wrapper(wrapper, function)
     return wrapper
@@ -88,7 +88,7 @@ class Server(BaseServer):
         return (Option('site'),) + BaseServer.get_options(self)
 
     def handle(self, _, site, host, port, use_debugger, use_reloader):
-        app = create_app(site)
+        app = build_app(site)
         app.run(host=host, port=port, debug=use_debugger,
                 use_debugger=use_debugger, use_reloader=use_reloader,
                 **self.server_options)
@@ -101,7 +101,7 @@ class Shell(BaseShell):
         return (Option('site'),) + BaseShell.get_options(self)
 
     def handle(self, _, site, *args, **kwargs):
-        app = create_app(site)
+        app = build_app(site)
         Command.handle(self, app, *args, **kwargs)
 
 
