@@ -7,6 +7,12 @@ from jinja2 import Environment, PackageLoader, TemplateNotFound
 class Tango(Flask):
     "Application class for a Tango site."
 
+    def __init__(self, import_name, *args, **kwargs):
+        # Flask.__init__ sets static path based on sys.modules.
+        # As such, import the package here to ensure it's in sys.modules.
+        __import__(import_name)
+        Flask.__init__(self, import_name, *args, **kwargs)
+
     def create_jinja_environment(self):
         options = dict(self.jinja_options)
         if 'autoescape' not in options:
