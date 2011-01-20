@@ -2,6 +2,7 @@
 
 from functools import update_wrapper
 import os.path
+import sys
 
 from flaskext.script import Command, Option
 from flaskext.script import Manager as BaseManager
@@ -22,7 +23,11 @@ def build_app(site):
     try:
         return tango.factory.build_app('tango.site.' + site)
     except ImportError:
-        return tango.factory.build_app(site)
+        try:
+            return tango.factory.build_app(site)
+        except ImportError:
+            print "Cannot find site '%s'." % site
+            sys.exit(1)
 
 
 def command(function):
@@ -75,8 +80,8 @@ def snapshot(site):
             import_name = site
             package = __import__(import_name)
         except ImportError:
-            print "No content package found for '%s'." % site
-            return
+            print "Cannot find site '%s'." % site
+            sys.exit(1)
     filename = build_snapshot(build_package_context(package), import_name)
     print 'Snapshot of full template context:', filename
 

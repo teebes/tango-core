@@ -90,12 +90,6 @@ Command line: ``tango snapshot default``
 Snapshot of full template context: tango.site.default.dat
 
 
-Command line: ``tango snapshot doesnotexist``
-
->>> call('snapshot doesnotexist')
-No content package found for 'doesnotexist'.
-
-
 Command line: ``tango serve default`` with snapshot available
 
 >>> call('serve default')
@@ -148,3 +142,39 @@ Command line: ``tango shell default`` without ipython installed
 ...     call('shell default')
 ... # doctest:+ELLIPSIS
 Called code.interact('', local={'app': <tango.app.Tango object at 0x...>})
+
+
+Test for cases where site does not exist.
+>>> from minimock import restore
+>>> restore()
+
+Command line: ``tango build doesnotexist``
+
+>>> call('build doesnotexist')
+Traceback (most recent call last):
+    ...
+SystemExit: 1
+
+
+Command line: ``tango serve doesnotexist``
+
+>>> call('serve doesnotexist')
+Traceback (most recent call last):
+    ...
+SystemExit: 1
+
+
+Command line: ``tango snapshot doesnotexist``
+
+>>> call('snapshot doesnotexist')
+Traceback (most recent call last):
+ ...
+SystemExit: 1
+
+
+Command line: ``tango shell doesnotexist``
+
+>>> call('shell doesnotexist')
+Traceback (most recent call last):
+    ...
+SystemExit: 1
