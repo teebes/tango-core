@@ -4,6 +4,7 @@ from flask import render_template
 
 from tango.app import Tango
 from tango.routes import get_routes
+import tango.filters
 
 from context import build_package_context
 from snapshot import get_snapshot
@@ -29,6 +30,9 @@ def build_app(import_name):
     app = Tango(import_name)
     app.config.from_object('tango.config')
     app.config.from_object(import_name + '.config')
+
+    # Load Tango filters.
+    tango.filters.init_app(app)
 
     # Get routes.
     routes = get_routes(app)
