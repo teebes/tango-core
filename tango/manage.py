@@ -27,7 +27,7 @@ def build_app(site):
             return tango.factory.build_app(site)
         except ImportError:
             print "Cannot find site '%s'." % site
-            sys.exit(1)
+            sys.exit(7)
 
 
 def command(function):
@@ -81,7 +81,7 @@ def snapshot(site):
             package = __import__(import_name)
         except ImportError:
             print "Cannot find site '%s'." % site
-            sys.exit(1)
+            sys.exit(7)
     filename = build_snapshot(build_package_context(package), import_name)
     print 'Snapshot of full template context:', filename
 

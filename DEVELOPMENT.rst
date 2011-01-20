@@ -153,7 +153,7 @@ Command line: ``tango build doesnotexist``
 >>> call('build doesnotexist')
 Traceback (most recent call last):
     ...
-SystemExit: 1
+SystemExit: 7
 
 
 Command line: ``tango serve doesnotexist``
@@ -161,7 +161,7 @@ Command line: ``tango serve doesnotexist``
 >>> call('serve doesnotexist')
 Traceback (most recent call last):
     ...
-SystemExit: 1
+SystemExit: 7
 
 
 Command line: ``tango snapshot doesnotexist``
@@ -169,7 +169,7 @@ Command line: ``tango snapshot doesnotexist``
 >>> call('snapshot doesnotexist')
 Traceback (most recent call last):
  ...
-SystemExit: 1
+SystemExit: 7
 
 
 Command line: ``tango shell doesnotexist``
@@ -177,4 +177,4 @@ Command line: ``tango shell doesnotexist``
 >>> call('shell doesnotexist')
 Traceback (most recent call last):
     ...
-SystemExit: 1
+SystemExit: 7
