@@ -15,6 +15,7 @@ install:
 
 develop: setup.py
 	easy_install pip
+	pip install Flask-Testing
 	pip install nose minimock
 	pip install pyflakes
 	pip install docutils

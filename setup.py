@@ -32,6 +32,7 @@ setup(
     tests_require=[
         'nose',
         'minimock',
+        'Flask-Testing',
         ],
     test_suite='nose.collector',
     )
