@@ -41,6 +41,7 @@ def build_app(import_name):
     else:
         print 'Using template context snapshot.'
     site_context = package_context.get(app.config['SITE'], {})
+    app.site_context = site_context
 
     # Stitch together context, template, and path.
     for template, paths in routes.items():
