@@ -68,13 +68,17 @@ def version():
 def snapshot(site):
     "Build context from a Tango site package and store it into an image file."
     try:
-        import_name = 'tango.site.' + site + '.content'
+        import_name = 'tango.site.' + site
         package = __import__(import_name)
     except ImportError:
-        import_name = site + '.content'
-        package = __import__(import_name)
+        try:
+            import_name = site
+            package = __import__(import_name)
+        except ImportError:
+            print "No content package found for '%s'." % site
+            return
     filename = build_snapshot(build_package_context(package), import_name)
-    print 'snapshot:', filename
+    print 'Snapshot of full template context:', filename
 
 
 @command

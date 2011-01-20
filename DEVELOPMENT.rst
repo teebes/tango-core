@@ -68,12 +68,6 @@ Tango ...
 Maintainer: ...
 
 
-Command line: ``tango snapshot default``
-
->>> call('snapshot default')
-snapshot: tango.site.default.content.dat
-
-
 Command line: ``tango build default``
 
 >>> call('build default')
@@ -88,6 +82,36 @@ Called tango.app.Tango.run(
     port=5000,
     use_debugger=True,
     use_reloader=True)
+
+
+Command line: ``tango snapshot default``
+
+>>> call('snapshot default')
+Snapshot of full template context: tango.site.default.dat
+
+
+Command line: ``tango snapshot doesnotexist``
+
+>>> call('snapshot doesnotexist')
+No content package found for 'doesnotexist'.
+
+
+Command line: ``tango serve default`` with snapshot available
+
+>>> call('serve default')
+Using template context snapshot.
+Called tango.app.Tango.run(
+    debug=True,
+    host='127.0.0.1',
+    port=5000,
+    use_debugger=True,
+    use_reloader=True)
+
+
+Remove snapshot.
+>>> import os
+>>> os.system('rm -f tango.site.default.dat')
+0
 
 
 Command line: ``tango shell --no-ipython default``

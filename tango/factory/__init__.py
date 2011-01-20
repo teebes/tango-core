@@ -38,6 +38,8 @@ def build_app(import_name):
     if package_context is None:
         package = __import__(import_name)
         package_context = build_package_context(package)
+    else:
+        print 'Using template context snapshot.'
     site_context = package_context.get(app.config['SITE'])
 
     # Stitch together context, template, and path.
