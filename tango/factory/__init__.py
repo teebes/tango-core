@@ -40,11 +40,11 @@ def build_app(import_name):
         package_context = build_package_context(package)
     else:
         print 'Using template context snapshot.'
-    site_context = package_context.get(app.config['SITE'])
+    site_context = package_context.get(app.config['SITE'], {})
 
     # Stitch together context, template, and path.
     for template, paths in routes.items():
         for path in paths:
-            build_view(app, path, template, site_context[path])
+            build_view(app, path, template, site_context.get(path, {}))
 
     return app
