@@ -71,6 +71,7 @@ Maintainer: ...
 Command line: ``tango snapshot default``
 
 >>> call('snapshot default')
+snapshot: tango.site.default.content.dat
 
 
 Command line: ``tango build default``

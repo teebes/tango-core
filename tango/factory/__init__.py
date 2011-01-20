@@ -33,9 +33,11 @@ def build_app(import_name):
     # Get routes.
     routes = get_routes(app)
 
-    # Build template context.
-    package = __import__(import_name)
-    package_context = build_package_context(package)
+    # Build template context, checking for a snapshot first.
+    package_context = get_snapshot(import_name)
+    if package_context is None:
+        package = __import__(import_name)
+        package_context = build_package_context(package)
     site_context = package_context.get(app.config['SITE'])
 
     # Stitch together context, template, and path.
