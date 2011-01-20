@@ -1,6 +1,7 @@
 from flask import current_app
 
 
+UNSET = object()
 filters = {}
 
 
@@ -23,3 +24,21 @@ def get_default(key):
     except AttributeError:
         return None
     return app.config[key]
+
+
+@register
+def datetime(a_date_or_datetime, format=UNSET):
+    "Filter which formats given datetime/date using given format option."
+    if format is UNSET:
+        format = get_default('DEFAULT_DATETIME_FORMAT')
+    if format is None:
+        return str(a_date_or_datetime)
+    return a_date_or_datetime.strftime(format)
+
+
+@register
+def date(a_date, format=UNSET):
+    "Filter which formats given datetime/date using given format option."
+    if format is UNSET:
+        format = get_default('DEFAULT_DATE_FORMAT')
+    return datetime(a_date, format=format)
