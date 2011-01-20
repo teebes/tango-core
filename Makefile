@@ -6,7 +6,7 @@ setup = python setup.py
 
 clean:
 	find . -name '*.py[co]' -delete
-	rm -f develop README.html
+	rm -f develop README.html DEVELOPMENT.html
 	rm -fr *.egg *.egg-info dist build
 	rm -f *.dat
 
@@ -35,10 +35,13 @@ distribute: develop
 	$(setup) sdist
 	ls -1rt ./dist/ | tail -1
 
-doc: README.html
+doc: README.html DEVELOPMENT.html
 
 README.html: README.rst
 	rst2html README.rst > README.html
+
+DEVELOPMENT.html: DEVELOPMENT.rst
+	rst2html DEVELOPMENT.rst > DEVELOPMENT.html
 
 
 # Here is a custom todo tool, documented clearly so you know it works.
