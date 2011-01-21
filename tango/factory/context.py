@@ -133,6 +133,9 @@ def parse_header(module):
     ['/path1', '/path2']
     >>> header['export']
     {'count': 'number', 'name': 'string', 'sequence': '[number]'}
+    >>> from tango.site.default.content.package import module
+    >>> parse_header(module)
+    {'path': ['/'], 'export': {'hint': None}, 'site': 'default'}
     >>>
 
     :param module: Tango site content package module object
@@ -166,11 +169,12 @@ def parse_header(module):
         rawexport = list(rawheader['export'])
     for exportstmt in rawexport:
         # TODO: Warn about duplicates here, reporting module.__name__.
-        try:
-            name, hint = [x.strip() for x in exportstmt.split(HINT_DELIMITER)]
+        tokens = exportstmt.split(HINT_DELIMITER)
+        name = tokens[0].strip()
+        if len(tokens) > 1:
+            hint = HINT_DELIMITER.join(tokens[1:]).strip()
             header['export'][name] = hint
-        except ValueError:
-            # TODO: Warn of bad export, reporting exportstmt, module.__name__.
-            continue
+        else:
+            header['export'][name] = None
 
     return header
