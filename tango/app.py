@@ -1,7 +1,11 @@
 "Core Tango classes for creating applications from Tango sites."
 
-from flask import Flask
+from flask import Flask, current_app
 from jinja2 import Environment, PackageLoader, TemplateNotFound
+from werkzeug import LocalProxy as Proxy
+
+
+config = Proxy(lambda: current_app.config)
 
 
 class Tango(Flask):
