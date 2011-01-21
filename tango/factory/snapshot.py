@@ -6,7 +6,6 @@ import pickle
 
 def build_snapshot(package_context, import_name, directory='.'):
     "Serialize a snapshot image of a Tango context package."
-    # TODO: Support serializing generator / iterable objects.
     filename = get_snapshot_filename(import_name, directory)
     pickle.dump(package_context, open(filename, 'w'))
     return filename
