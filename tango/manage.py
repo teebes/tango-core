@@ -90,6 +90,7 @@ def snapshot(site):
 @require_site
 def build(app):
     "Build a Tango site into a collection of static files."
+    # TODO: Build `tango build` command. See Flask-Static.
 
 
 class Manager(BaseManager):

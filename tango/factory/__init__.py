@@ -37,6 +37,7 @@ def build_app(import_name):
     # Get routes.
     routes = get_routes(app)
 
+    # TODO: Package context picks up all tango.site packages. It shouldn't.
     # Build template context, checking for a snapshot first.
     package_context = get_snapshot(import_name)
     if package_context is None:

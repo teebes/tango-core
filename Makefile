@@ -32,6 +32,8 @@ smoke: develop
 	python -W ignore::DeprecationWarning setup.py nosetests --stop
 
 distribute: develop
+	# TODO: Can we output .tar.bz2 instead?
+	# TODO: Build a github upload task `make publish`?
 	$(setup) sdist
 	ls -1rt ./dist/ | tail -1
 
