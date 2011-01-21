@@ -18,7 +18,7 @@ def build_view(app, path, template, context):
     return app.route(path)(view)
 
 
-def build_app(import_name):
+def build_app(import_name, use_snapshot=True):
     """Create a Tango application object from a Python import name.
 
     Example, using the default site package in this project:
@@ -44,7 +44,10 @@ def build_app(import_name):
 
     # TODO: Package context picks up all tango.site packages. It shouldn't.
     # Build template context, checking for a snapshot first.
-    package_context = get_snapshot(import_name)
+    package_context = None
+    if use_snapshot:
+        package_context = get_snapshot(import_name)
+
     if package_context is None:
         package = __import__(import_name)
         package_context = build_package_context(package)

@@ -11,7 +11,6 @@ from flaskext.script import Shell as BaseShell
 
 from tango.app import Tango
 import tango.factory
-from tango.factory.context import build_package_context
 from tango.factory.snapshot import build_snapshot
 import tango.version
 
@@ -19,12 +18,12 @@ import tango.version
 commands = []
 
 
-def build_app(site):
+def build_app(site, **options):
     try:
-        return tango.factory.build_app('tango.site.' + site)
+        return tango.factory.build_app('tango.site.' + site, **options)
     except ImportError:
         try:
-            return tango.factory.build_app(site)
+            return tango.factory.build_app(site, **options)
         except ImportError:
             print "Cannot find site '%s'." % site
             sys.exit(7)
@@ -72,17 +71,7 @@ def version():
 @command
 def snapshot(site):
     "Build context from a Tango site package and store it into an image file."
-    try:
-        import_name = 'tango.site.' + site
-        package = __import__(import_name)
-    except ImportError:
-        try:
-            import_name = site
-            package = __import__(import_name)
-        except ImportError:
-            print "Cannot find site '%s'." % site
-            sys.exit(7)
-    filename = build_snapshot(build_package_context(package), import_name)
+    filename = build_snapshot(build_app(site, use_snapshot=False))
     print 'Snapshot of full template context:', filename
 
 
