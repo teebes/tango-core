@@ -86,7 +86,7 @@ def pull_context(module):
     Example:
     >>> from tango.site.default.content import index, multiple
     >>> pull_context(index)
-    {'default': {'/': {'title': 'MobileTango Starter'}}}
+    {'default': {'/': {'title': 'Tango'}}}
     >>> pull_context(multiple) # doctest:+NORMALIZE_WHITESPACE
     {'default': {'/path1': {'count': 2, 'name': 'multiple.py context',
     'sequence': [4, 5, 6]}, '/path2': {'count': 2, 'name':
@@ -102,7 +102,10 @@ def pull_context(module):
 
     path_context = {}
     for name in header['export']:
-        path_context[name] = getattr(module, name)
+        if name in header['static']:
+            path_context[name] = header['export'][name]
+        else:
+            path_context[name] = getattr(module, name)
 
     site_context = {}
     for path in header['path']:
@@ -124,8 +127,9 @@ def parse_header(module):
 
     Example:
     >>> from tango.site.default.content import index, multiple
-    >>> parse_header(index)
-    {'path': ['/'], 'export': {'title': 'string'}, 'site': 'default'}
+    >>> parse_header(index) # doctest:+NORMALIZE_WHITESPACE
+    {'path': ['/'], 'static': ['title'], 'export': {'title': 'Tango'},
+     'site': 'default'}
     >>> header = parse_header(multiple)
     >>> header['site']
     'default'
@@ -135,7 +139,7 @@ def parse_header(module):
     {'count': 'number', 'name': 'string', 'sequence': '[number]'}
     >>> from tango.site.default.content.package import module
     >>> parse_header(module)
-    {'path': ['/'], 'export': {'hint': None}, 'site': 'default'}
+    {'path': ['/'], 'static': [], 'export': {'hint': None}, 'site': 'default'}
     >>>
 
     :param module: Tango site content package module object
@@ -163,18 +167,23 @@ def parse_header(module):
         # TODO: Warn about duplicates here, reporting module.__name__.
 
     header['export'] = {}
+    header['static'] = []
     if isinstance(rawheader['export'], basestring):
         rawexport = [rawheader['export']]
     else:
         rawexport = list(rawheader['export'])
     for exportstmt in rawexport:
         # TODO: Warn about duplicates here, reporting module.__name__.
-        tokens = exportstmt.split(HINT_DELIMITER)
-        name = tokens[0].strip()
-        if len(tokens) > 1:
-            hint = HINT_DELIMITER.join(tokens[1:]).strip()
-            header['export'][name] = hint
+        if isinstance(exportstmt, basestring):
+            tokens = exportstmt.split(HINT_DELIMITER)
+            name = tokens[0].strip()
+            if len(tokens) > 1:
+                hint = HINT_DELIMITER.join(tokens[1:]).strip()
+                header['export'][name] = hint
+            else:
+                header['export'][name] = None
         else:
-            header['export'][name] = None
-
+            for name in exportstmt:
+                header['export'][name] = exportstmt[name]
+                header['static'].append(name)
     return header

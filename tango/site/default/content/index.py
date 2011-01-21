@@ -1,7 +1,6 @@
 """
 site: default
 path: /
-export: title <- string
+export:
+ - title: Tango
 """
-
-title = 'MobileTango Starter'
