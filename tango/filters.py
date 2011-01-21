@@ -1,3 +1,6 @@
+from time import mktime
+from datetime import datetime as dt
+
 from flask import current_app
 
 
@@ -41,4 +44,13 @@ def date(a_date, format=UNSET):
     "Filter which formats given datetime/date using given format option."
     if format is UNSET:
         format = get_default('DEFAULT_DATE_FORMAT')
+    return datetime(a_date, format=format)
+
+
+@register
+def struct_time(a_struct_time, format=UNSET):
+    "Filter which formats given struct_time using given format option."
+    a_date = dt.fromtimestamp(mktime(a_struct_time))
+    if format is UNSET:
+        format = get_default('DEFAULT_DATETIME_FORMAT')
     return datetime(a_date, format=format)

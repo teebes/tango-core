@@ -1,4 +1,5 @@
 import datetime
+import time
 import unittest
 
 from flaskext.testing import TestCase
@@ -75,6 +76,33 @@ class FiltersTestCase(TestCase):
 
         self.assertEqual(raw_date(d), '2010-03-12')
         self.assertEqual(app_date(d), '2010-03-12')
+
+    def testStructTime(self):
+        st = datetime.datetime(2010, 3, 12, 12, 34, 56).timetuple()
+
+        raw_struct_time = filters.struct_time
+        assert 'struct_time' in self.app.jinja_env.filters.keys()
+        app_struct_time = self.app.jinja_env.filters['struct_time']
+
+        self.assertEqual(raw_struct_time(st), '2010-03-12 12:34:56')
+        self.assertEqual(app_struct_time(st), '2010-03-12 12:34:56')
+
+        self.assertEqual(raw_struct_time(st, '%m/%d/%Y'), '03/12/2010')
+        self.assertEqual(app_struct_time(st, '%m/%d/%Y'), '03/12/2010')
+
+        self.app.config['DEFAULT_DATETIME_FORMAT'] = '%m/%d/%y'
+
+        self.assertEqual(raw_struct_time(st), '03/12/10')
+        self.assertEqual(app_struct_time(st), '03/12/10')
+        self.assertEqual(raw_struct_time(st, None), '2010-03-12 12:34:56')
+        self.assertEqual(app_struct_time(st, None), '2010-03-12 12:34:56')
+        self.assertEqual(raw_struct_time(st, format=None), '2010-03-12 12:34:56')
+        self.assertEqual(app_struct_time(st, format=None), '2010-03-12 12:34:56')
+
+        self.app.config['DEFAULT_DATETIME_FORMAT'] = None
+
+        self.assertEqual(raw_struct_time(st), '2010-03-12 12:34:56')
+        self.assertEqual(app_struct_time(st), '2010-03-12 12:34:56')
 
 
 if __name__ == '__main__':
