@@ -1,6 +1,7 @@
 "Package to instantiate a Tango object from a Tango site package."
 
 from flask import render_template
+from werkzeug import create_environ
 
 from tango.app import Tango
 from tango.routes import get_routes
@@ -31,6 +32,10 @@ def build_app(import_name):
     app.config.from_object('tango.config')
     app.config.from_object(import_name + '.config')
 
+    # Create app context, push it onto request stack for use in initialization.
+    ctx = app.request_context(create_environ())
+    ctx.push()
+
     # Load Tango filters.
     tango.filters.init_app(app)
 
@@ -54,4 +59,6 @@ def build_app(import_name):
         for path in paths:
             build_view(app, path, template, site_context.get(path, {}))
 
+    # Pop app request context.
+    ctx.pop()
     return app
