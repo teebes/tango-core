@@ -6,7 +6,7 @@ setup = python setup.py
 
 clean:
 	find . -name '*.py[co]' -delete
-	rm -f develop README.html DEVELOPMENT.html
+	rm -f develop README.html DEVELOPMENT.html tests/*.html
 	rm -fr *.egg *.egg-info dist build
 	rm -f *.dat
 
@@ -37,13 +37,13 @@ distribute: develop
 	$(setup) sdist
 	ls -1rt ./dist/ | tail -1
 
-doc: README.html DEVELOPMENT.html
+doc_files := $(patsubst %.rst,%.html,$(wildcard *.rst))
+doc_deep_files := $(patsubst %.rst,%.html,$(wildcard **/*.rst))
 
-README.html: README.rst
-	rst2html README.rst > README.html
+doc: $(doc_files) $(doc_deep_files)
 
-DEVELOPMENT.html: DEVELOPMENT.rst
-	rst2html DEVELOPMENT.rst > DEVELOPMENT.html
+%.html: %.rst develop
+	rst2html $< > $@
 
 
 # Here is a custom todo tool, documented clearly so you know it works.
