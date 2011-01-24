@@ -17,27 +17,15 @@ def dict_zip(**kwargs):
     which it originated. If the provided iterables are of different lengths, the
     list of dictionaries will have a length equal to the shortest iterable.
 
-    Example:
+    Examples:
     >>> meals = ('breakfast', 'dinner')
     >>> foods = ('spam', 'eggs')
-    >>> list1 = dict_zip(meal=meals, food=foods)
-    >>> len(list1)
-    2
-    >>> d1 = list1[0]
-    >>> d1.has_key('meal')
-    True
-    >>> d1.has_key('food')
-    True
+    >>> dict_zip(meal=meals, food=foods)
+    [{'food': 'spam', 'meal': 'breakfast'}, {'food': 'eggs', 'meal': 'dinner'}]
     >>> names = ('oilman',)
     >>> roles = ('worker', 'empty')
-    >>> list2 = dict_zip(name=names, role=roles)
-    >>> len(list2)
-    1
-    >>> d2 = list2[0]
-    >>> d2['name']
-    'oilman'
-    >>> d2['role']
-    'worker'
+    >>> dict_zip(name=names, role=roles)
+    [{'role': 'worker', 'name': 'oilman'}]
 
     """
     return [dict(zip(kwargs.keys(), item)) for item in zip(*kwargs.values())]
