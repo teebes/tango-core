@@ -1,6 +1,6 @@
 "Package to instantiate a Tango object from a Tango site package."
 
-from flask import render_template
+from flask import render_template, request
 from werkzeug import create_environ
 
 from tango.app import Tango
@@ -63,4 +63,6 @@ def build_app(import_name, use_snapshot=True):
 
     # Pop app request context.
     ctx.pop()
+
+    app.context_processor(lambda: request.view_args)
     return app
