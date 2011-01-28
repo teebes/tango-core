@@ -20,8 +20,9 @@ def build_package_context(package):
     >>> build_package_context(tango.site.default.content)
     ... # doctest: +ELLIPSIS, +NORMALIZE_WHITESPACE
     {'default': {'/path1': {'count': 2, 'name': '...', 'sequence': [4, 5, 6]},
-    '/path2': {'count': 2, 'name': '...', 'sequence': [4, 5, 6]},
-    '/': {'project': 'tango', 'hint': '...', 'title': '...'}}}
+     '/path2': {'count': 2, 'name': '...', 'sequence': [4, 5, 6]},
+     '/': {'project': 'tango', 'hint': '...', 'title': '...'},
+     '/routing/<parameter>': {'purpose': '...'}}}
     >>>
 
     :param package: Tango site content package object
