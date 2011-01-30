@@ -1,8 +1,9 @@
 # make: your onestop entry to this project, complete with dependency resolution
 
-all: flakes test todo
+all: flakes coverage todo
 
 setup = python setup.py
+nosetests = python -W ignore::DeprecationWarning setup.py nosetests
 
 clean:
 	find . -name '*.py[co]' -delete
@@ -17,6 +18,7 @@ develop: setup.py
 	easy_install pip
 	pip install Flask-Testing
 	pip install nose minimock
+	pip install coverage
 	pip install pyflakes
 	pip install docutils
 	$(setup) develop
@@ -26,10 +28,13 @@ flakes: develop
 	find . -name '*.py' | xargs pyflakes | grep -v local_config; echo -n
 
 test: develop
-	python -W ignore::DeprecationWarning setup.py nosetests
+	$(nosetests)
 
 smoke: develop
-	python -W ignore::DeprecationWarning setup.py nosetests --stop
+	$(nosetests) --stop
+
+coverage: develop
+	$(nosetests) --with-coverage --cover-package=tango --cover-tests
 
 distribute: develop
 	# TODO: Can we output .tar.bz2 instead?
@@ -60,4 +65,4 @@ todo:
 	grep -nR [T]ODO * | sed 's/\([0-9]\):[^T\ODO]*T\ODO/\1:\tT\ODO/g'
 	echo
 
-.SILENT: flakes test todo
+.SILENT: coverage flakes test todo
