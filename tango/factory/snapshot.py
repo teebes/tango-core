@@ -21,6 +21,14 @@ def get_snapshot(import_name, directory='.'):
 
 
 def get_snapshot_filename(import_name, directory):
+    """Create a snapshot filename based on import name & directory.
+
+    >>> get_snapshot_filename('tango.site.default', '.')
+    'tango.site.default.dat'
+    >>> get_snapshot_filename('tango.site.default', '/tmp/')
+    '/tmp/tango.site.default.dat'
+    >>>
+    """
     if directory == '.':
         return import_name + '.dat'
     return os.path.join(directory, import_name) + '.dat'
