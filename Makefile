@@ -7,7 +7,7 @@ nosetests = python -W ignore::DeprecationWarning setup.py nosetests
 
 clean:
 	find . -name '*.py[co]' -delete
-	rm -f develop README.html DEVELOPMENT.html tests/*.html
+	rm -f develop README.html DEVELOPMENT.html tests/test_*.html
 	rm -fr *.egg *.egg-info dist build
 	rm -f *.dat
 
