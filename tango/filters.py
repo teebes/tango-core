@@ -21,12 +21,18 @@ def register(f):
 
 
 def get_default(key):
-    "Get a default value from the current app's configuration."
+    """Get a default value from the current app's configuration.
+
+    Currently returns None when no app is in context:
+    >>> get_default('NO_APP_IS_LOADED') is None
+    True
+    >>>
+    """
     try:
         app = current_app
+        return app.config[key]
     except AttributeError:
         return None
-    return app.config[key]
 
 
 @register
