@@ -57,6 +57,7 @@ def build_app(import_name, use_snapshot=True):
     app.package_context = package_context
 
     # Stitch together context, template, and path.
+    # TODO: Warn on mutually exclusive routes.py and context header routes.
     for template, paths in routes.items():
         for path in paths:
             build_view(app, path, template, site_context.get(path, {}))
