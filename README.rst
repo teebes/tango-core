@@ -36,6 +36,99 @@ package.  Site packages have the namespace::
 See existing sites and examples for more detail.
 
 
+What is Tango?
+==============
+
+Here is Tango's plan.
+
+
+At a glance, Tango...
+---------------------
+
+* is a mobile web framework built on Python
+* is a site-builder: follow a few simple conventions in your project and Tango
+  builds a mobile-optimized web app for you
+* provides device detection and capabilities, chooses template based on the
+  user's device & browser
+* includes automated testing for unit and functional tests
+
+
+Benefits
+--------
+
+* Two teams develop Tango site packages in parallel:
+
+ * template developers, implementing designs and arranging content
+ * data sourcers, tapping into origin database or site to push content into
+   templates
+
+* Spec-first development
+
+ * Tango site developers codify site's URL routes and data using Python & yaml
+   definitions.
+ * spec clearly spells out template content -- template & data are developed at
+   the same time
+
+* Productivity Measures
+
+ * Tango snapshots data - develop templates without fetching data
+ * data sourcing occurs outside of web context - develop & unit-test data
+   modules in isolation
+
+
+Specifics
+---------
+
+* Tango deploys as a Python WSGI app.
+
+ * Tango complies with the WSGI web standard.
+ * Most Tango deployments use mod_wsgi under Apache httpd.
+ * Tango can also deploy under ISAPI interface on Microsoft's IIS platform.
+
+* Tango on a schedule, including:
+
+ * automated deploy using Python standards & automated upgrade using git
+   revision control
+ * cron static builds where possible
+ * dynamic views with caching -- cached on a time-to-live schedule
+
+* Tango site packages include
+
+ * a URL map using intuitive Python syntax (routes.py)
+ * a template package in Python's Jinja2
+ * a content package in Python, using yaml headers
+ * static assets - images, CSS, JavaScript
+ * config using simple key/value pairs
+
+* Templating: Tango uses Python's highly regarded Jinja2 (inspired by Django).
+
+
+Other Notes
+-----------
+
+Tango:
+
+* framework reduces web request & response code to 0.
+* developers can theme sites easily using template inheritance and CSS.
+* is a rapid prototyping framework (we think *very* rapid), but is ready for
+  primetime & full applications.
+* automates unit and functional tests, testing all the way up to (but not
+  including) browser quirks.
+
+On redirecting users from the desktop site:
+
+* Most site owners want to hit iPhone, Android, and Blackberry.
+
+ * Nearly all of these devices have JavaScript enabled.
+ * Use a simple JavaScript redirection script (preferably on every page, but at
+   least the home page).
+
+* For wider device targets:
+
+ * Set URL rewrite rules for Apache httpd or IIS.
+ * Redirect devices even if JavaScript is disabled.
+
+
 Releases
 ========
 
