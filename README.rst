@@ -129,6 +129,26 @@ On redirecting users from the desktop site:
  * Redirect devices even if JavaScript is disabled.
 
 
+Yet Another Web Framework?
+==========================
+
+No, Tango extends Flask, or rather, Tango *builds* Flask, Flask WSGI
+application objects to be exact.  Flask:
+
+* builds on Werkzeug, a WSGI implementation
+* builds on Jinja2, a templating platform
+* allows for a Pythonic app-building pattern
+* provides for extensions with clear conventions
+  (and the Flask committers review & approve these extensions)
+
+Tango focuses on the templating platform, completely hides the WSGI layer,
+establishes a spec-first development pattern on top of Flask, leverages
+Flask-related tools & extensions, and as a result, makes the Tango developers
+more productive in building mobile web sites.
+
+Tango is WillowTree's Flask platform, but is developed for general use.
+
+
 Releases
 ========
 
