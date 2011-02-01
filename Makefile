@@ -1,6 +1,6 @@
 # make: your onestop entry to this project, complete with dependency resolution
 
-all: flakes coverage todo
+all: flakes test todo
 
 setup = python setup.py
 nosetests = python -W ignore::DeprecationWarning setup.py nosetests
@@ -28,13 +28,12 @@ flakes: develop
 	find . -name '*.py' | xargs pyflakes | grep -v local_config; echo -n
 
 test: develop
-	$(nosetests)
+	$(nosetests) --with-coverage --cover-package=tango --cover-tests
 
 smoke: develop
 	$(nosetests) --stop
 
-coverage: develop
-	$(nosetests) --with-coverage --cover-package=tango --cover-tests
+coverage: test
 
 distribute: develop
 	# TODO: Can we output .tar.bz2 instead? (Basico)
