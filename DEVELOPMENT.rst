@@ -30,6 +30,9 @@ Todos:
   This matches routes.py, not request URLs, to support exports across an
   entire area of the app.
 * TODO: Build a utility to determine if a link is internal/external to app.
+* TODO: Provide an app-building option which only hits a specific context
+  module, for testing data/template integration in isolation.
+  Remove any routes/templates mismatch warnings when using this option.
 
 
 Tool ideas:
