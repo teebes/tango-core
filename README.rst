@@ -129,6 +129,15 @@ On redirecting users from the desktop site:
  * Redirect devices even if JavaScript is disabled.
 
 
+Logic in Templates?
+===================
+
+Template developers say you should keep heavy logic out-of-templates, and there
+are good reasons for that.  In stark contrast, Tango relies on heavy logic in
+the templates.  This is intentional; *all* logic is in the templates.  There
+are no view functions in Tango, only templates and a data layer.
+
+
 Yet Another Web Framework?
 ==========================
 
