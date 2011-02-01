@@ -39,14 +39,6 @@ def command(function):
     return function
 
 
-def register_command(name):
-    "Like @command, but allows for renaming functions."
-    def decorator(function):
-        function.__name__ = name
-        return command(function)
-    return decorator
-
-
 def require_site(function):
     """Decorator to mark a function as requiring a Tango site package.
 
