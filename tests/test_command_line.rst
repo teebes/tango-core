@@ -164,3 +164,9 @@ Command line: ``tango shell doesnotexist``
 Traceback (most recent call last):
     ...
 SystemExit: 7
+
+
+Verify call from OS shell.
+
+>>> os.system('tango version >/dev/null 2>&1')
+0

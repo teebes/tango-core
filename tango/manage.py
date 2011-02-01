@@ -122,7 +122,3 @@ def run():
     for cmd in commands:
         manager.command(cmd)
     manager.run()
-
-
-if __name__ == '__main__':
-    run()
