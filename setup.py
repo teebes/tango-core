@@ -13,7 +13,7 @@ setup(
     long_description=__doc__,
     maintainer=version.info.maintainer,
     maintainer_email=version.info.maintainer_email,
-    # TODO: Remove tango.site.test et al from packages.
+    # TODO: Remove tango.site.test et al from packages. (Basico)
     packages=find_packages(),
     # Include package data, disable zipping to allow Jinja2 to find templates.
     include_package_data=True,

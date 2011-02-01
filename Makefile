@@ -37,8 +37,9 @@ coverage: develop
 	$(nosetests) --with-coverage --cover-package=tango --cover-tests
 
 distribute: develop
-	# TODO: Can we output .tar.bz2 instead?
-	# TODO: Build a github upload task `make publish`?
+	# TODO: Can we output .tar.bz2 instead? (Basico)
+	# TODO: Build a github upload task `make publish`? (Basico)
+	# TODO: Verify clean, installable distribution. (Basico)
 	$(setup) sdist
 	ls -1rt ./dist/ | tail -1
 
