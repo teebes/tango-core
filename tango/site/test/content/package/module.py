@@ -1,5 +1,5 @@
 """
-site: default
+site: test
 path: /
 export: hint # Demonstrating that export hints are not strictly required.
 """

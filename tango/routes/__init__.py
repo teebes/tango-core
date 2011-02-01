@@ -16,7 +16,7 @@ def get_routes(app):
     """Get app routes from app's site package routes module.
 
     >>> from tango.app import Tango
-    >>> get_routes(Tango('tango.site.default'))
+    >>> get_routes(Tango('tango.site.test'))
     {'index.html': ('/',), 'parameter.html': ('/routing/<parameter>',)}
     >>>
     """

@@ -1,5 +1,5 @@
 """
-site: default
+site: test
 path:
  - /routing/<parameter>
 export:

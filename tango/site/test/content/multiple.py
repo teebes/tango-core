@@ -1,5 +1,5 @@
 """
-site: default
+site: test
 path:
  - /path1
  - /path2
