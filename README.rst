@@ -33,20 +33,20 @@ package.  Site packages have the namespace::
 
     tango.site.sitename
 
-See the examples for more detail.
+See existing sites and examples for more detail.
 
 
 Releases
 ========
 
-The current target release is 0.1 (Basico) which establishes Tango conventions,
-namespaces, and supports building static sites.
+The current target release is 0.1 (Basico) which establishes Tango conventions
+and package namespaces, supports building static sites, and provides a solid
+codebase with 100% statement test coverage.
 
 Further development beyond Tango Basico will support:
 
 * utilities determining whether URL is internal or external to the mobile site.
-* arguments in site routes.
-* view functions in addition to exporting static template contexts.
+* simplified dynamic view functions.
 
 Future development:
 
@@ -54,6 +54,8 @@ Future development:
   specific devices.
 * Provide a configurable pipeline for common optimizations of responses.
 * Provide a configurable pipeline for integrating addons into responses.
+* Dynamic view caching, on an expiration schedule.
+* Static context updates on a schedule, for example, fetch a feed every 5 min.
 * Consider developing an interface for clients to manage templates and content.
 
 
