@@ -74,11 +74,8 @@ def discover_modules(package):
         tokens = name.split('.')
         packagename = '.'.join(tokens[:-1])
         base = tokens[-1]
-        try:
-            module = getattr(__import__(packagename, fromlist=[base]), base)
-            yield module
-        except ValueError:
-            "Ignore empty modules."
+        module = getattr(__import__(packagename, fromlist=[base]), base)
+        yield module
 
 
 def pull_context(module):
