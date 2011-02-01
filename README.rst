@@ -46,8 +46,8 @@ At a glance, Tango...
 ---------------------
 
 * is a mobile web framework built on Python
-* is a site-builder: follow a few simple conventions in your project and Tango
-  builds a mobile-optimized web app for you
+* is a site-builder: follow a few simple conventions in a project and Tango
+  builds a mobile-optimized web app
 * provides device detection and capabilities, chooses template based on the
   user's device & browser
 * includes automated testing for unit and functional tests
@@ -66,8 +66,8 @@ Benefits
 
  * Tango site developers codify site's URL routes and data using Python & yaml
    definitions.
- * spec clearly spells out template content -- template & data are developed at
-   the same time
+ * spec clearly spells out template content -- develop the spec, then develop
+   templates & data at the same time
 
 * Productivity Measures
 
@@ -79,11 +79,11 @@ Benefits
 Specifics
 ---------
 
-* Tango deploys as a Python WSGI app.
+* Tango deploys as a Python WSGI app:
 
- * Tango complies with the WSGI web standard.
- * Most Tango deployments use mod_wsgi under Apache httpd.
- * Tango can also deploy under ISAPI interface on Microsoft's IIS platform.
+ * complies with the WSGI web standard.
+ * most deployments use mod_wsgi under Apache httpd.
+ * can also deploy under ISAPI interface on Microsoft's IIS platform.
 
 * Tango on a schedule, including:
 
@@ -110,7 +110,7 @@ Tango:
 
 * framework reduces web request & response code to 0.
 * developers can theme sites easily using template inheritance and CSS.
-* is a rapid prototyping framework (we think *very* rapid), but is ready for
+* is a rapid prototyping framework (think *very* rapid), but is ready for
   primetime & full applications.
 * automates unit and functional tests, testing all the way up to (but not
   including) browser quirks.
@@ -132,10 +132,10 @@ On redirecting users from the desktop site:
 Logic in Templates?
 ===================
 
-Template developers say you should keep heavy logic out-of-templates, and there
-are good reasons for that.  In stark contrast, Tango relies on heavy logic in
-the templates.  This is intentional; *all* logic is in the templates.  There
-are no view functions in Tango, only templates and a data layer.
+Template developers say that heavy logic should stay out of templates, and
+there are good reasons for that.  In stark contrast, Tango relies on heavy
+logic in the templates.  This is intentional; *all* logic is in the templates.
+There are no view functions, only templates and a freestyle data layer.
 
 
 Yet Another Web Framework?
