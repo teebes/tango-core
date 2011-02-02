@@ -112,9 +112,9 @@ Command line: ``tango shell default`` with ipython option
 ...     print "Called IPython.Shell.IPShellEmbed(banner='')"
 ...     print ("Called sh(global_ns={}, local_ns={'app':"
 ...            " <tango.app.Tango object at 0x...>})")
-... # doctest:+ELLIPSIS
+... # doctest:+ELLIPSIS,+NORMALIZE_WHITESPACE
 Called IPython.Shell.IPShellEmbed(banner='')
-Called sh(global_ns={}, local_ns={'app': <tango.app.Tango object at 0x...>})
+Called sh(...global_ns={}, local_ns={'app': <tango.app.Tango object at 0x...>})
 
 
 Command line: ``tango shell default`` without ipython installed
