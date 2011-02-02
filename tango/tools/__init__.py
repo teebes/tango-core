@@ -1,6 +1,7 @@
 "Package of utilities for use by Tango sites external to core Tango framework."
 
 import re
+import time
 
 
 first_cap_re = re.compile('(.)([A-Z][a-z]+)')
@@ -63,7 +64,31 @@ def slugify(value):
     >>> slugify('-a slug')
     '-a-slug'
 
-
     """
     value = special_chars_re.sub('', value).strip().lower()
     return dash_and_space_re.sub('-', value)
+
+
+def make_timestamp(string, formatter):
+    """Make a stringified UNIX timestamp out of a given `string` that follows
+    the date format specified by `formatter`.
+
+    Dates prior to the UNIX epoch will return a negative result. `string` must
+    match the format of `formatter` or a ValueError will be raised.
+
+    Examples:
+
+    >>> make_timestamp('March 04', '%B %y')
+    '1078117200'
+    >>> make_timestamp('January 1950', '%B %Y')
+    '-631134000'
+    >>> make_timestamp('Feb.08 2011 4:00 PM', '%b.%d %Y %I:%M %p')
+    '1297198800'
+    >>> make_timestamp('Feb.08 2011 4:00 PM', '%b.%d %Y %I:%M')
+    Traceback (most recent call last):
+    ...
+    ValueError: unconverted data remains:  PM
+
+    """
+    struct = time.strptime(string, formatter)
+    return format(time.mktime(struct), '.0f')
