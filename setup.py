@@ -23,6 +23,7 @@ setup(
     install_requires=[
         'Flask',
         'Flask-Script',
+	'lxml',
         'pyyaml',
         ],
     entry_points={
