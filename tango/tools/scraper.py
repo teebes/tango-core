@@ -83,7 +83,7 @@ def url_selector_list(url, selector, text_only=False):
     >>> url_selector_list(my_url, 'span a') # doctest:+NORMALIZE_WHITESPACE
     ['<a href="a.html">Link A</a>',
      '<a href="b.html">Link B</a>',
-     '<a href="c.html">Link C</a>']
+     '<a href="c.html" rel="external">Link C</a>']
     >>> url_selector_list(my_url, 'span a', True)
     ['Link A', 'Link B', 'Link C']
 
@@ -101,6 +101,27 @@ def url_selector_list(url, selector, text_only=False):
     if text_only:
         return [branch.text for branch in cs(tree)]
     return [etree.tostring(branch) for branch in cs(tree)]
+
+
+def url_selector_values(url, selector, attr):
+    """Return a list of attributes of type `attr` from the set of elements
+    matched by `selector` from a given `url`.
+
+    If an attribute is not present for a matched element, `None` is added to the
+    returned list.
+
+    Common use:
+    >>> url_selector_values(my_url, 'span a', 'href')
+    ['a.html', 'b.html', 'c.html']
+    >>> url_selector_values(my_url, 'span a', 'rel')
+    [None, None, 'external']
+    >>> url_selector_values(my_url, 'span a', 'foo')
+    [None, None, None]
+    >>>
+    """
+    tree = etree.parse(urllib2.urlopen(url), parser)
+    cs = CSSSelector(selector)
+    return [branch.get(attr) for branch in cs(tree)]
 
 
 # For testing:
