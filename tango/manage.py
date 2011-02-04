@@ -19,14 +19,7 @@ commands = []
 
 
 def build_app(site, **options):
-    try:
-        return tango.factory.build_app('tango.site.' + site, **options)
-    except ImportError:
-        try:
-            return tango.factory.build_app(site, **options)
-        except ImportError:
-            print "Cannot find site '%s'." % site
-            sys.exit(7)
+    return tango.factory.build_app('tango.site.' + site, **options)
 
 
 def command(function):
