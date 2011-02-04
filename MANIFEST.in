@@ -1,1 +1,1 @@
-recursive-include tango/site/**/templates *
+recursive-include tango/site/default/templates *
