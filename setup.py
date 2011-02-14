@@ -21,9 +21,10 @@ setup(
     # tango, tango.site are namespace packages. Others are full packages.
     namespace_packages=['tango', 'tango.site'],
     install_requires=[
+        'BeautifulSoup',
         'Flask',
         'Flask-Script',
-	'lxml',
+        'lxml',
         'pyyaml',
         ],
     entry_points={

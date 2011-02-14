@@ -33,7 +33,7 @@ def camel_case(name):
     'http_response_code'
     >>> camel_case('HTTPResponseCodeXYZ')
     'http_response_code_xyz'
-
+    >>>
     """
     first_pass = first_cap_re.sub(r'\1_\2', name)
     return all_cap_re.sub(r'\1_\2', first_pass).lower()
@@ -63,7 +63,7 @@ def slugify(value):
     'a-slug'
     >>> slugify('-a slug')
     '-a-slug'
-
+    >>>
     """
     value = special_chars_re.sub('', value).strip().lower()
     return dash_and_space_re.sub('-', value)
@@ -88,7 +88,7 @@ def make_timestamp(string, formatter):
     Traceback (most recent call last):
     ...
     ValueError: unconverted data remains:  PM
-
+    >>>
     """
     struct = time.strptime(string, formatter)
     return format(time.mktime(struct), '.0f')
