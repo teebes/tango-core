@@ -1,7 +1,8 @@
 "Package of utilities for use by Tango sites external to core Tango framework."
 
 import re
-import time
+from datetime import date
+from time import mktime, strptime
 
 
 first_cap_re = re.compile('(.)([A-Z][a-z]+)')
@@ -90,5 +91,33 @@ def make_timestamp(string, formatter):
     ValueError: unconverted data remains:  PM
     >>>
     """
-    struct = time.strptime(string, formatter)
-    return format(time.mktime(struct), '.0f')
+    struct = strptime(string, formatter)
+    return format(mktime(struct), '.0f')
+
+
+def date_from_string(string, formatter):
+    """Return a datetime date object from a given `string` that follows the date
+    format specified by `formatter`.
+
+    At minimum, the function requires that `formatter` contain a day, month, and
+    year. In addition, `string must match the format of `formatter` or a
+    ValueError will be raised.
+
+    Examples:
+
+    >>> date_from_string('November 11, 2011', '%B %d, %Y')
+    datetime.date(2011, 11, 11)
+    >>> date_from_string('November 11', '%B %d')
+    Traceback (most recent call last):
+    ...
+    OverflowError: mktime argument out of range
+    >>> date_from_string('Feb.08 2011 4:00 PM', '%b.%d %Y %I:%M %p')
+    datetime.date(2011, 2, 8)
+    >>> date_from_string('Feb.08 2011 4:00 PM', '%b.%d %Y %I:%M')
+    Traceback (most recent call last):
+    ...
+    ValueError: unconverted data remains:  PM
+    >>>
+    """
+    struct = strptime(string, formatter)
+    return date.fromtimestamp(mktime(struct))
