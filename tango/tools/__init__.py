@@ -71,11 +71,11 @@ def slugify(value):
 
 
 def make_timestamp(string, formatter):
-    """Make a stringified UNIX timestamp out of a given `string` that follows
-    the date format specified by `formatter`.
+    """Make a stringified UNIX timestamp out of a given ``string`` that follows
+    the date format specified by ``formatter``.
 
-    Dates prior to the UNIX epoch will return a negative result. `string` must
-    match the format of `formatter` or a ValueError will be raised.
+    Dates prior to the UNIX epoch will return a negative result. ``string``
+    must match the format of ``formatter`` or a ValueError will be raised.
 
     Examples:
 
@@ -96,21 +96,26 @@ def make_timestamp(string, formatter):
 
 
 def date_from_string(string, formatter):
-    """Return a datetime date object from a given `string` that follows the date
-    format specified by `formatter`.
+    """Return a datetime date object from a given ``string`` that follows the
+    date format specified by ``formatter``.
 
-    At minimum, the function requires that `formatter` contain a day, month, and
-    year. In addition, `string must match the format of `formatter` or a
-    ValueError will be raised.
+    At minimum, the function requires that ``formatter`` contain a day and a
+    month.  When year is not given, date defaults to current year.
+
+    Raises Value error when ``string`` does not match ``formatter``.
 
     Examples:
 
     >>> date_from_string('November 11, 2011', '%B %d, %Y')
     datetime.date(2011, 11, 11)
-    >>> date_from_string('November 11', '%B %d')
-    Traceback (most recent call last):
-    ...
-    OverflowError: mktime argument out of range
+    >>> date_from_string('November 11', '%B %d') #doctest:+ELLIPSIS
+    datetime.date(..., 11, 11)
+    >>> _.year == date.today().year
+    True
+    >>> date_from_string('Feb.08 4:00 PM', '%b.%d %I:%M %p') #doctest:+ELLIPSIS
+    datetime.date(..., 2, 8)
+    >>> _.year == date.today().year
+    True
     >>> date_from_string('Feb.08 2011 4:00 PM', '%b.%d %Y %I:%M %p')
     datetime.date(2011, 2, 8)
     >>> date_from_string('Feb.08 2011 4:00 PM', '%b.%d %Y %I:%M')
@@ -120,4 +125,8 @@ def date_from_string(string, formatter):
     >>>
     """
     struct = strptime(string, formatter)
+    if ('%Y' not in formatter and
+        '%y' not in formatter and
+        struct.tm_year == 1900):
+        return date(date.today().year, struct.tm_mon, struct.tm_mday)
     return date.fromtimestamp(mktime(struct))
