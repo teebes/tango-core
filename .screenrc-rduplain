@@ -3,8 +3,6 @@ caption always
 screen -t editor     0 wrap $EDITOR .
 screen -t git        1 wrap git status
 screen -t make       2 wrap make
-screen -t explore    3 wrap -C ../../explore $EDITOR .
-screen -t explore    4 wrap -C ../../explore echo grep me
 screen -t sample     5 wrap -C ../tango-sample git status
 select 1
 select 0
