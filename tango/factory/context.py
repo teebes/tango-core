@@ -4,6 +4,8 @@ import pkgutil
 
 import yaml
 
+from tango.helpers import get_module
+
 
 HINT_DELIMITER = '<-'
 
@@ -71,11 +73,7 @@ def discover_modules(package):
     onerror = lambda args: None
     yield package
     for _, name, _ in pkgutil.walk_packages(path, prefix, onerror):
-        tokens = name.split('.')
-        packagename = '.'.join(tokens[:-1])
-        base = tokens[-1]
-        module = getattr(__import__(packagename, fromlist=[base]), base)
-        yield module
+        yield get_module(name)
 
 
 def pull_context(module):
