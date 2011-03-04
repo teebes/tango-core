@@ -1,6 +1,6 @@
 """
 site: test
-path: /
-export:
+routes: /
+exports:
  - title: Tango
 """

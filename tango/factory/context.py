@@ -15,14 +15,14 @@ def build_package_context(package):
 
     Structure of site context:
 
-    site_context = {'site': {'path1': {}, 'path2': {}, 'pathN': {}}}
-    site_context['site']['pathN'] is a standard template context dict.
+    site_context = {'site': {'route1': {}, 'route2': {}, 'routeN': {}}}
+    site_context['site']['routeN'] is a standard template context dict.
 
     >>> import tango.site.test.content
     >>> build_package_context(tango.site.test.content)
     ... # doctest: +ELLIPSIS, +NORMALIZE_WHITESPACE
-    {'test': {'/path1': {'count': 2, 'name': '...', 'sequence': [4, 5, 6]},
-     '/path2': {'count': 2, 'name': '...', 'sequence': [4, 5, 6]},
+    {'test': {'/route1': {'count': 2, 'name': '...', 'sequence': [4, 5, 6]},
+     '/route2': {'count': 2, 'name': '...', 'sequence': [4, 5, 6]},
      '/': {'project': 'tango', 'hint': '...', 'title': '...'},
      '/routing/<parameter>': {'purpose': '...'}}}
     >>>
@@ -38,11 +38,11 @@ def build_package_context(package):
             continue
         for site in context:
             site_context = package_context.get(site, {})
-            for path in context[site]:
-                path_context = site_context.get(path, {})
-                # TODO: Warn on path context overwrite.
-                path_context.update(context[site][path])
-                site_context[path] = path_context
+            for route in context[site]:
+                route_context = site_context.get(route, {})
+                # TODO: Warn on route context overwrite.
+                route_context.update(context[site][route])
+                site_context[route] = route_context
             package_context[site] = site_context
     return package_context
 
@@ -84,8 +84,8 @@ def pull_context(module):
     >>> pull_context(index)
     {'test': {'/': {'title': 'Tango'}}}
     >>> pull_context(multiple) # doctest:+NORMALIZE_WHITESPACE
-    {'test': {'/path1': {'count': 2, 'name': 'multiple.py context',
-     'sequence': [4, 5, 6]}, '/path2': {'count': 2, 'name':
+    {'test': {'/route1': {'count': 2, 'name': 'multiple.py context',
+     'sequence': [4, 5, 6]}, '/route2': {'count': 2, 'name':
      'multiple.py context', 'sequence': [4, 5, 6]}}}
     >>>
 
@@ -96,16 +96,16 @@ def pull_context(module):
     if header is None:
         return None
 
-    path_context = {}
-    for name in header['export']:
+    route_context = {}
+    for name in header['exports']:
         if name in header['static']:
-            path_context[name] = header['export'][name]
+            route_context[name] = header['exports'][name]
         else:
-            path_context[name] = getattr(module, name)
+            route_context[name] = getattr(module, name)
 
     site_context = {}
-    for path in header['path']:
-        site_context[path] = path_context
+    for route in header['routes']:
+        site_context[route] = route_context
 
     return {header['site']: site_context}
 
@@ -116,26 +116,25 @@ def parse_header(module):
     Modules in the site content package must have these fields in the header:
 
     * site
-    * path
-    * export
+    * routes
+    * exports
 
     Raise KeyError if any of these fields are missing.
 
     Example:
     >>> from tango.site.test.content import index, multiple
     >>> parse_header(index) # doctest:+NORMALIZE_WHITESPACE
-    {'path': ['/'], 'static': ['title'], 'export': {'title': 'Tango'},
-     'site': 'test'}
+    {'routes': ['/'], 'exports': {'title': 'Tango'}, 'static': ['title'], 'site': 'test'}
     >>> header = parse_header(multiple)
     >>> header['site']
     'test'
-    >>> header['path']
-    ['/path1', '/path2']
-    >>> header['export']
+    >>> header['routes']
+    ['/route1', '/route2']
+    >>> header['exports']
     {'count': 'number', 'name': 'string', 'sequence': '[number]'}
     >>> from tango.site.test.content.package import module
     >>> parse_header(module)
-    {'path': ['/'], 'static': [], 'export': {'hint': None}, 'site': 'test'}
+    {'routes': ['/'], 'exports': {'hint': None}, 'static': [], 'site': 'test'}
     >>>
 
     :param module: Tango site content package module object
@@ -156,18 +155,18 @@ def parse_header(module):
 
     header = {'site': rawheader['site']}
 
-    if isinstance(rawheader['path'], basestring):
-        header['path'] = [rawheader['path']]
+    if isinstance(rawheader['routes'], basestring):
+        header['routes'] = [rawheader['routes']]
     else:
-        header['path'] = list(rawheader['path'])
+        header['routes'] = list(rawheader['routes'])
         # TODO: Warn about duplicates here, reporting module.__name__.
 
-    header['export'] = {}
+    header['exports'] = {}
     header['static'] = []
-    if isinstance(rawheader['export'], basestring):
-        rawexport = [rawheader['export']]
+    if isinstance(rawheader['exports'], basestring):
+        rawexport = [rawheader['exports']]
     else:
-        rawexport = list(rawheader['export'])
+        rawexport = list(rawheader['exports'])
     for exportstmt in rawexport:
         # TODO: Warn about duplicates here, reporting module.__name__.
         if isinstance(exportstmt, basestring):
@@ -175,11 +174,11 @@ def parse_header(module):
             name = tokens[0].strip()
             if len(tokens) > 1:
                 hint = HINT_DELIMITER.join(tokens[1:]).strip()
-                header['export'][name] = hint
+                header['exports'][name] = hint
             else:
-                header['export'][name] = None
+                header['exports'][name] = None
         else:
             for name in exportstmt:
-                header['export'][name] = exportstmt[name]
+                header['exports'][name] = exportstmt[name]
                 header['static'].append(name)
     return header

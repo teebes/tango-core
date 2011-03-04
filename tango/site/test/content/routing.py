@@ -1,7 +1,7 @@
 """
 site: test
-path:
+routes:
  - /routing/<parameter>
-export:
+exports:
  - purpose: Show that route parameters are implicitly added to context.
 """

@@ -1,6 +1,6 @@
 """
 site: default
-path: /
-export:
+routes: /
+exports:
  - title: Tango
 """

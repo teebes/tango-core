@@ -1,9 +1,9 @@
 """
 site: test
-path:
- - /path1
- - /path2
-export:
+routes:
+ - /route1
+ - /route2
+exports:
  - name <- string
  - count <- number
  - sequence <- [number]

@@ -1,7 +1,7 @@
 """
 site: test
-path: /
-export: project <- string
+routes: /
+exports: project <- string
 """
 
 project = 'tango'
