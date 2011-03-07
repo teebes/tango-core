@@ -12,6 +12,7 @@ Import Tango's command-line module.
 
 Build a test harness.
 
+>>> import os
 >>> import sys
 >>> def call(command=None):
 ...     "Set command-line arguments and call Tango manager."
@@ -22,7 +23,7 @@ Build a test harness.
 ...     sys.argv = ['tango/manage.py'] + args
 ...     manage.run()
 ...     sys.argv = previous_argv
-...
+>>>
 
 
 Mock system-level details.
@@ -44,6 +45,7 @@ Command line: ``tango``
   serve     Run a Tango site on the local machine, for development.
   version   Display this version of Tango.
   build     Build a Tango site into a collection of static files.
+>>>
 
 
 Command line: ``tango version``
@@ -52,11 +54,20 @@ Command line: ``tango version``
 ... # doctest:+ELLIPSIS
 Tango ...
 Maintainer: ...
+>>>
 
 
 Command line: ``tango build default``
 
 >>> call('build default')
+Successfully built site: tango.site.default
+>>>
+
+
+Remove build.
+>>> os.system('rm -fr build/')
+0
+>>>
 
 
 Command line: ``tango serve default``
@@ -68,12 +79,14 @@ Called tango.app.Tango.run(
     port=5000,
     use_debugger=True,
     use_reloader=True)
+>>>
 
 
 Command line: ``tango snapshot default``
 
 >>> call('snapshot default')
 Snapshot of full template context: tango.site.default.dat
+>>>
 
 
 Command line: ``tango serve default`` with snapshot available
@@ -86,12 +99,14 @@ Called tango.app.Tango.run(
     port=5000,
     use_debugger=True,
     use_reloader=True)
+>>>
 
 
 Remove snapshot.
 >>> import os
 >>> os.system('rm -f tango.site.default.dat')
 0
+>>>
 
 
 Command line: ``tango shell --no-ipython default``
@@ -99,6 +114,7 @@ Command line: ``tango shell --no-ipython default``
 >>> call('shell --no-ipython default')
 ... # doctest:+ELLIPSIS
 Called code.interact('', local={'app': <tango.app.Tango object at 0x...>})
+>>>
 
 
 Command line: ``tango shell default`` with ipython option
@@ -115,6 +131,7 @@ Command line: ``tango shell default`` with ipython option
 ... # doctest:+ELLIPSIS,+NORMALIZE_WHITESPACE
 Called IPython.Shell.IPShellEmbed(banner='')
 Called sh(...global_ns={}, local_ns={'app': <tango.app.Tango object at 0x...>})
+>>>
 
 
 Command line: ``tango shell default`` without ipython installed
@@ -128,6 +145,7 @@ Command line: ``tango shell default`` without ipython installed
 ...     call('shell default')
 ... # doctest:+ELLIPSIS
 Called code.interact('', local={'app': <tango.app.Tango object at 0x...>})
+>>>
 
 
 Test for cases where site does not exist.
@@ -140,6 +158,7 @@ Command line: ``tango build doesnotexist``
 Traceback (most recent call last):
     ...
 SystemExit: 7
+>>>
 
 
 Command line: ``tango serve doesnotexist``
@@ -148,6 +167,7 @@ Command line: ``tango serve doesnotexist``
 Traceback (most recent call last):
     ...
 SystemExit: 7
+>>>
 
 
 Command line: ``tango snapshot doesnotexist``
@@ -156,6 +176,7 @@ Command line: ``tango snapshot doesnotexist``
 Traceback (most recent call last):
  ...
 SystemExit: 7
+>>>
 
 
 Command line: ``tango shell doesnotexist``
@@ -164,9 +185,11 @@ Command line: ``tango shell doesnotexist``
 Traceback (most recent call last):
     ...
 SystemExit: 7
+>>>
 
 
 Verify call from OS shell.
 
 >>> os.system('tango version >/dev/null 2>&1')
 0
+>>>
