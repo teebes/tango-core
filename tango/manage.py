@@ -1,6 +1,7 @@
 "Console entry point and management & development tasks for Tango framework."
 
 from functools import update_wrapper
+from os.path import abspath, dirname
 import imp
 import os.path
 import sys
@@ -88,6 +89,11 @@ def snapshot(site):
 def build(app):
     "Build a Tango site into a collection of static files."
     # TODO: Build `tango build` command. See Flask-Static. (Basico)
+    # TODO: Provide for configurable output directory.
+    build_path = dirname(dirname(abspath(__file__))) + '/build'
+    app.config['FREEZER_DESTINATION'] = build_path
+    if not os.path.exists('build'):
+        os.makedirs('build')
     import_name = build_static_site(app)
     print 'Successfully built site:', import_name
 
