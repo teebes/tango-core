@@ -11,6 +11,7 @@ from flaskext.script import Server as BaseServer
 from flaskext.script import Shell as BaseShell
 
 from tango.app import Tango
+from tango.build import build_static_site
 from tango.factory.snapshot import build_snapshot
 from tango.helpers import get_module, package_submodule
 import tango.factory
@@ -87,6 +88,8 @@ def snapshot(site):
 def build(app):
     "Build a Tango site into a collection of static files."
     # TODO: Build `tango build` command. See Flask-Static. (Basico)
+    import_name = build_static_site(app)
+    print 'Successfully built site:', import_name
 
 
 class Manager(BaseManager):

@@ -32,6 +32,7 @@ setup(
         'BeautifulSoup',
         'Flask',
         'Flask-Script',
+        'Frozen-Flask',
         'lxml',
         'pyyaml',
         ],
