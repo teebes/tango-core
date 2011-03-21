@@ -87,8 +87,7 @@ def snapshot(site):
 @require_site
 def build(app):
     "Build a Tango site into a collection of static files."
-    # TODO: Build `tango build` command. See Flask-Static. (Basico)
-    # TODO: Provide for configurable output directory.
+    # TODO: Provide for configurable output directory. (Basico)
     build_static_site(app)
     print 'Successfully built site:', app.import_name
 

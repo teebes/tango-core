@@ -21,10 +21,9 @@ Todos:
 
 * TODO: add simple unit test for tango.site.default '/' path.
 * TODO: use tango.site.default in app context, update with target site.
-* TODO: carefully catch ImportError - else hiding legitimate ImportErrors.
 * TODO: support app.TAB tab completion with code.interact
 * TODO: test empty and sparse site packages.
-* TODO: Support regular expression route matches, using a 'match' directive.
+* TODO: Support regular expression route matches, using 'match' directive. (?)
   This matches routes.py, not request URLs, to support exports across an
   entire area of the app.
 * TODO: Build a utility to determine if a link is internal/external to app.
