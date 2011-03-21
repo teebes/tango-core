@@ -32,6 +32,24 @@ Todos:
   Remove any routes/templates mismatch warnings when using this option.
 
 
+Open development topics:
+
+* For each of the following topics, look to available WSGI tools for solutions.
+* For ``tango snapshot``, pickling only works for simple static
+  content. Python's pickle protocol does not support generators or functions.
+  How should snapshots work, or are they needed at all?
+* How should tango handle app initialization?  One approach is to mix
+  statically built content with app objects.  Another is to defer prefetched
+  content so that a WSGI server can load an app instantly even before it's
+  package context is available.  The latter gets complicated, whereas the
+  former can be slow (unless snapshots come through here).  In either case,
+  there is a sense of hot-swapping content of production applications.
+  This is where much of tango's optimization takes place.
+* If tango handles multiple app objects and static content, Flask's development
+  server isn't going to suffice.  What tools should ``tango serve`` use to
+  enable local development?
+
+
 Tool ideas:
 
 * ``tango report <site>`` - where template devs, data devs, & managers meet
