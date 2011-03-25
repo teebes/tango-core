@@ -36,11 +36,10 @@ smoke: develop
 coverage: test
 
 distribute: develop
-	# TODO: Can we output .tar.bz2 instead? (Basico)
 	# TODO: Build a github upload task `make publish`? (Basico)
 	# TODO: Verify clean, installable distribution. (Basico)
 	$(setup) sdist
-	ls -1rt ./dist/ | tail -1
+	@echo Built: `ls -1rt ./dist/ | tail -1`
 
 doc_files := $(patsubst %.rst,%.html,$(wildcard *.rst))
 doc_deep_files := $(patsubst %.rst,%.html,$(wildcard **/*.rst))
@@ -65,4 +64,4 @@ todo:
 	grep -nR [T]ODO * | sed 's/\([0-9]\):[^T\ODO]*T\ODO/\1:\tT\ODO/g'
 	echo
 
-.SILENT: coverage flakes test todo
+.SILENT: coverage distribute flakes test todo
