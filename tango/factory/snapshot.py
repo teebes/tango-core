@@ -7,7 +7,7 @@ import cPickle as pickle
 def build_snapshot(app, directory='.'):
     "Serialize a snapshot image of a Tango application context."
     filename = get_snapshot_filename(app.import_name, directory)
-    pickle.dump(app.package_context, open(filename, 'w'))
+    pickle.dump(app.package_context, open(filename, 'wb'))
     return filename
 
 
@@ -15,7 +15,7 @@ def get_snapshot(import_name, directory='.'):
     "Deserialize a snapshot image of a Tango context package."
     filename = get_snapshot_filename(import_name, directory)
     try:
-        return pickle.load(open(filename))
+        return pickle.load(open(filename, 'rb'))
     except:
         return None
 
