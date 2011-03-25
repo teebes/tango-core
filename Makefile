@@ -36,7 +36,7 @@ smoke: develop
 coverage: test
 
 distribute: develop
-	# TODO: Build a github upload task `make publish`? (Basico)
+	# TODO: Build GitHub upload task `make publish`? GitHub support yet?
 	$(setup) sdist
 	@echo Built: `ls -1rt ./dist/ | tail -1`
 
