@@ -6,7 +6,7 @@ from tango import version
 
 
 def find_selected_packages():
-    exclude_bases = ('tango.site.test',)
+    exclude_bases = ('tango.site.test', 'tango.site.importerror')
     excludes = []
     for exclude_base in exclude_bases:
         excludes.append(exclude_base)

@@ -37,7 +37,6 @@ coverage: test
 
 distribute: develop
 	# TODO: Build a github upload task `make publish`? (Basico)
-	# TODO: Verify clean, installable distribution. (Basico)
 	$(setup) sdist
 	@echo Built: `ls -1rt ./dist/ | tail -1`
 
