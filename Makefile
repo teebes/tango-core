@@ -35,10 +35,12 @@ smoke: develop
 
 coverage: test
 
-distribute: develop
+dist: develop
 	# TODO: Build GitHub upload task `make publish`? GitHub support yet?
 	$(setup) sdist
 	@echo Built: `ls -1rt ./dist/ | tail -1`
+
+distribute: dist
 
 doc_files := $(patsubst %.rst,%.html,$(wildcard *.rst))
 doc_deep_files := $(patsubst %.rst,%.html,$(wildcard **/*.rst))
@@ -63,4 +65,5 @@ todo:
 	grep -nR [T]ODO * | sed 's/\([0-9]\):[^T\ODO]*T\ODO/\1:\tT\ODO/g'
 	echo
 
-.SILENT: coverage distribute flakes test todo
+.PHONY: dist
+.SILENT: coverage dist flakes test todo
