@@ -1,5 +1,6 @@
 "Marshal template contexts exported declaratively by Tango content packages."
 
+import copy
 import pkgutil
 
 import yaml
@@ -21,10 +22,14 @@ def build_package_context(package):
     >>> import tango.site.test.content
     >>> build_package_context(tango.site.test.content)
     ... # doctest: +ELLIPSIS, +NORMALIZE_WHITESPACE
-    {'test': {'/route1': {'count': 2, 'name': '...', 'sequence': [4, 5, 6]},
-     '/route2': {'count': 2, 'name': '...', 'sequence': [4, 5, 6]},
-     '/': {'project': 'tango', 'hint': '...', 'title': '...'},
-     '/routing/<parameter>': {'purpose': '...'}}}
+    {'test':
+     {'/route1': {'count': 2, 'name': '...', 'sequence': [4, 5, 6]},
+      '/another/<argument>':
+       {'_routing': {'argument': xrange(3, 6)}, 'purpose': '...'},
+      '/route2': {'count': 2, 'name': '...', 'sequence': [4, 5, 6]},
+      '/': {'project': 'tango', 'hint': '...', 'title': 'Tango'},
+      '/routing/<parameter>':
+       {'_routing': {'parameter': [0, 1, 2]}, 'purpose': '...'}}}
     >>>
 
     :param package: Tango site content package object
@@ -87,6 +92,13 @@ def pull_context(module):
     {'test': {'/route1': {'count': 2, 'name': 'multiple.py context',
      'sequence': [4, 5, 6]}, '/route2': {'count': 2, 'name':
      'multiple.py context', 'sequence': [4, 5, 6]}}}
+    >>> from tango.site.test.content import routing
+    >>> pull_context(routing)
+    ... # doctest: +ELLIPSIS, +NORMALIZE_WHITESPACE
+    {'test': {'/another/<argument>':
+     {'_routing': {'argument': xrange(3, 6)}, 'purpose': '...'},
+     '/routing/<parameter>':
+     {'_routing': {'parameter': [0, 1, 2]}, 'purpose': '...'}}}
     >>>
 
     :param module: Tango site content package module object
@@ -96,15 +108,33 @@ def pull_context(module):
     if header is None:
         return None
 
-    route_context = {}
+    base_route_context = {}
     for name in header['exports']:
         if name in header['static']:
-            route_context[name] = header['exports'][name]
+            base_route_context[name] = header['exports'][name]
         else:
-            route_context[name] = getattr(module, name)
+            base_route_context[name] = getattr(module, name)
+
+    routing = {}
+    for lookup in header.get('_routing', []):
+        # TODO: ? pass through lists, list() iterables, call callables. (Basico)
+        for name, iterable_name in lookup.items():
+            routing[name] = getattr(module, iterable_name)
 
     site_context = {}
     for route in header['routes']:
+        route_context = copy.deepcopy(base_route_context)
+        local_routing = {}
+        for argument in routing.keys():
+            # TODO: Support URL converters. (Basico)
+            if ('%s' % argument) in route:
+                local_routing[argument] = routing[argument]
+        if local_routing:
+            route_context['_routing'] = local_routing
+        else:
+            route_context.pop('_routing', None)
+
+        # routing here, match route with routing path?
         site_context[route] = route_context
 
     return {header['site']: site_context}
@@ -124,7 +154,8 @@ def parse_header(module):
     Example:
     >>> from tango.site.test.content import index, multiple
     >>> parse_header(index) # doctest:+NORMALIZE_WHITESPACE
-    {'routes': ['/'], 'exports': {'title': 'Tango'}, 'static': ['title'], 'site': 'test'}
+    {'routes': ['/'], 'exports': {'title': 'Tango'},
+     'static': ['title'], 'site': 'test'}
     >>> header = parse_header(multiple)
     >>> header['site']
     'test'
@@ -135,6 +166,13 @@ def parse_header(module):
     >>> from tango.site.test.content.package import module
     >>> parse_header(module)
     {'routes': ['/'], 'exports': {'hint': None}, 'static': [], 'site': 'test'}
+    >>> from tango.site.test.content import routing
+    >>> parse_header(routing)
+    ... # doctest: +ELLIPSIS, +NORMALIZE_WHITESPACE
+    {'routes': ['/routing/<parameter>', '/another/<argument>'],
+     'exports': {'purpose': '...'},
+    '_routing': [{'parameter': 'parameters'}, {'argument': 'arguments'}],
+    'static': ['purpose'], 'site': 'test'}
     >>>
 
     :param module: Tango site content package module object
@@ -154,6 +192,9 @@ def parse_header(module):
         return None
 
     header = {'site': rawheader['site']}
+    routing = rawheader.get('routing')
+    if routing is not None:
+        header['_routing'] = routing
 
     if isinstance(rawheader['routes'], basestring):
         header['routes'] = [rawheader['routes']]
