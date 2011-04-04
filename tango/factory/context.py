@@ -24,11 +24,11 @@ def build_package_context(package):
     ... # doctest: +ELLIPSIS, +NORMALIZE_WHITESPACE
     {'test':
      {'/route1': {'count': 2, 'name': '...', 'sequence': [4, 5, 6]},
-      '/another/<argument>':
+      '/another/<argument>/':
        {'_routing': {'argument': xrange(3, 6)}, 'purpose': '...'},
       '/route2': {'count': 2, 'name': '...', 'sequence': [4, 5, 6]},
       '/': {'project': 'tango', 'hint': '...', 'title': 'Tango'},
-      '/routing/<parameter>':
+      '/routing/<parameter>/':
        {'_routing': {'parameter': [0, 1, 2]}, 'purpose': '...'}}}
     >>>
 
@@ -95,9 +95,9 @@ def pull_context(module):
     >>> from tango.site.test.content import routing
     >>> pull_context(routing)
     ... # doctest: +ELLIPSIS, +NORMALIZE_WHITESPACE
-    {'test': {'/another/<argument>':
+    {'test': {'/another/<argument>/':
      {'_routing': {'argument': xrange(3, 6)}, 'purpose': '...'},
-     '/routing/<parameter>':
+     '/routing/<parameter>/':
      {'_routing': {'parameter': [0, 1, 2]}, 'purpose': '...'}}}
     >>>
 
@@ -117,9 +117,10 @@ def pull_context(module):
 
     routing = {}
     for lookup in header.get('_routing', []):
-        # TODO: ? pass through lists, list() iterables, call callables. (Basico)
         for name, iterable_name in lookup.items():
             routing[name] = getattr(module, iterable_name)
+            if hasattr(routing[name], '__call__'):
+                routing[name] = routing[name]()
 
     site_context = {}
     for route in header['routes']:
@@ -127,7 +128,7 @@ def pull_context(module):
         local_routing = {}
         for argument in routing.keys():
             # TODO: Support URL converters. (Basico)
-            if ('%s' % argument) in route:
+            if ('<%s>' % argument) in route:
                 local_routing[argument] = routing[argument]
         if local_routing:
             route_context['_routing'] = local_routing
@@ -169,7 +170,7 @@ def parse_header(module):
     >>> from tango.site.test.content import routing
     >>> parse_header(routing)
     ... # doctest: +ELLIPSIS, +NORMALIZE_WHITESPACE
-    {'routes': ['/routing/<parameter>', '/another/<argument>'],
+    {'routes': ['/routing/<parameter>/', '/another/<argument>/'],
      'exports': {'purpose': '...'},
     '_routing': [{'parameter': 'parameters'}, {'argument': 'arguments'}],
     'static': ['purpose'], 'site': 'test'}

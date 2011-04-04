@@ -3,6 +3,9 @@ routes = {
         '/',
     ),
     'parameter.html': (
-        '/routing/<parameter>',
+        '/routing/<parameter>/',
+    ),
+    'argument.html': (
+        '/another/<argument>/',
     ),
 }

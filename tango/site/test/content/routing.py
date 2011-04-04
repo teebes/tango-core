@@ -1,8 +1,8 @@
 """
 site: test
 routes:
- - /routing/<parameter>
- - /another/<argument>
+ - /routing/<parameter>/
+ - /another/<argument>/
 exports:
  - purpose: Show that route parameters are implicitly added to context.
 routing:
