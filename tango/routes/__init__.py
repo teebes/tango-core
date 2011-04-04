@@ -17,7 +17,9 @@ def get_routes(app):
 
     >>> from tango.app import Tango
     >>> get_routes(Tango('tango.site.test')) # doctest: +NORMALIZE_WHITESPACE
-    {'index.html': ('/',), 'parameter.html': ('/routing/<parameter>/',),
+    {'index.html': ('/',),
+     'parameter.html': ('/routing/<parameter>/',
+                        '/files/page-<parameter>.html'),
      'argument.html': ('/another/<argument>/',)}
     >>>
     """

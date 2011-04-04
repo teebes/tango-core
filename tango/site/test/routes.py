@@ -4,6 +4,7 @@ routes = {
     ),
     'parameter.html': (
         '/routing/<parameter>/',
+        '/files/page-<parameter>.html',
     ),
     'argument.html': (
         '/another/<argument>/',

@@ -25,11 +25,13 @@ def build_package_context(package):
     {'test':
      {'/route1': {'count': 2, 'name': '...', 'sequence': [4, 5, 6]},
       '/route2': {'count': 2, 'name': '...', 'sequence': [4, 5, 6]},
-      '/another/<argument>/':
-       {'_routing': {'argument': xrange(3, 6)}, 'purpose': '...'},
+      '/files/page-<parameter>.html':
+       {'_routing': {'parameter': [0, 1, 2]}, 'purpose': '...'},
       '/': {'project': 'tango', 'hint': '...', 'title': 'Tango'},
       '/routing/<parameter>/':
-       {'_routing': {'parameter': [0, 1, 2]}, 'purpose': '...'}}}
+       {'_routing': {'parameter': [0, 1, 2]}, 'purpose': '...'},
+      '/another/<argument>/':
+       {'_routing': {'argument': xrange(3, 6)}, 'purpose': '...'}}}
     >>>
 
     :param package: Tango site content package object
@@ -95,7 +97,9 @@ def pull_context(module):
     >>> from tango.site.test.content import routing
     >>> pull_context(routing)
     ... # doctest: +ELLIPSIS, +NORMALIZE_WHITESPACE
-    {'test': {'/routing/<parameter>/':
+    {'test': {'/files/page-<parameter>.html':
+     {'_routing': {'parameter': [0, 1, 2]}, 'purpose': '...'},
+     '/routing/<parameter>/':
      {'_routing': {'parameter': [0, 1, 2]}, 'purpose': '...'},
      '/another/<argument>/':
      {'_routing': {'argument': xrange(3, 6)}, 'purpose': '...'}}}
@@ -170,7 +174,8 @@ def parse_header(module):
     >>> from tango.site.test.content import routing
     >>> parse_header(routing)
     ... # doctest: +ELLIPSIS, +NORMALIZE_WHITESPACE
-    {'routes': ['/routing/<parameter>/', '/another/<argument>/'],
+    {'routes': ['/routing/<parameter>/', '/another/<argument>/',
+                '/files/page-<parameter>.html'],
      'exports': {'purpose': '...'},
     '_routing': [{'parameter': 'parameters'}, {'argument': 'arguments'}],
     'static': ['purpose'], 'site': 'test'}
