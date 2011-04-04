@@ -24,9 +24,9 @@ def build_package_context(package):
     ... # doctest: +ELLIPSIS, +NORMALIZE_WHITESPACE
     {'test':
      {'/route1': {'count': 2, 'name': '...', 'sequence': [4, 5, 6]},
+      '/route2': {'count': 2, 'name': '...', 'sequence': [4, 5, 6]},
       '/another/<argument>/':
        {'_routing': {'argument': xrange(3, 6)}, 'purpose': '...'},
-      '/route2': {'count': 2, 'name': '...', 'sequence': [4, 5, 6]},
       '/': {'project': 'tango', 'hint': '...', 'title': 'Tango'},
       '/routing/<parameter>/':
        {'_routing': {'parameter': [0, 1, 2]}, 'purpose': '...'}}}
@@ -95,10 +95,10 @@ def pull_context(module):
     >>> from tango.site.test.content import routing
     >>> pull_context(routing)
     ... # doctest: +ELLIPSIS, +NORMALIZE_WHITESPACE
-    {'test': {'/another/<argument>/':
-     {'_routing': {'argument': xrange(3, 6)}, 'purpose': '...'},
-     '/routing/<parameter>/':
-     {'_routing': {'parameter': [0, 1, 2]}, 'purpose': '...'}}}
+    {'test': {'/routing/<parameter>/':
+     {'_routing': {'parameter': [0, 1, 2]}, 'purpose': '...'},
+     '/another/<argument>/':
+     {'_routing': {'argument': xrange(3, 6)}, 'purpose': '...'}}}
     >>>
 
     :param module: Tango site content package module object

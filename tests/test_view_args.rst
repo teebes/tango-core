@@ -24,12 +24,12 @@ Create a test client.
 
 Our route is ``/routing/<parameter>`` and the routed template only contains::
 
-    {{ parameter }}
+    parameter: {{ parameter }}
 
->>> client.get('/routing/testing').data
-'testing'
+>>> client.get('/routing/testing/').data
+'parameter: testing'
 
->>> client.get('/routing/this_is_my_parameter').data
-'this_is_my_parameter'
+>>> client.get('/routing/this_is_my_parameter/').data
+'parameter: this_is_my_parameter'
 
 I'm convinced.  Are you convinced?
