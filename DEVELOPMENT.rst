@@ -14,8 +14,6 @@ See the various .rst docs and read through the source & git log.
 
 For the Tango Basico release (``make todo | grep Basico``):
 
-* TODO: Build a full production site with Tango Basico.
-
 
 Todos:
 
