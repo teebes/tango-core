@@ -16,7 +16,7 @@ def find_selected_packages():
 
 setup(
     name='Tango',
-    version=version.info.number,
+    version=version.info.dist,
     url='http://www.willowtreeapps.com',
     description='mobile web optimization framework',
     long_description=__doc__,
