@@ -38,7 +38,9 @@ coverage: test
 dist: develop
 	# TODO: Build GitHub upload task `make publish`? GitHub support yet?
 	$(setup) sdist
-	@echo Built: `ls -1rt ./dist/ | tail -1`
+	@echo
+	@echo Tarball for distribution:
+	@echo `ls -1rt ./dist/*.tar* | tail -1`
 
 distribute: dist
 

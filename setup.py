@@ -23,6 +23,8 @@ setup(
     maintainer=version.info.maintainer,
     maintainer_email=version.info.maintainer_email,
     packages=find_selected_packages(),
+    license='Commercial',
+    platforms=['POSIX'],
     # Include package data, disable zipping to allow Jinja2 to find templates.
     include_package_data=True,
     zip_safe=False,

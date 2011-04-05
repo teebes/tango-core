@@ -1,1 +1,3 @@
+include README*
+exclude tests
 recursive-include tango/site/default/templates *
