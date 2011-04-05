@@ -1,17 +1,17 @@
 "Package to build a Tango site into a collection of static files."
 
-from os.path import abspath, dirname
 import os
 
 from flaskext.frozen import Freezer
 
 
-def build_static_site(app):
-    # TODO: Provide a better default output directory. (Basico)
-    build_path = dirname(dirname(abspath(__file__))) + '/output'
-    app.config['FREEZER_DESTINATION'] = build_path
-    if not os.path.exists(build_path):
-        os.makedirs(build_path)
+def build_static_site(app, path=None):
+    if path is None:
+        sitepath = app.config['SITE'] or 'build'
+        path = app.config['TANGO_BUILD_BASE'] + '/' + sitepath
+    app.config['FREEZER_DESTINATION'] = path
+    if not os.path.exists(path):
+        os.makedirs(path)
     freezer = Freezer(app)
 
     @freezer.register_generator

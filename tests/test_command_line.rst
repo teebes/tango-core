@@ -65,7 +65,7 @@ Successfully built site: tango.site.default
 
 
 Remove build.
->>> os.system('rm -fr build/')
+>>> os.system('rm -fr default/')
 0
 >>>
 
