@@ -1,4 +1,4 @@
-sessionname tango
+sessionname tango-core
 screen -t editor     0 wrap $EDITOR .
 screen -t git        1 wrap git status
 screen -t make       2 wrap make
