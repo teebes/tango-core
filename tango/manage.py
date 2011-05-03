@@ -13,7 +13,6 @@ from flaskext.script import Shell as BaseShell
 from tango.app import Tango
 from tango.build import build_static_site
 from tango.factory.snapshot import build_snapshot
-from tango.helpers import get_module, package_submodule
 import tango.factory
 import tango.site
 import tango.version
@@ -31,14 +30,8 @@ def build_app(site, **options):
     <tango.app.Tango object at 0x...>
     >>>
     """
-    packagename, base = package_submodule(site)
-    if packagename is not None:
-        package = get_module(packagename)
-    else:
-        package = tango.site
-        site = 'tango.site.' + site
     try:
-        imp.find_module(base, package.__path__)
+        imp.find_module(site)
     except ImportError:
         print "Cannot find site '%s'." % site
         sys.exit(7)
