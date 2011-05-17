@@ -1,9 +1,8 @@
 Testing: Command-line Interface
 ===============================
 
-For each command below, note that 'default' is the site name.
-Use the sitename appropriate to your project,
-that is, sitename in tango.site.sitename
+For each command below, note that 'simplesite' is the site name.
+In production, use the sitename appropriate to your project.
 
 Import Tango's command-line module.
 
@@ -59,20 +58,20 @@ Maintainer: ...
 
 Command line: ``tango build default``
 
->>> call('build default')
-Successfully built site: tango.site.default
+>>> call('build simplesite')
+Successfully built site: simplesite
 >>>
 
 
 Remove build.
->>> os.system('rm -fr default/')
+>>> os.system('rm -fr simplesite/')
 0
 >>>
 
 
 Command line: ``tango serve default``
 
->>> call('serve default')
+>>> call('serve simplesite')
 Called tango.app.Tango.run(
     debug=True,
     host='127.0.0.1',
@@ -84,14 +83,14 @@ Called tango.app.Tango.run(
 
 Command line: ``tango snapshot default``
 
->>> call('snapshot default')
-Snapshot of full template context: tango.site.default.dat
+>>> call('snapshot simplesite')
+Snapshot of full template context: simplesite.dat
 >>>
 
 
 Command line: ``tango serve default`` with snapshot available
 
->>> call('serve default')
+>>> call('serve simplesite')
 Using template context snapshot.
 Called tango.app.Tango.run(
     debug=True,
@@ -104,14 +103,14 @@ Called tango.app.Tango.run(
 
 Remove snapshot.
 >>> import os
->>> os.system('rm -f tango.site.default.dat')
+>>> os.system('rm -f simplesite.dat')
 0
 >>>
 
 
 Command line: ``tango shell --no-ipython default``
 
->>> call('shell --no-ipython default')
+>>> call('shell --no-ipython simplesite')
 ... # doctest:+ELLIPSIS
 Called code.interact('', local={'app': <tango.app.Tango object at 0x...>})
 >>>
@@ -123,7 +122,7 @@ Command line: ``tango shell default`` with ipython option
 ...     import IPython
 ...     IPython.Shell.IPShellEmbed = Mock('IPython.Shell.IPShellEmbed')
 ...     IPython.Shell.IPShellEmbed.mock_returns = Mock('sh')
-...     call('shell default')
+...     call('shell simplesite')
 ... except ImportError:
 ...     print "Called IPython.Shell.IPShellEmbed(banner='')"
 ...     print ("Called sh(global_ns={}, local_ns={'app':"
@@ -139,10 +138,10 @@ Command line: ``tango shell default`` without ipython installed
 >>> try:
 ...     import IPython
 ...     IPython = sys.modules.pop('IPython')
-...     call('shell default')
+...     call('shell simplesite')
 ...     sys.modules['IPython'] = IPython
 ... except:
-...     call('shell default')
+...     call('shell simplesite')
 ... # doctest:+ELLIPSIS
 Called code.interact('', local={'app': <tango.app.Tango object at 0x...>})
 >>>

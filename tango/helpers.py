@@ -5,10 +5,10 @@ def package_submodule(hierarchical_module_name):
     """Provide package name, submodule name from dotted module name.
 
     Example:
-    >>> package_submodule('tango.site.default')
-    ('tango.site', 'default')
-    >>> package_submodule('tango.site')
-    ('tango', 'site')
+    >>> package_submodule('simplesite')
+    (None, 'simplesite')
+    >>> package_submodule('tango.factory')
+    ('tango', 'factory')
     >>> package_submodule('tango')
     (None, 'tango')
     >>> package_submodule('')
@@ -26,12 +26,12 @@ def get_module(name):
     hierarchical module names (names containing dots).
 
     Example:
-    >>> get_module('tango.site.default.content') # doctest:+ELLIPSIS
-    <module 'tango.site.default.content' from '...'>
-    >>> get_module('tango.site.default') # doctest:+ELLIPSIS
-    <module 'tango.site.default' from '...'>
-    >>> get_module('tango.site') # doctest:+ELLIPSIS
-    <module 'tango.site' from '...'>
+    >>> get_module('simplesite.content') # doctest:+ELLIPSIS
+    <module 'simplesite.content' from '...'>
+    >>> get_module('simplesite') # doctest:+ELLIPSIS
+    <module 'simplesite' from '...'>
+    >>> get_module('testsite') # doctest:+ELLIPSIS
+    <module 'testsite' from '...'>
     >>> get_module('tango') # doctest:+ELLIPSIS
     <module 'tango' from '...'>
     >>>

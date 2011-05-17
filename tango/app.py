@@ -33,17 +33,17 @@ class TemplateLoader(PackageLoader):
     As Tango handles device detection, it will find templates implicitly here.
 
     Example:
-    >>> environment = Environment(loader=TemplateLoader('tango.site.default'))
+    >>> environment = Environment(loader=TemplateLoader('simplesite'))
     >>> base = environment.get_template('base.html')
     >>> base
     <Template 'base.html'>
     >>> base.filename # doctest:+ELLIPSIS
-    '.../tango/site/default/templates/base.html'
+    '.../simplesite/templates/base.html'
     >>> index = environment.get_template('index.html')
     >>> index
     <Template 'index.html'>
     >>> index.filename # doctest:+ELLIPSIS
-    '.../tango/site/default/templates/default/index.html'
+    '.../simplesite/templates/default/index.html'
     >>>
     """
 

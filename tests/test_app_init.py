@@ -8,7 +8,7 @@ from tango.factory import build_app
 class AppInitTestCase(TestCase):
 
     def create_app(self):
-        return build_app('tango.site.default')
+        return build_app('simplesite')
 
     def setUp(self):
         self.client = self.app.test_client()

@@ -1,17 +1,14 @@
 """Tango mobile web optimization framework."""
 
+import sys
+
 from setuptools import setup, find_packages
 
 from tango import version
 
 
-def find_selected_packages():
-    exclude_bases = ('tango.site.test', 'tango.site.importerror')
-    excludes = []
-    for exclude_base in exclude_bases:
-        excludes.append(exclude_base)
-        excludes.append(exclude_base + '.*')
-    return find_packages(exclude=excludes)
+# Test tango sites reside in the tests/ directory.
+sys.path.append('tests')
 
 
 setup(
@@ -22,10 +19,9 @@ setup(
     long_description=__doc__,
     maintainer=version.info.maintainer,
     maintainer_email=version.info.maintainer_email,
-    packages=find_selected_packages(),
+    packages=find_packages(),
     license='Commercial',
     platforms=['POSIX'],
-    # Include package data, disable zipping to allow Jinja2 to find templates.
     include_package_data=True,
     zip_safe=False,
     install_requires=[
@@ -43,7 +39,7 @@ setup(
         },
     tests_require=[
         'nose',
-        'minimock',
+        'minimock==1.2.5',
         'Flask-Testing',
         ],
     test_suite='nose.collector',

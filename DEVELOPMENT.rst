@@ -17,8 +17,7 @@ For the Tango Basico release (``make todo | grep Basico``):
 
 Todos:
 
-* TODO: add simple unit test for tango.site.default '/' path.
-* TODO: use tango.site.default in app context, update with target site.
+* TODO: add simple unit test for simplesite '/' path.
 * TODO: support app.TAB tab completion with code.interact
 * TODO: test empty and sparse site packages.
 * TODO: Support regular expression route matches, using 'match' directive. (?)

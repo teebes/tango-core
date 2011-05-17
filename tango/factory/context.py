@@ -19,8 +19,8 @@ def build_package_context(package):
     site_context = {'site': {'route1': {}, 'route2': {}, 'routeN': {}}}
     site_context['site']['routeN'] is a standard template context dict.
 
-    >>> import tango.site.test.content
-    >>> build_package_context(tango.site.test.content)
+    >>> import testsite.content
+    >>> build_package_context(testsite.content)
     ... # doctest: +ELLIPSIS, +NORMALIZE_WHITESPACE
     {'test':
      {'/route1': {'count': 2, 'name': '...', 'sequence': [4, 5, 6]},
@@ -60,16 +60,16 @@ def discover_modules(package):
     This searches all subpackages and includes __init__ modules.
 
     Example:
-    >>> import tango.site.test.content
-    >>> discover_modules(tango.site.test.content) # doctest:+ELLIPSIS
+    >>> import testsite.content
+    >>> discover_modules(testsite.content) # doctest:+ELLIPSIS
     <generator object discover_modules at 0x...>
-    >>> list(discover_modules(tango.site.test.content))
+    >>> list(discover_modules(testsite.content))
     ... # doctest: +ELLIPSIS, +NORMALIZE_WHITESPACE
-    [<module 'tango.site.test.content' from '...'>,
-     <module 'tango.site.test.content.index' from '...'>,
-     <module 'tango.site.test.content.multiple' from '...'>,
-     <module 'tango.site.test.content.package' from '...'>,
-     <module 'tango.site.test.content.package.module' from '...'>]
+    [<module 'testsite.content' from '...'>,
+     <module 'testsite.content.index' from '...'>,
+     <module 'testsite.content.multiple' from '...'>,
+     <module 'testsite.content.package' from '...'>,
+     <module 'testsite.content.package.module' from '...'>]
     >>>
 
     :param package: Tango site content package object
@@ -87,14 +87,14 @@ def pull_context(module):
     """Pull dict template context from module, parsing it's header.
 
     Example:
-    >>> from tango.site.test.content import index, multiple
+    >>> from testsite.content import index, multiple
     >>> pull_context(index)
     {'test': {'/': {'title': 'Tango'}}}
     >>> pull_context(multiple) # doctest:+NORMALIZE_WHITESPACE
     {'test': {'/route1': {'count': 2, 'name': 'multiple.py context',
      'sequence': [4, 5, 6]}, '/route2': {'count': 2, 'name':
      'multiple.py context', 'sequence': [4, 5, 6]}}}
-    >>> from tango.site.test.content import routing
+    >>> from testsite.content import routing
     >>> pull_context(routing)
     ... # doctest: +ELLIPSIS, +NORMALIZE_WHITESPACE
     {'test': {'/files/page-<parameter>.html':
@@ -157,7 +157,7 @@ def parse_header(module):
     Raise KeyError if any of these fields are missing.
 
     Example:
-    >>> from tango.site.test.content import index, multiple
+    >>> from testsite.content import index, multiple
     >>> parse_header(index) # doctest:+NORMALIZE_WHITESPACE
     {'routes': ['/'], 'exports': {'title': 'Tango'},
      'static': ['title'], 'site': 'test'}
@@ -168,10 +168,10 @@ def parse_header(module):
     ['/route1', '/route2']
     >>> header['exports']
     {'count': 'number', 'name': 'string', 'sequence': '[number]'}
-    >>> from tango.site.test.content.package import module
+    >>> from testsite.content.package import module
     >>> parse_header(module)
     {'routes': ['/'], 'exports': {'hint': None}, 'static': [], 'site': 'test'}
-    >>> from tango.site.test.content import routing
+    >>> from testsite.content import routing
     >>> parse_header(routing)
     ... # doctest: +ELLIPSIS, +NORMALIZE_WHITESPACE
     {'routes': ['/routing/<parameter>/', '/another/<argument>/',

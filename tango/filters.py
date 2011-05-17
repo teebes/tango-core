@@ -31,7 +31,7 @@ def get_default(key):
     try:
         app = current_app
         return app.config[key]
-    except AttributeError:
+    except RuntimeError:
         return None
 
 

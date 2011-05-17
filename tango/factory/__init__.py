@@ -22,9 +22,9 @@ def build_app(import_name, use_snapshot=True):
     """Create a Tango application object from a Python import name.
 
     Example, using the default site package in this project:
-    >>> app = build_app('tango.site.default')
+    >>> app = build_app('simplesite')
     >>> app.config['SITE']
-    'default'
+    'simplesite'
     >>>
     """
     # Initialize application.

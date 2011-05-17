@@ -10,7 +10,7 @@ from tango import filters
 class FiltersTestCase(TestCase):
 
     def create_app(self):
-        return build_app('tango.site.default')
+        return build_app('simplesite')
 
     def setUp(self):
         self.client = self.app.test_client()

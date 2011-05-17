@@ -29,9 +29,7 @@ exports template contexts for given routes.
 
 The templates, static assets, and content package are discovered and integrated
 by the Tango core with the help of ``config.py`` and ``routes.py`` in the site
-package.  Site packages have the namespace::
-
-    tango.site.sitename
+package.
 
 See existing sites and examples for more detail.
 

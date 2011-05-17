@@ -14,7 +14,6 @@ from tango.app import Tango
 from tango.build import build_static_site
 from tango.factory.snapshot import build_snapshot
 import tango.factory
-import tango.site
 import tango.version
 
 
@@ -24,10 +23,14 @@ commands = []
 def build_app(site, **options):
     """Build a Tango app object from a site name, long or short name.
 
-    >>> build_app('default') # doctest:+ELLIPSIS
+    >>> build_app('simplesite') # doctest:+ELLIPSIS
     <tango.app.Tango object at 0x...>
-    >>> build_app('tango.site.default') # doctest:+ELLIPSIS
+    >>> build_app('testsite') # doctest:+ELLIPSIS
     <tango.app.Tango object at 0x...>
+    >>> build_app('importerror') # doctest:+ELLIPSIS
+    Traceback (most recent call last):
+      ...
+    ImportError: No module named doesnotexist
     >>>
     """
     try:
@@ -54,7 +57,7 @@ def require_site(function):
     The first argument of the decorated function is translated from a Tango
     package name into a Tango app instance, i.e.
 
-    tango.site.default -> Tango('tango.site.default')
+    sitename -> Tango('sitename')
     """
     def wrapper(site, *args, **kwargs):
         app = build_app(site)
