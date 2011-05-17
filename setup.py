@@ -28,8 +28,6 @@ setup(
     # Include package data, disable zipping to allow Jinja2 to find templates.
     include_package_data=True,
     zip_safe=False,
-    # tango, tango.site are namespace packages. Others are full packages.
-    namespace_packages=['tango', 'tango.site'],
     install_requires=[
         'BeautifulSoup',
         'Flask',
