@@ -5,6 +5,7 @@ import pkgutil
 
 import yaml
 
+from tango.errors import HeaderException
 from tango.helpers import get_module
 
 
@@ -177,6 +178,11 @@ def parse_header(module):
      'exports': {'purpose': '...'},
     '_routing': [{'parameter': 'parameters'}, {'argument': 'arguments'}],
     'static': ['purpose'], 'site': 'test'}
+    >>> from errorsite.content import hybrid
+    >>> parse_header(hybrid)
+    Traceback (most recent call last):
+      ...
+    HeaderException: metadata docstring must be yaml or doc, but not both.
     >>>
 
     :param module: Tango site content package module object
@@ -185,8 +191,8 @@ def parse_header(module):
     try:
         rawheader = yaml.load(module.__doc__)
     except yaml.scanner.ScannerError:
-        # TODO: Warn about failed parse here, reporting module.__name__.
-        return None
+        raise HeaderException('metadata docstring must be yaml or doc, '
+                              'but not both.')
     except AttributeError:
         # Not an error or a warning, just a module without a docstring.
         return None
