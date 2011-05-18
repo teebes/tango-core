@@ -29,9 +29,10 @@ def get_default(key):
     >>>
     """
     try:
-        app = current_app
-        return app.config[key]
-    except RuntimeError:
+        return current_app.config.get(key, None)
+    except (AttributeError, RuntimeError):
+        # AttributeError or RuntimeError depending on upstream versions.
+        # No app is in context, return None as documented.
         return None
 
 
