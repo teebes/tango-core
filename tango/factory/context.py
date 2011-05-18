@@ -2,10 +2,12 @@
 
 import copy
 import pkgutil
+import warnings
 
 import yaml
 
-from tango.errors import HeaderException
+from tango.errors import DuplicateContextWarning, DuplicateExportWarning
+from tango.errors import DuplicateRouteWarning, HeaderException
 from tango.helpers import get_module
 
 
@@ -48,8 +50,18 @@ def build_package_context(package):
             site_context = package_context.get(site, {})
             for route in context[site]:
                 route_context = site_context.get(route, {})
-                # TODO: Warn on route context overwrite.
-                route_context.update(context[site][route])
+                new_route_context = context[site][route]
+
+                # Test for and warn on route context override.
+                current_keys = set(route_context.keys())
+                new_keys = set(new_route_context.keys())
+                intersection = current_keys.intersection(new_keys)
+                if intersection:
+                    msg = '{0} duplicate context, exports: {1}'
+                    msg = msg.format(route, ', '.join(intersection))
+                    warnings.warn(msg, DuplicateContextWarning)
+
+                route_context.update(new_route_context)
                 site_context[route] = route_context
             package_context[site] = site_context
     return package_context
@@ -210,7 +222,14 @@ def parse_header(module):
         header['routes'] = [rawheader['routes']]
     else:
         header['routes'] = list(rawheader['routes'])
-        # TODO: Warn about duplicates here, reporting module.__name__.
+        # Test for and warn on route duplicates.
+        route_check = set()
+        for route in header['routes']:
+            if route in route_check:
+                msg = '{0} duplicate route: {1}'
+                msg = msg.format(module.__name__, route)
+                warnings.warn(msg, DuplicateRouteWarning)
+            route_check.add(route)
 
     header['exports'] = {}
     header['static'] = []
@@ -218,18 +237,26 @@ def parse_header(module):
         rawexport = [rawheader['exports']]
     else:
         rawexport = list(rawheader['exports'])
+
+    export_pairs = []
+    export_static_names = set()
     for exportstmt in rawexport:
-        # TODO: Warn about duplicates here, reporting module.__name__.
         if isinstance(exportstmt, basestring):
             tokens = exportstmt.split(HINT_DELIMITER)
-            name = tokens[0].strip()
             if len(tokens) > 1:
                 hint = HINT_DELIMITER.join(tokens[1:]).strip()
-                header['exports'][name] = hint
             else:
-                header['exports'][name] = None
+                hint = None
+            export_pairs.append((tokens[0].strip(), hint))
         else:
             for name in exportstmt:
-                header['exports'][name] = exportstmt[name]
-                header['static'].append(name)
+                export_pairs.append((name, exportstmt[name]))
+                export_static_names.add(name)
+    for name, hint in export_pairs:
+        if header['exports'].has_key(name):
+            msg = '{0} duplicate export: {1}'
+            msg = msg.format(module.__name__, name)
+            warnings.warn(msg, DuplicateExportWarning)
+        header['exports'][name] = hint
+    header['static'] = list(export_static_names)
     return header
