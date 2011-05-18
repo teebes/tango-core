@@ -67,9 +67,10 @@ def build_package_context(package):
     return package_context
 
 
-def discover_modules(package):
-    """Discover content package modules, returning iterable of module objects.
+def discover_modules(module):
+    """Discover content modules, returning iterable of module objects.
 
+    Note that both packages and modules result in module objects.
     This searches all subpackages and includes __init__ modules.
 
     Example:
@@ -85,15 +86,27 @@ def discover_modules(package):
      <module 'testsite.content.package.module' from '...'>]
     >>>
 
-    :param package: Tango site content package object
-    :type package: module
+    Modules are supported in addition to packages.
+    >>> import testsite.content.index
+    >>> list(discover_modules(testsite.content.index)) # doctest:+ELLIPSIS
+    [<module 'testsite.content.index' from '...'>]
+    >>>
+
+    :param module: Tango site content module object
+    :type module: module
     """
-    path = package.__path__
-    prefix = package.__name__ + '.'
+    if hasattr(module, '__path__'):
+        path = module.__path__
+        ispackage = True
+    else:
+        path = module.__file__
+        ispackage = False
+    prefix = module.__name__ + '.'
     onerror = lambda args: None
-    yield package
-    for _, name, _ in pkgutil.walk_packages(path, prefix, onerror):
-        yield get_module(name)
+    yield module
+    if ispackage:
+        for _, name, _ in pkgutil.walk_packages(path, prefix, onerror):
+            yield get_module(name)
 
 
 def pull_context(module):
