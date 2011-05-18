@@ -4,10 +4,27 @@ import os
 
 from flaskext.frozen import Freezer
 
+from tango.errors import ConfigurationError
+
 
 def build_static_site(app, path=None):
+    """Build a Tango site into a collection of static files, based on routing.
+
+    Uses Frozen-Flask to build the site.
+
+    >>> from tango.factory import build_app
+    >>> app = build_app('testsite')
+    >>> del app.config['TANGO_BUILD_BASE']
+    >>> build_static_site(app)
+    Traceback (most recent call last):
+        ...
+    ConfigurationError: app config is missing TANGO_BUILD_BASE
+    >>>
+    """
     if path is None:
         sitepath = app.config['SITE'] or 'build'
+        if not app.config.has_key('TANGO_BUILD_BASE'):
+            raise ConfigurationError('app config is missing TANGO_BUILD_BASE')
         path = app.config['TANGO_BUILD_BASE'] + '/' + sitepath
     app.config['FREEZER_DESTINATION'] = path
     if not os.path.exists(path):
