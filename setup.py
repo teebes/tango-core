@@ -4,7 +4,7 @@ import sys
 
 from setuptools import setup, find_packages
 
-from tango import version
+# Avoid importing tango here, to get accurate test coverage reports.
 
 
 # Test tango sites reside in the tests/ directory.
@@ -13,12 +13,12 @@ sys.path.append('tests')
 
 setup(
     name='Tango',
-    version=version.info.dist,
+    # version=version.info.dist,
     url='http://www.willowtreeapps.com',
     description='mobile web optimization framework',
     long_description=__doc__,
-    maintainer=version.info.maintainer,
-    maintainer_email=version.info.maintainer_email,
+    # maintainer=version.info.maintainer,
+    # maintainer_email=version.info.maintainer_email,
     packages=find_packages(),
     license='Commercial',
     platforms=['POSIX'],

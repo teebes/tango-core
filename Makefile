@@ -28,7 +28,7 @@ flakes: develop
 	find . -name '*.py' | xargs pyflakes | grep -v local_config; true
 
 test: develop
-	$(nosetests) --with-coverage --cover-package=tango --cover-tests
+	$(nosetests) --with-coverage --cover-package=tango --cover-erase
 
 smoke: develop
 	$(nosetests) --stop
