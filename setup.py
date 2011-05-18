@@ -13,7 +13,7 @@ sys.path.append('tests')
 
 setup(
     name='Tango',
-    # version=version.info.dist,
+    version='0.1',
     url='http://www.willowtreeapps.com',
     description='mobile web optimization framework',
     long_description=__doc__,
@@ -25,6 +25,7 @@ setup(
     include_package_data=True,
     zip_safe=False,
     install_requires=[
+        'distribute',
         'BeautifulSoup',
         'Flask',
         'Flask-Script',
