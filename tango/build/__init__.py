@@ -30,8 +30,30 @@ def build_static_site(app, path=None):
     if not os.path.exists(path):
         os.makedirs(path)
     freezer = Freezer(app)
+    freezer.register_generator(build_endpoint_routing(app))
+    freezer.freeze()
+    return app
 
-    @freezer.register_generator
+
+def build_endpoint_routing(app):
+    """Build endpoint routing as needed for Frozen-Flask url generation.
+
+    >>> from tango.factory import build_app
+    >>> app = build_app('testsite')
+    >>> url_generator = build_endpoint_routing(app)
+    >>> for endpoint, keywords in url_generator():
+    ...     print endpoint, keywords
+    /routing/<parameter>/ {'parameter': 0}
+    /routing/<parameter>/ {'parameter': 1}
+    /routing/<parameter>/ {'parameter': 2}
+    /files/page-<parameter>.html {'parameter': 0}
+    /files/page-<parameter>.html {'parameter': 1}
+    /files/page-<parameter>.html {'parameter': 2}
+    /another/<argument>/ {'argument': 3}
+    /another/<argument>/ {'argument': 4}
+    /another/<argument>/ {'argument': 5}
+    >>>
+    """
     def routing():
         for rule in app.url_map.iter_rules():
             route_context = app.site_context.get(rule.endpoint)
@@ -42,9 +64,5 @@ def build_static_site(app, path=None):
                 continue
             for argument, values in routing.items():
                 for value in values:
-                    if value is None:
-                        continue
                     yield rule.endpoint, {argument: value}
-
-    freezer.freeze()
-    return app
+    return routing
