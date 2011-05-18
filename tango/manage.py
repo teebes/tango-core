@@ -13,8 +13,8 @@ from flaskext.script import Shell as BaseShell
 from tango.app import Tango
 from tango.build import build_static_site
 from tango.factory.snapshot import build_snapshot
+import tango
 import tango.factory
-import tango.version
 
 
 commands = []
@@ -69,7 +69,7 @@ def require_site(function):
 @command
 def version():
     'Display this version of Tango.'
-    print tango.version.info.label
+    print tango.__label__
 
 
 @command

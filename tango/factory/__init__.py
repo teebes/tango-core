@@ -5,6 +5,7 @@ from werkzeug import create_environ
 
 from tango.app import Tango
 from tango.routes import get_routes
+import tango
 import tango.filters
 
 from context import build_package_context
@@ -30,7 +31,13 @@ def build_app(import_name, use_snapshot=True):
     # Initialize application.
     app = Tango(import_name)
     app.config.from_object('tango.config')
+    app.config['TANGO_VERSION'] = tango.__fullversion__
+    app.config['TANGO_MAINTAINER'] = tango.__contact__
     app.config.from_object(import_name + '.config')
+    # Build label from config to allow override if so desired.
+    app.config['TANGO_LABEL'] = \
+        tango.build_label(app.config['TANGO_VERSION'],
+                          app.config['TANGO_MAINTAINER'])
 
     # Create app context, push it onto request stack for use in initialization.
     ctx = app.request_context(create_environ())

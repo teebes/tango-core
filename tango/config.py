@@ -2,15 +2,6 @@
 
 import os
 
-import tango.version
-
-
-# Version info.
-
-TANGO_VERSION = tango.version.info.banner
-TANGO_MAINTAINER = tango.version.info.maintainer_info
-TANGO_LABEL = tango.version.info.label
-
 
 # Site defaults.
 
