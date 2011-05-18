@@ -123,8 +123,6 @@ def pull_context(module):
     for lookup in header.get('_routing', []):
         for name, iterable_name in lookup.items():
             routing[name] = getattr(module, iterable_name)
-            if hasattr(routing[name], '__call__'):
-                routing[name] = routing[name]()
 
     site_context = {}
     for route in header['routes']:
