@@ -67,8 +67,6 @@ def build_app(import_name, use_snapshot=True):
 
     # Stitch together context, template, and path.
     for route in app.routes:
-        if route.site != app.config['SITE']:
-            continue
         build_view(app, route)
 
     # Pop app request context.
