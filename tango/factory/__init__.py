@@ -15,8 +15,11 @@ def build_view(app, route):
     template = route.template
     context = route.context
 
+    # TODO: Create a tango.writers namespace.
+    # TODO: Use writer as dictated by route, only define view once.
+    # TODO: First look for template, then look for writer, then use default.
+    # TODO: Use default as configured in app.config.
     if template is None:
-        # TODO: Verify jsonify can handle contexts it's getting.
         def view(*args, **kwargs):
             return jsonify(**context)
     else:
