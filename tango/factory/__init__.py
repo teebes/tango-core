@@ -1,10 +1,9 @@
 "Package to instantiate a Tango object from a Tango site package."
 
-from flask import render_template, request
+from flask import jsonify, render_template, request
 from werkzeug import create_environ
 
 from tango.app import Tango
-from tango.routes import get_routes
 import tango
 import tango.filters
 
@@ -12,11 +11,15 @@ from context import build_package_context
 from snapshot import get_snapshot
 
 
-def build_view(app, path, template, context):
-    def view(*args, **kwargs):
-        return render_template(template, **context)
-    view.__name__ = path
-    return app.route(path)(view)
+def build_view(app, route, context, template=None):
+    if template is None:
+        def view(*args, **kwargs):
+            return jsonify(**context)
+    else:
+        def view(*args, **kwargs):
+            return render_template(template, **context)
+    view.__name__ = route
+    return app.route(route)(view)
 
 
 def build_app(import_name, use_snapshot=True):
@@ -46,9 +49,6 @@ def build_app(import_name, use_snapshot=True):
     # Load Tango filters.
     tango.filters.init_app(app)
 
-    # Get routes.
-    routes = get_routes(app)
-
     # Build template context, checking for a snapshot first.
     package_context = None
     if use_snapshot:
@@ -64,10 +64,9 @@ def build_app(import_name, use_snapshot=True):
     app.package_context = package_context
 
     # Stitch together context, template, and path.
-    # TODO: Warn on mutually exclusive routes.py and context header routes.
-    for template, paths in routes.items():
-        for path in paths:
-            build_view(app, path, template, site_context.get(path, {}))
+    for route, context in app.site_context.items():
+        template = context.get('_template', None)
+        build_view(app, route, context, template)
 
     # Pop app request context.
     ctx.pop()
