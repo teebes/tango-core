@@ -144,7 +144,7 @@ def pull_context(route_objs):
     static = route_objs[0].static
 
     assert len(route_objs[0].modules) == 1, "I'm confused by multiple modules."
-    module = route_objs[0].modules[0]
+    module = get_module(route_objs[0].modules[0])
 
     context = {}
     for name in exports:
@@ -200,7 +200,7 @@ def pull_routing(route_objs):
 
     for route_obj in route_objs:
         assert len(route_obj.modules) == 1, "I'm confused by multiple modules."
-        module = route_obj.modules[0]
+        module = get_module(route_objs[0].modules[0])
         route_obj.routing = {}
         for param in route_obj.routing_exports:
             if routing.has_key(param):
@@ -413,7 +413,7 @@ def parse_header(module):
             msg = msg.format(module.__name__, route)
             warnings.warn(msg, DuplicateRouteWarning)
         route_obj = Route(site, route, exports, static, template)
-        route_obj.modules = [module]
+        route_obj.modules = [module.__name__]
         route_obj.routing_exports = {}
         for param in routing_exports:
             if url_parameter_match(route, param):
