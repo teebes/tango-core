@@ -7,19 +7,23 @@ from tango.app import Tango
 import tango
 import tango.filters
 
-from context import build_package_context
+from context import build_package_routes
 from snapshot import get_snapshot
 
 
-def build_view(app, route, context, template=None):
+def build_view(app, route):
+    template = route.template
+    context = route.context
+
     if template is None:
+        # TODO: Verify jsonify can handle contexts it's getting.
         def view(*args, **kwargs):
             return jsonify(**context)
     else:
         def view(*args, **kwargs):
             return render_template(template, **context)
-    view.__name__ = route
-    return app.route(route)(view)
+    view.__name__ = route.route
+    return app.route(route.route)(view)
 
 
 def build_app(import_name, use_snapshot=True):
@@ -49,24 +53,23 @@ def build_app(import_name, use_snapshot=True):
     # Load Tango filters.
     tango.filters.init_app(app)
 
-    # Build template context, checking for a snapshot first.
-    package_context = None
+    # Build application routes, checking for a snapshot first.
+    routes = None
     if use_snapshot:
-        package_context = get_snapshot(import_name)
+        routes = get_snapshot(import_name)
 
-    if package_context is None:
+    if routes is None:
         package = __import__(import_name, fromlist=['content']).content
-        package_context = build_package_context(package)
+        routes = build_package_routes(package)
     else:
         print 'Using template context snapshot.'
-    site_context = package_context.get(app.config['SITE'], {})
-    app.site_context = site_context
-    app.package_context = package_context
+    app.routes = routes
 
     # Stitch together context, template, and path.
-    for route, context in app.site_context.items():
-        template = context.get('_template', None)
-        build_view(app, route, context, template)
+    for route in app.routes:
+        if route.site != app.config['SITE']:
+            continue
+        build_view(app, route)
 
     # Pop app request context.
     ctx.pop()

@@ -27,6 +27,59 @@ class Tango(Flask):
         return Environment(loader=TemplateLoader(self.import_name), **options)
 
 
+class Route(object):
+    "Route metadata for a Tango context module."
+
+    # required site field in the header
+    site = None
+
+    # required url path of this route
+    route = None
+
+    # required dict of variable names & hints to import into route's context
+    exports = None
+
+    # list of exports which are statically set in header
+    static = None
+
+    # template to render for route, may be None
+    template = None
+
+    # dict mapping url parameters to iterable exports providing values
+    routing = None
+
+    # dict of url parameter names & export variables to import for routing
+    routing_exports = None
+
+    # context as exported by context module, for template or serialization
+    context = None
+
+    # modules from which this content module was constructed
+    modules = None
+
+    def __init__(self, site, route, exports, static=None, template=None,
+                 routing=None, routing_exports=None, context=None,
+                 modules=None):
+        self.site = site
+        self.route = route
+        self.exports = exports
+        self.static = static
+        self.template = template
+
+        self.routing = routing
+        self.routing_exports = routing_exports
+
+        self.context = context
+        self.modules = modules
+
+    def __repr__(self):
+        pattern = u'<Route: {0}{1}>'
+        if self.template is None:
+            return pattern.format(self.route, '')
+        else:
+            return pattern.format(self.route, ', {0}'.format(self.template))
+
+
 class TemplateLoader(PackageLoader):
     """Template loader which looks for defaults.
 

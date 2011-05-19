@@ -1,11 +1,12 @@
 "Marshal template contexts exported declaratively by Tango content packages."
 
-import copy
 import pkgutil
+import re
 import warnings
 
 import yaml
 
+from tango.app import Route
 from tango.errors import DuplicateContextWarning, DuplicateExportWarning
 from tango.errors import DuplicateRouteWarning, HeaderException
 from tango.helpers import get_module
@@ -14,57 +15,59 @@ from tango.helpers import get_module
 HINT_DELIMITER = '<-'
 
 
-def build_package_context(package):
+def build_package_routes(package, context=True, routing=True):
     """Pull contexts from site package, discovering modules & parsing headers.
 
-    Structure of site context:
-
-    site_context = {'site': {'route1': {}, 'route2': {}, 'routeN': {}}}
-    site_context['site']['routeN'] is a standard template context dict.
+    Returns list of Route objects with attributes via structured docstrings.
 
     >>> import testsite.content
-    >>> build_package_context(testsite.content)
+    >>> build_package_routes(testsite.content)
     ... # doctest: +ELLIPSIS, +NORMALIZE_WHITESPACE
-    {'test':
-     {'/route1': {'count': 2, 'name': '...', 'sequence': [4, 5, 6]},
-      '/route2': {'count': 2, 'name': '...', 'sequence': [4, 5, 6]},
-      '/files/page-<parameter>.html':
-       {'_routing': {'parameter': [0, 1, 2]}, 'purpose': '...'},
-      '/': {'project': 'tango', 'hint': '...', 'title': 'Tango'},
-      '/routing/<parameter>/':
-       {'_routing': {'parameter': [0, 1, 2]}, 'purpose': '...'},
-      '/another/<argument>/':
-       {'_routing': {'argument': xrange(3, 6)}, 'purpose': '...'}}}
+    [<Route: />,
+     <Route: /another/<argument>/, argument.html>,
+     <Route: /files/page-<parameter>.html, parameter.html>,
+     <Route: /route1>,
+     <Route: /route2>,
+     <Route: /routing/<parameter>/, parameter.html>]
     >>>
 
     :param package: Tango site content package object
     :type package: module
+    :param context: flag whether to pull template contexts into route objects
+    :param routing: flag whether to pull routing iterables into route objects
     """
-    package_context = {}
+    route_collection = []
 
     for module in discover_modules(package):
-        context = pull_context(module)
-        if context is None:
+        module_routes = parse_header(module)
+        if module_routes is None:
             continue
-        for site in context:
-            site_context = package_context.get(site, {})
-            for route in context[site]:
-                route_context = site_context.get(route, {})
-                new_route_context = context[site][route]
+        if context:
+            module_routes = pull_context(module_routes)
+        if routing:
+            module_routes = pull_routing(module_routes)
+        route_collection += module_routes
 
-                # Test for and warn on route context override.
-                current_keys = set(route_context.keys())
-                new_keys = set(new_route_context.keys())
-                intersection = current_keys.intersection(new_keys)
-                if intersection:
-                    msg = '{0} duplicate context, exports: {1}'
-                    msg = msg.format(route, ', '.join(intersection))
-                    warnings.warn(msg, DuplicateContextWarning)
+    route_table = {}
+    for route in route_collection:
+        if route.route in route_table:
+            route_context = route_table[route.route].context
+            new_route_context = route.context
 
-                route_context.update(new_route_context)
-                site_context[route] = route_context
-            package_context[site] = site_context
-    return package_context
+            # Test for and warn on route context override.
+            current_keys = set(route_context.keys())
+            new_keys = set(new_route_context.keys())
+            intersection = current_keys.intersection(new_keys)
+            if intersection:
+                msg = '{0} duplicate context, exports: {1}'
+                msg = msg.format(route, ', '.join(intersection))
+                warnings.warn(msg, DuplicateContextWarning)
+            route_context.update(new_route_context)
+            route.context = route_context
+            route.modules += route_table[route.route].modules
+
+        route_table[route.route] = route
+    return sorted(route_table.values(), key=lambda route: route.route)
 
 
 def discover_modules(module):
@@ -109,64 +112,106 @@ def discover_modules(module):
             yield get_module(name)
 
 
-def pull_context(module):
-    """Pull dict template context from module, parsing it's header.
+def pull_context(route_objs):
+    """Pull dict template context from module using Routes parsed from header.
 
-    Example:
-    >>> from testsite.content import index, multiple
-    >>> pull_context(index)
-    {'test': {'/': {'title': 'Tango'}}}
-    >>> pull_context(multiple) # doctest:+NORMALIZE_WHITESPACE
-    {'test': {'/route1': {'count': 2, 'name': 'multiple.py context',
-     'sequence': [4, 5, 6]}, '/route2': {'count': 2, 'name':
-     'multiple.py context', 'sequence': [4, 5, 6]}}}
-    >>> from testsite.content import routing
-    >>> pull_context(routing)
-    ... # doctest: +ELLIPSIS, +NORMALIZE_WHITESPACE
-    {'test': {'/files/page-<parameter>.html':
-     {'_routing': {'parameter': [0, 1, 2]}, 'purpose': '...'},
-     '/routing/<parameter>/':
-     {'_routing': {'parameter': [0, 1, 2]}, 'purpose': '...'},
-     '/another/<argument>/':
-     {'_routing': {'argument': xrange(3, 6)}, 'purpose': '...'}}}
+    Examples:
+    >>> from testsite.content import index
+    >>> routes = pull_context(parse_header(index))
+    >>> routes
+    [<Route: /, index.html>]
+    >>> routes[0].context
+    {'title': 'Tango'}
     >>>
 
-    :param module: Tango site content package module object
-    :type module: module
+    >>> from testsite.content import multiple
+    >>> routes = pull_context(parse_header(multiple))
+    >>> routes
+    [<Route: /route1>, <Route: /route2>]
+    >>> routes[0].context == routes[1].context
+    True
+    >>> routes[0].context
+    {'count': 2, 'name': 'multiple.py context', 'sequence': [4, 5, 6]}
+    >>>
+
+    :param route_objs: list of Route instances, provided by parse_header
     """
-    header = parse_header(module)
-    if header is None:
+    if route_objs is None or len(route_objs) == 0:
         return None
 
-    base_route_context = {}
-    for name in header['exports']:
-        if name in header['static']:
-            base_route_context[name] = header['exports'][name]
-        else:
-            base_route_context[name] = getattr(module, name)
+    # All route objects from a module have same exports.
+    exports = route_objs[0].exports
+    static = route_objs[0].static
 
+    assert len(route_objs[0].modules) == 1, "I'm confused by multiple modules."
+    module = route_objs[0].modules[0]
+
+    context = {}
+    for name in exports:
+        if name in static:
+            context[name] = exports[name]
+        else:
+            context[name] = getattr(module, name)
+    for route_obj in route_objs:
+        route_obj.context = context
+
+    return route_objs
+
+
+def pull_routing(route_objs):
+    """Pull routing iterables from module using Routes parsed from header.
+
+    Examples:
+    >>> from testsite.content import index
+    >>> routes = pull_routing(parse_header(index))
+    >>> routes
+    [<Route: /, index.html>]
+    >>> routes[0].routing_exports
+    {}
+    >>> routes[0].routing
+    {}
+    >>>
+
+    >>> from testsite.content import routing
+    >>> routes = pull_routing(parse_header(routing))
+    >>> len(routes)
+    3
+    >>> routes[0].route
+    '/routing/<parameter>/'
+    >>> routes[0].routing
+    {'parameter': [0, 1, 2]}
+    >>> routes[1].route
+    '/files/page-<parameter>.html'
+    >>> routes[1].routing
+    {'parameter': [0, 1, 2]}
+    >>> routes[2].route
+    '/another/<argument>/'
+    >>> routes[2].routing
+    {'argument': xrange(3, 6)}
+    >>>
+
+    :param route_objs: list of Route instances, provided by parse_header
+    """
+    if route_objs is None or len(route_objs) == 0:
+        return None
+
+    # All route objects from a module have same exports, but diff routing.
     routing = {}
-    for lookup in header.get('_routing', []):
-        for name, iterable_name in lookup.items():
-            routing[name] = getattr(module, iterable_name)
 
-    site_context = {}
-    for route in header['routes']:
-        route_context = copy.deepcopy(base_route_context)
-        local_routing = {}
-        for argument in routing.keys():
-            # TODO: Support URL converters. (Basico)
-            if ('<%s>' % argument) in route:
-                local_routing[argument] = routing[argument]
-        if local_routing:
-            route_context['_routing'] = local_routing
-        else:
-            route_context.pop('_routing', None)
+    for route_obj in route_objs:
+        assert len(route_obj.modules) == 1, "I'm confused by multiple modules."
+        module = route_obj.modules[0]
+        route_obj.routing = {}
+        for param in route_obj.routing_exports:
+            if routing.has_key(param):
+                route_obj.routing[param] = routing[param]
+            else:
+                name = route_obj.routing_exports[param]
+                param_iterable = getattr(module, name)
+                route_obj.routing[param] = param_iterable
+                routing[param] = param_iterable
 
-        # routing here, match route with routing path?
-        site_context[route] = route_context
-
-    return {header['site']: site_context}
+    return route_objs
 
 
 def parse_header(module):
@@ -179,30 +224,83 @@ def parse_header(module):
     * exports
 
     Raise KeyError if any of these fields are missing.
+    Raise HeaderException if header is not pure yaml.
+    Return None if module has no docstring or defines no routes.
 
-    Example:
-    >>> from testsite.content import index, multiple
-    >>> parse_header(index) # doctest:+NORMALIZE_WHITESPACE
-    {'routes': ['/'], 'exports': {'title': 'Tango'},
-     'static': ['title'], 'site': 'test'}
-    >>> header = parse_header(multiple)
-    >>> header['site']
+    Examples:
+    >>> from testsite.content import index
+    >>> routes = parse_header(index)
+    >>> routes
+    [<Route: /, index.html>]
+    >>> route = routes[0]
+    >>> route.exports
+    {'title': 'Tango'}
+    >>> route.static
+    ['title']
+    >>> route.site
     'test'
-    >>> header['routes']
-    ['/route1', '/route2']
-    >>> header['exports']
+    >>> route.context
+    >>>
+
+    >>> from testsite.content import multiple
+    >>> routes = parse_header(multiple)
+    >>> routes
+    [<Route: /route1>, <Route: /route2>]
+    >>> [route.site for route in routes]
+    ['test', 'test']
+    >>> routes[0].exports == routes[1].exports
+    True
+    >>> routes[0].exports
     {'count': 'number', 'name': 'string', 'sequence': '[number]'}
+    >>>
+
     >>> from testsite.content.package import module
-    >>> parse_header(module)
-    {'routes': ['/'], 'exports': {'hint': None}, 'static': [], 'site': 'test'}
+    >>> routes = parse_header(module)
+    >>> routes
+    [<Route: />]
+    >>> route = routes[0]
+    >>> route.site
+    'test'
+    >>> route.exports
+    {'hint': None}
+    >>> route.static
+    []
+    >>>
+
     >>> from testsite.content import routing
-    >>> parse_header(routing)
-    ... # doctest: +ELLIPSIS, +NORMALIZE_WHITESPACE
-    {'routes': ['/routing/<parameter>/', '/another/<argument>/',
-                '/files/page-<parameter>.html'],
-     'exports': {'purpose': '...'},
-    '_routing': [{'parameter': 'parameters'}, {'argument': 'arguments'}],
-    'static': ['purpose'], 'site': 'test'}
+    >>> routes = parse_header(routing)
+    >>> routes # doctest:+NORMALIZE_WHITESPACE
+    [<Route: /routing/<parameter>/, parameter.html>,
+     <Route: /files/page-<parameter>.html, parameter.html>,
+     <Route: /another/<argument>/, argument.html>]
+    >>> routes[0].routing_exports
+    {'parameter': 'parameters'}
+    >>> routes[1].routing_exports
+    {'parameter': 'parameters'}
+    >>> routes[2].routing_exports
+    {'argument': 'arguments'}
+    >>> routes[0].site == routes[1].site == routes[2].site == 'test'
+    True
+    >>> routes[0].exports == routes[1].exports == routes[2].exports
+    True
+    >>> routes[0].exports # doctest:+ELLIPSIS
+    {'purpose': '...'}
+    >>> routes[0].static == routes[1].static == routes[2].static
+    True
+    >>> routes[0].static
+    ['purpose']
+    >>>
+
+    >>> import testsite.content.package
+    >>> parse_header(testsite.content.package) is None
+    True
+    >>>
+
+    >>> from testsite.content import dummy
+    >>> parse_header(dummy) is None
+    True
+    >>>
+
     >>> from errorsite.content import hybrid
     >>> parse_header(hybrid)
     Traceback (most recent call last):
@@ -214,7 +312,7 @@ def parse_header(module):
     :type module: module
     """
     try:
-        rawheader = yaml.load(module.__doc__)
+        header = yaml.load(module.__doc__)
     except yaml.scanner.ScannerError:
         raise HeaderException('metadata docstring must be yaml or doc, '
                               'but not both.')
@@ -222,54 +320,134 @@ def parse_header(module):
         # Not an error or a warning, just a module without a docstring.
         return None
 
-    if not isinstance(rawheader, dict):
+    if not isinstance(header, dict):
         # module has a docstring, but it's not yaml.
         return None
 
-    header = {'site': rawheader['site']}
-    routing = rawheader.get('routing')
-    if routing is not None:
-        header['_routing'] = routing
+    # Build a list of Route instances from the header.
+    route_objs = []
 
-    if isinstance(rawheader['routes'], basestring):
-        header['routes'] = [rawheader['routes']]
+    # Relevant values to pull from header, of various types.
+    site = header['site']
+    rawroutes = header['routes']
+    exports = {}
+    rawexports = header['exports']
+    routing_exports = {}
+    rawrouting = header.get('routing', [])
+    static = []
+
+    # Coerce routes into a list.
+    if isinstance(rawroutes, basestring):
+        rawroutes = [rawroutes]
     else:
-        header['routes'] = list(rawheader['routes'])
-        # Test for and warn on route duplicates.
-        route_check = set()
-        for route in header['routes']:
-            if route in route_check:
-                msg = '{0} duplicate route: {1}'
-                msg = msg.format(module.__name__, route)
-                warnings.warn(msg, DuplicateRouteWarning)
-            route_check.add(route)
+        rawroutes = list(rawroutes)
 
-    header['exports'] = {}
-    header['static'] = []
-    if isinstance(rawheader['exports'], basestring):
-        rawexport = [rawheader['exports']]
+    # Coerce exports into a list.
+    if isinstance(rawexports, basestring):
+        rawexports = [rawexports]
     else:
-        rawexport = list(rawheader['exports'])
+        rawexports = list(rawexports)
 
-    export_pairs = []
+    # Collect export (name, hint) pairs, noting static exceptions.
+    export_items = []
     export_static_names = set()
-    for exportstmt in rawexport:
+    for exportstmt in rawexports:
         if isinstance(exportstmt, basestring):
+            # Export statement includes a type hint.
             tokens = exportstmt.split(HINT_DELIMITER)
             if len(tokens) > 1:
                 hint = HINT_DELIMITER.join(tokens[1:]).strip()
             else:
                 hint = None
-            export_pairs.append((tokens[0].strip(), hint))
+            export_items.append((tokens[0].strip(), hint))
         else:
+            # Export statement resulted in a dict of name-to-static exports.
             for name in exportstmt:
-                export_pairs.append((name, exportstmt[name]))
+                export_items.append((name, exportstmt[name]))
                 export_static_names.add(name)
-    for name, hint in export_pairs:
-        if header['exports'].has_key(name):
+
+    # Test for and warn on export duplicates while constructing exports dict.
+    for item in export_items:
+        name, hint = item
+        if exports.has_key(name):
             msg = '{0} duplicate export: {1}'
             msg = msg.format(module.__name__, name)
             warnings.warn(msg, DuplicateExportWarning)
-        header['exports'][name] = hint
-    header['static'] = list(export_static_names)
-    return header
+        exports[name] = hint
+    static = list(export_static_names)
+
+    # Test for and warn on routing export duplicates while constructing dict.
+    for export_dict in rawrouting:
+        if not export_dict:
+            continue
+        url_parameter, export_variable = export_dict.items()[0]
+        if routing_exports.has_key(url_parameter):
+            msg = '{0} duplicate routing export: {1}'
+            msg = msg.format(module.__name__, name)
+            warnings.warn(msg, DuplicateExportWarning)
+        routing_exports[url_parameter] = export_variable
+
+    # Build out list of Route instances.
+    routes_templates = []
+    for rawroute in rawroutes:
+        if isinstance(rawroute, dict):
+            # routes directive is a map of one template to one or more routes.
+            assert len(rawroute) == 1, 'map only one template at a time'
+            template = rawroute.keys()[0]
+            if isinstance(rawroute[template], basestring):
+                # One route.
+                routes_templates.append((rawroute[template], template))
+            else:
+                # Many routes.
+                for route in rawroute[template]:
+                    routes_templates.append((route, template))
+        else:
+            # route directive is a route without a template
+            routes_templates.append((rawroute, None))
+
+    # Test for and warn on route duplicates while constructing Route objects.
+    route_check = set()
+    for route, template in routes_templates:
+        if route in route_check:
+            msg = '{0} duplicate route: {1}'
+            msg = msg.format(module.__name__, route)
+            warnings.warn(msg, DuplicateRouteWarning)
+        route_obj = Route(site, route, exports, static, template)
+        route_obj.modules = [module]
+        route_obj.routing_exports = {}
+        for param in routing_exports:
+            if url_parameter_match(route, param):
+                route_obj.routing_exports[param] = routing_exports[param]
+        route_objs.append(route_obj)
+        route_check.add(route)
+
+    return route_objs
+
+
+def url_parameter_match(route, parameter):
+    """Determine whether a route contains a url parameter, return True if so.
+
+    Example:
+    >>> url_parameter_match('/<argument>', 'argument')
+    True
+    >>> url_parameter_match('/<argument>/', 'argument')
+    True
+    >>> url_parameter_match('/<int:argument>', 'argument')
+    True
+    >>> url_parameter_match('/int:<argument>/', 'argument')
+    True
+    >>> url_parameter_match('/path:<argument>/', 'argument')
+    True
+    >>> url_parameter_match('/path/to/<parameter>/', 'parameter')
+    True
+    >>> url_parameter_match('/path/to/<path:parameter>/', 'parameter')
+    True
+    >>> url_parameter_match('/path/to/<aparameter>/', 'parameter')
+    False
+    >>> url_parameter_match('/path/to/<path:aparameter>/', 'parameter')
+    False
+    >>> url_parameter_match('/', 'parameter')
+    False
+    >>>
+    """
+    return re.search('[<:]{0}>'.format(parameter), route) is not None

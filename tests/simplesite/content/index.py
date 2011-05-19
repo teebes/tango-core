@@ -1,6 +1,7 @@
 """
 site: default
-routes: /
+routes:
+ - index.html: /
 exports:
  - title: Tango
 """

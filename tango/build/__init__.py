@@ -43,26 +43,22 @@ def build_endpoint_routing(app):
     >>> url_generator = build_endpoint_routing(app)
     >>> for endpoint, keywords in url_generator():
     ...     print endpoint, keywords
-    /routing/<parameter>/ {'parameter': 0}
-    /routing/<parameter>/ {'parameter': 1}
-    /routing/<parameter>/ {'parameter': 2}
-    /files/page-<parameter>.html {'parameter': 0}
-    /files/page-<parameter>.html {'parameter': 1}
-    /files/page-<parameter>.html {'parameter': 2}
     /another/<argument>/ {'argument': 3}
     /another/<argument>/ {'argument': 4}
     /another/<argument>/ {'argument': 5}
+    /files/page-<parameter>.html {'parameter': 0}
+    /files/page-<parameter>.html {'parameter': 1}
+    /files/page-<parameter>.html {'parameter': 2}
+    /routing/<parameter>/ {'parameter': 0}
+    /routing/<parameter>/ {'parameter': 1}
+    /routing/<parameter>/ {'parameter': 2}
     >>>
     """
     def routing():
-        for rule in app.url_map.iter_rules():
-            route_context = app.site_context.get(rule.endpoint)
-            if route_context is None:
+        for route in app.routes:
+            if route.routing is None:
                 continue
-            routing = route_context.get('_routing')
-            if routing is None:
-                continue
-            for argument, values in routing.items():
+            for argument, values in route.routing.items():
                 for value in values:
-                    yield rule.endpoint, {argument: value}
+                    yield route.route, {argument: value}
     return routing

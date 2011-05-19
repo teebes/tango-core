@@ -1,6 +1,7 @@
 """
 site: test
-routes: /
+routes:
+ - index.html: /
 exports:
  - title: Tango
 """

@@ -7,7 +7,7 @@ import cPickle as pickle
 def build_snapshot(app, directory='.'):
     "Serialize a snapshot image of a Tango application context."
     filename = get_snapshot_filename(app.import_name, directory)
-    pickle.dump(app.package_context, open(filename, 'wb'))
+    pickle.dump(app.routes, open(filename, 'wb'))
     return filename
 
 
