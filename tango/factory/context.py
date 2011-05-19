@@ -177,17 +177,17 @@ def pull_routing(route_objs):
     >>> len(routes)
     3
     >>> routes[0].route
-    '/routing/<parameter>/'
+    '/another/<argument>/'
     >>> routes[0].routing
-    {'parameter': [0, 1, 2]}
+    {'argument': xrange(3, 6)}
     >>> routes[1].route
     '/files/page-<parameter>.html'
     >>> routes[1].routing
     {'parameter': [0, 1, 2]}
     >>> routes[2].route
-    '/another/<argument>/'
+    '/routing/<parameter>/'
     >>> routes[2].routing
-    {'argument': xrange(3, 6)}
+    {'parameter': [0, 1, 2]}
     >>>
 
     :param route_objs: list of Route instances, provided by parse_header
@@ -270,15 +270,15 @@ def parse_header(module):
     >>> from testsite.content import routing
     >>> routes = parse_header(routing)
     >>> routes # doctest:+NORMALIZE_WHITESPACE
-    [<Route: /routing/<parameter>/, parameter.html>,
+    [<Route: /another/<argument>/, argument.html>,
      <Route: /files/page-<parameter>.html, parameter.html>,
-     <Route: /another/<argument>/, argument.html>]
+     <Route: /routing/<parameter>/, parameter.html>]
     >>> routes[0].routing_exports
-    {'parameter': 'parameters'}
+    {'argument': 'arguments'}
     >>> routes[1].routing_exports
     {'parameter': 'parameters'}
     >>> routes[2].routing_exports
-    {'argument': 'arguments'}
+    {'parameter': 'parameters'}
     >>> routes[0].site == routes[1].site == routes[2].site == 'test'
     True
     >>> routes[0].exports == routes[1].exports == routes[2].exports
@@ -323,9 +323,6 @@ def parse_header(module):
     if not isinstance(header, dict):
         # module has a docstring, but it's not yaml.
         return None
-
-    # Build a list of Route instances from the header.
-    route_objs = []
 
     # Relevant values to pull from header, of various types.
     site = header['site']
@@ -406,9 +403,9 @@ def parse_header(module):
             routes_templates.append((rawroute, None))
 
     # Test for and warn on route duplicates while constructing Route objects.
-    route_check = set()
+    route_table = {}
     for route, template in routes_templates:
-        if route in route_check:
+        if route in route_table:
             msg = '{0} duplicate route: {1}'
             msg = msg.format(module.__name__, route)
             warnings.warn(msg, DuplicateRouteWarning)
@@ -418,10 +415,9 @@ def parse_header(module):
         for param in routing_exports:
             if url_parameter_match(route, param):
                 route_obj.routing_exports[param] = routing_exports[param]
-        route_objs.append(route_obj)
-        route_check.add(route)
+        route_table[route] = route_obj
 
-    return route_objs
+    return sorted(route_table.values(), key=lambda route: route.route)
 
 
 def url_parameter_match(route, parameter):
