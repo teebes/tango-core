@@ -56,8 +56,6 @@ def build_endpoint_routing(app):
     """
     def routing():
         for route in app.routes:
-            if route.routing is None:
-                continue
             for argument, values in route.routing.items():
                 for value in values:
                     yield route.route, {argument: value}

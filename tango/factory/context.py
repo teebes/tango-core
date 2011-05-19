@@ -26,6 +26,7 @@ def build_package_routes(package, context=True, routing=True):
     [<Route: />,
      <Route: /another/<argument>/, argument.html>,
      <Route: /files/page-<parameter>.html, parameter.html>,
+     <Route: /norouting/<parameter>/, parameter.html>,
      <Route: /route1>,
      <Route: /route2>,
      <Route: /routing/<parameter>/, parameter.html>]
