@@ -33,6 +33,45 @@ def dict_zip(**kwargs):
     """
     return [dict(zip(kwargs.keys(), item)) for item in zip(*kwargs.values())]
 
+def get_with_selector(content, selector, text_only=False, content_type='string', parser='HTMLParser'):
+    """
+    Return the unicode representation of element `content` matched by
+    `selector`.
+
+    If `selector` matches multiple elements, they will be concatenated into a
+    single unicode string.
+
+    If text_only is true, only the contents of the matched element will be
+    returned
+    
+    If content_type is `url, content will be treated as a URL and its contents
+    will be loaded and processed with with the selector
+
+    >>> get_with_selector("<b>I am bold.</b>", 'b')
+    u'<b>I am bold.</b>'
+    >>> get_with_selector("<b>I am bold.</b>", 'b', True)
+    u'I am bold.'
+    """
+    try:
+        loaded_parser = getattr(etree, parser)()
+    except AttributeError:
+        raise Exception("Invalid parser '%s'" % parser)
+
+    if content_type == 'string':
+        tree = etree.fromstring(content, loaded_parser)
+    elif content_type == 'url':
+        tree = etree.parse(urllib2.urlopen(content), loaded_parser)
+    else:
+        raise Exception("Invalid content type '%s'" % content_type)
+        
+    cs = CSSSelector(selector)
+    output = u''
+    for branch in cs(tree):
+        if text_only:
+            output += branch.text
+        else:
+            output += etree.tostring(branch)
+    return output
 
 def url_selector(url, selector, text_only=False):
     """Return the unicode representation of an HTML element from `url` matched
