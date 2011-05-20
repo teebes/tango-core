@@ -5,13 +5,14 @@ from flask import abort, request, session
 import app
 import build
 import config
+import errors
 import factory
 import helpers
 import tools
 
 
-__all__ = ['abort', 'request', 'session', 'app', 'build', 'config', 'factory',
-           'helpers', 'tools',
+__all__ = ['abort', 'errors', 'request', 'session', 'app', 'build', 'config',
+           'factory', 'helpers', 'tools',
            '__codename__', '__fullversion__', '__label__']
 
 
