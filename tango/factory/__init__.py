@@ -1,6 +1,6 @@
 "Package to instantiate a Tango object from a Tango stash module."
 
-from flask import jsonify, render_template, request
+from flask import request
 from werkzeug import create_environ
 
 from tango.app import Tango
@@ -9,24 +9,6 @@ import tango.filters
 
 from context import build_module_routes
 from snapshot import get_snapshot
-
-
-def build_view(app, route):
-    template = route.writer_name
-    context = route.context
-
-    # TODO: Create a tango.writers namespace.
-    # TODO: Use writer as dictated by route, only define view once.
-    # TODO: First look for template, then look for writer, then use default.
-    # TODO: Use default as configured in app.config.
-    if template is None:
-        def view(*args, **kwargs):
-            return jsonify(**context)
-    else:
-        def view(*args, **kwargs):
-            return render_template(template, **context)
-    view.__name__ = route.rule
-    return app.route(route.rule)(view)
 
 
 def build_app(import_name, use_snapshot=True):
@@ -82,7 +64,7 @@ def build_app(import_name, use_snapshot=True):
 
     # Stitch together context, template, and path.
     for route in app.routes:
-        build_view(app, route)
+        app.build_view(route)
 
     # Pop app request context.
     ctx.pop()
