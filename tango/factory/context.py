@@ -1,7 +1,6 @@
 "Marshal template contexts exported declaratively by Tango stash packages."
 
 import pkgutil
-import re
 import warnings
 
 import yaml
@@ -9,7 +8,7 @@ import yaml
 from tango.app import Route
 from tango.errors import DuplicateContextWarning, DuplicateExportWarning
 from tango.errors import DuplicateRouteWarning, HeaderException
-from tango.helpers import get_module
+from tango.helpers import get_module, url_parameter_match
 
 
 HINT_DELIMITER = '<-'
@@ -419,32 +418,3 @@ def parse_header(module):
         route_table[route] = route_obj
 
     return sorted(route_table.values(), key=lambda route: route.route)
-
-
-def url_parameter_match(route, parameter):
-    """Determine whether a route contains a url parameter, return True if so.
-
-    Example:
-    >>> url_parameter_match('/<argument>', 'argument')
-    True
-    >>> url_parameter_match('/<argument>/', 'argument')
-    True
-    >>> url_parameter_match('/<int:argument>', 'argument')
-    True
-    >>> url_parameter_match('/int:<argument>/', 'argument')
-    True
-    >>> url_parameter_match('/path:<argument>/', 'argument')
-    True
-    >>> url_parameter_match('/path/to/<parameter>/', 'parameter')
-    True
-    >>> url_parameter_match('/path/to/<path:parameter>/', 'parameter')
-    True
-    >>> url_parameter_match('/path/to/<aparameter>/', 'parameter')
-    False
-    >>> url_parameter_match('/path/to/<path:aparameter>/', 'parameter')
-    False
-    >>> url_parameter_match('/', 'parameter')
-    False
-    >>>
-    """
-    return re.search('[<:]{0}>'.format(parameter), route) is not None
