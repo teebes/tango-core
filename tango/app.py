@@ -33,8 +33,8 @@ class Route(object):
     # required site field in the header
     site = None
 
-    # required url path of this route
-    route = None
+    # required url rule/path of this route
+    rule = None
 
     # required dict of variable names & hints to import into route's context
     exports = None
@@ -57,11 +57,11 @@ class Route(object):
     # modules from which this stash module was constructed
     modules = None
 
-    def __init__(self, site, route, exports, static=None, template=None,
+    def __init__(self, site, rule, exports, static=None, template=None,
                  routing=None, routing_exports=None, context=None,
                  modules=None):
         self.site = site
-        self.route = route
+        self.rule = rule
         self.exports = exports
         self.static = static
         self.template = template
@@ -75,9 +75,9 @@ class Route(object):
     def __repr__(self):
         pattern = u'<Route: {0}{1}>'
         if self.template is None:
-            return pattern.format(self.route, '')
+            return pattern.format(self.rule, '')
         else:
-            return pattern.format(self.route, ', {0}'.format(self.template))
+            return pattern.format(self.rule, ', {0}'.format(self.template))
 
 
 class TemplateLoader(PackageLoader):

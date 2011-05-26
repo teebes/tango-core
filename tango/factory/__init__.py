@@ -25,8 +25,8 @@ def build_view(app, route):
     else:
         def view(*args, **kwargs):
             return render_template(template, **context)
-    view.__name__ = route.route
-    return app.route(route.route)(view)
+    view.__name__ = route.rule
+    return app.route(route.rule)(view)
 
 
 def build_app(import_name, use_snapshot=True):

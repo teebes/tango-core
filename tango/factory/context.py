@@ -50,8 +50,8 @@ def build_package_routes(package, context=True, routing=True):
 
     route_table = {}
     for route in route_collection:
-        if route.route in route_table:
-            route_context = route_table[route.route].context
+        if route.rule in route_table:
+            route_context = route_table[route.rule].context
             new_route_context = route.context
 
             # Test for and warn on route context override.
@@ -64,10 +64,10 @@ def build_package_routes(package, context=True, routing=True):
                 warnings.warn(msg, DuplicateContextWarning)
             route_context.update(new_route_context)
             route.context = route_context
-            route.modules += route_table[route.route].modules
+            route.modules += route_table[route.rule].modules
 
-        route_table[route.route] = route
-    return sorted(route_table.values(), key=lambda route: route.route)
+        route_table[route.rule] = route
+    return sorted(route_table.values(), key=lambda route: route.rule)
 
 
 def discover_modules(module):
@@ -176,15 +176,15 @@ def pull_routing(route_objs):
     >>> routes = pull_routing(parse_header(routing))
     >>> len(routes)
     3
-    >>> routes[0].route
+    >>> routes[0].rule
     '/another/<argument>/'
     >>> routes[0].routing
     {'argument': xrange(3, 6)}
-    >>> routes[1].route
+    >>> routes[1].rule
     '/files/page-<parameter>.html'
     >>> routes[1].routing
     {'parameter': [0, 1, 2]}
-    >>> routes[2].route
+    >>> routes[2].rule
     '/routing/<parameter>/'
     >>> routes[2].routing
     {'parameter': [0, 1, 2]}
@@ -417,4 +417,4 @@ def parse_header(module):
                 route_obj.routing_exports[param] = routing_exports[param]
         route_table[route] = route_obj
 
-    return sorted(route_table.values(), key=lambda route: route.route)
+    return sorted(route_table.values(), key=lambda route: route.rule)

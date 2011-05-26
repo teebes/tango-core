@@ -58,5 +58,5 @@ def build_endpoint_routing(app):
         for route in app.routes:
             for argument, values in route.routing.items():
                 for value in values:
-                    yield route.route, {argument: value}
+                    yield route.rule, {argument: value}
     return routing
