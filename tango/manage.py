@@ -1,7 +1,6 @@
 "Console entry point and management & development tasks for Tango framework."
 
 from functools import update_wrapper
-import imp
 import os
 import sys
 
@@ -13,6 +12,7 @@ from flaskext.script import Shell as BaseShell
 from tango.app import Tango
 from tango.build import build_static_site
 from tango.factory.snapshot import build_snapshot
+from tango.helpers import module_exists
 import tango
 import tango.factory
 
@@ -33,9 +33,7 @@ def build_app(site, **options):
     ImportError: No module named doesnotexist
     >>>
     """
-    try:
-        imp.find_module(site)
-    except ImportError:
+    if not module_exists(site):
         print "Cannot find site '%s'." % site
         sys.exit(7)
     return tango.factory.build_app(site, **options)

@@ -1,5 +1,6 @@
 "Utilities for internal use within Tango framework."
 
+import imp
 import re
 
 
@@ -44,6 +45,28 @@ def get_module_filepath(module):
     else:
         return module.__file__
 
+
+def module_exists(name):
+    """Return True if a module by the given name exists, or False if not.
+
+    Example:
+    >>> module_exists('tango')
+    True
+    >>> module_exists('simplesite')
+    True
+    >>> module_exists('simplest')
+    True
+    >>> module_exists('importerror')
+    True
+    >>> module_exists('doesnotexist')
+    False
+    >>>
+    """
+    try:
+        imp.find_module(name)
+    except ImportError:
+        return False
+    return True
 
 def module_is_package(module):
     """Return True if module is a Python package, or False if not.
