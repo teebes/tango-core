@@ -101,10 +101,9 @@ def discover_modules(module):
     """
     ispackage = module_is_package(module)
     prefix = module.__name__ + '.'
-    onerror = lambda args: None
     yield module
     if ispackage:
-        for _, name, _ in pkgutil.walk_packages(module.__path__, prefix, onerror):
+        for _, name, _ in pkgutil.walk_packages(module.__path__, prefix):
             yield get_module(name)
 
 
