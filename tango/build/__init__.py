@@ -14,15 +14,19 @@ def build_static_site(app, path=None):
 
     >>> from tango.factory import build_app
     >>> app = build_app('testsite')
+    >>> del app.config['TANGO_BUILD_DIR']
+    >>> app = build_app('testsite')
     >>> del app.config['TANGO_BUILD_BASE']
     >>> build_static_site(app)
     Traceback (most recent call last):
         ...
     ConfigurationError: app config is missing TANGO_BUILD_BASE
+    >>> import os
+    >>> _ = os.system('rm -fr public/')
     >>>
     """
     if path is None:
-        sitepath = app.config['SITE'] or 'build'
+        sitepath = app.config.get('TANGO_BUILD_DIR') or 'public'
         if not app.config.has_key('TANGO_BUILD_BASE'):
             raise ConfigurationError('app config is missing TANGO_BUILD_BASE')
         path = app.config['TANGO_BUILD_BASE'] + '/' + sitepath

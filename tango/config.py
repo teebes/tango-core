@@ -2,16 +2,10 @@
 
 import os
 
-
-# Site defaults.
-
-SITE = None
-
-
 # Build defaults.
 
 TANGO_BUILD_BASE = os.getcwd()
-
+TANGO_BUILD_DIR = 'public'
 
 # Date formats.
 # Default date/datetime formats. If None, uses ISO 8601 format.

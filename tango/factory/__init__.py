@@ -34,16 +34,24 @@ def build_app(import_name, use_snapshot=True):
 
     Example, using the simplesite package in this project:
     >>> app = build_app('simplesite')
-    >>> app.config['SITE']
-    'simplesite'
+    >>> app.url_map # doctest:+NORMALIZE_WHITESPACE
+    Map([[<Rule '/static/<filename>' (HEAD, OPTIONS, GET) -> static>,
+          <Rule '/' (HEAD, OPTIONS, GET) -> />]])
     >>>
     """
+    # Check for a site config.
+    try:
+        site_config = __import__(import_name, fromlist=['config']).config
+    except AttributeError:
+        site_config = None
+
     # Initialize application.
     app = Tango(import_name)
     app.config.from_object('tango.config')
     app.config['TANGO_VERSION'] = tango.__fullversion__
     app.config['TANGO_MAINTAINER'] = tango.__contact__
-    app.config.from_object(import_name + '.config')
+    if site_config is not None:
+        app.config.from_object(site_config)
     # Build label from config to allow override if so desired.
     app.config['TANGO_LABEL'] = \
         tango.build_label(app.config['TANGO_VERSION'],

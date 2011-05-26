@@ -1,2 +1,1 @@
-# Configuration attributes are all uppercase.
-SITE = 'simplesite'
+TANGO_BUILD_DIR = 'simplesite'
