@@ -2,8 +2,8 @@ Testing: Implicit View Function Arguments
 =========================================
 
 When defining routes, you can define URL parameters in your rules, just as in
-Werkzeug and Flask.  Tango provides these parameters by name in the template
-context.  So if you define::
+Werkzeug and Flask.  For convenience, Tango provides these parameters by name
+in the template context.  So if you define::
 
     /my/<argument>
 
@@ -32,4 +32,4 @@ Our route is ``/routing/<parameter>`` and the routed template only contains::
 >>> client.get('/routing/this_is_my_parameter/').data
 'parameter: this_is_my_parameter'
 
-I'm convinced.  Are you convinced?
+I'm convinced this works.  Are you convinced?
