@@ -4,6 +4,8 @@ from flask import Flask, current_app, request
 from jinja2 import Environment, PackageLoader, TemplateNotFound
 from werkzeug import LocalProxy as Proxy
 
+import tango
+
 
 __all__ = ['Tango', 'config', 'request', 'Proxy']
 
@@ -19,12 +21,32 @@ class Tango(Flask):
         # As such, import the package here to ensure it's in sys.modules.
         __import__(import_name)
         Flask.__init__(self, import_name, *args, **kwargs)
+        self.set_default_config()
+
+    def set_default_config(self):
+        self.config.from_object('tango.config')
+        self.config['TANGO_VERSION'] = tango.__fullversion__
+        self.config['TANGO_MAINTAINER'] = tango.__contact__
 
     def create_jinja_environment(self):
         options = dict(self.jinja_options)
         if 'autoescape' not in options:
             options['autoescape'] = self.select_jinja_autoescape
         return Environment(loader=TemplateLoader(self.import_name), **options)
+
+    @property
+    def version(self):
+        """Application version information, Tango versioning by default.
+
+        Test:
+        >>> app = Tango('simplesite')
+        >>> print app.version # doctest:+ELLIPSIS
+        Tango ...
+        Maintainer: ...
+        >>>
+        """
+        return tango.build_label(self.config['TANGO_VERSION'],
+                                 self.config['TANGO_MAINTAINER'])
 
 
 class Route(object):

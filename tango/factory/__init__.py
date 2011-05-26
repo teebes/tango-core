@@ -46,23 +46,17 @@ def build_app(import_name, use_snapshot=True):
           <Rule '/' (HEAD, OPTIONS, GET) -> />]])
     >>>
     """
+    # Initialize application.
+    app = Tango(import_name)
+
     # Check for a site config.
     try:
         site_config = __import__(import_name, fromlist=['config']).config
-    except AttributeError:
-        site_config = None
-
-    # Initialize application.
-    app = Tango(import_name)
-    app.config.from_object('tango.config')
-    app.config['TANGO_VERSION'] = tango.__fullversion__
-    app.config['TANGO_MAINTAINER'] = tango.__contact__
-    if site_config is not None:
         app.config.from_object(site_config)
-    # Build label from config to allow override if so desired.
-    app.config['TANGO_LABEL'] = \
-        tango.build_label(app.config['TANGO_VERSION'],
-                          app.config['TANGO_MAINTAINER'])
+        del site_config
+    except AttributeError:
+        # The site has no config, and that's okay.
+        pass
 
     # Create app context, push it onto request stack for use in initialization.
     ctx = app.request_context(create_environ())
