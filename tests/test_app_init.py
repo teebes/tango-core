@@ -20,6 +20,8 @@ class AppInitTestCase(TestCase):
         response = self.client.get('/static/images/willowtree-avatar.png')
         self.assertEqual(response.status_code, 200)
 
+    def testConfig(self):
+        self.assertEqual(self.app.config['TANGO_BUILD_DIR'], 'simplesite')
 
 if __name__ == '__main__':
     unittest.main()
