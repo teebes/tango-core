@@ -99,10 +99,9 @@ def discover_modules(module):
     :param module: Tango site stash module object
     :type module: module
     """
-    ispackage = module_is_package(module)
-    prefix = module.__name__ + '.'
     yield module
-    if ispackage:
+    if module_is_package(module):
+        prefix = module.__name__ + '.'
         for _, name, _ in pkgutil.walk_packages(module.__path__, prefix):
             yield get_module(name)
 
