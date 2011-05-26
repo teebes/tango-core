@@ -12,7 +12,7 @@ from snapshot import get_snapshot
 
 
 def build_view(app, route):
-    template = route.template
+    template = route.writer_name
     context = route.context
 
     # TODO: Create a tango.writers namespace.
