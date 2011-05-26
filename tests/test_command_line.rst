@@ -56,7 +56,7 @@ Maintainer: ...
 >>>
 
 
-Command line: ``tango build default``
+Command line: ``tango build simplesite``
 
 >>> call('build simplesite')
 Successfully built site: simplesite
@@ -64,12 +64,13 @@ Successfully built site: simplesite
 
 
 Remove build.
+
 >>> os.system('rm -fr simplesite/')
 0
 >>>
 
 
-Command line: ``tango serve default``
+Command line: ``tango serve simplesite``
 
 >>> call('serve simplesite')
 Called tango.app.Tango.run(
@@ -81,14 +82,14 @@ Called tango.app.Tango.run(
 >>>
 
 
-Command line: ``tango snapshot default``
+Command line: ``tango snapshot simplesite``
 
 >>> call('snapshot simplesite')
 Snapshot of full stashable template context: simplesite.dat
 >>>
 
 
-Command line: ``tango serve default`` with snapshot available
+Command line: ``tango serve simplesite`` with snapshot available
 
 >>> call('serve simplesite')
 Using snapshot with stashed template context.
@@ -102,13 +103,14 @@ Called tango.app.Tango.run(
 
 
 Remove snapshot.
+
 >>> import os
 >>> os.system('rm -f simplesite.dat')
 0
 >>>
 
 
-Command line: ``tango shell --no-ipython default``
+Command line: ``tango shell --no-ipython simplesite``
 
 >>> call('shell --no-ipython simplesite')
 ... # doctest:+ELLIPSIS
@@ -116,7 +118,7 @@ Called code.interact('', local={'app': <tango.app.Tango object at 0x...>})
 >>>
 
 
-Command line: ``tango shell default`` with ipython option
+Command line: ``tango shell simplesite`` with ipython option
 
 >>> try:
 ...     import IPython
@@ -133,7 +135,7 @@ Called sh(...global_ns={}, local_ns={'app': <tango.app.Tango object at 0x...>})
 >>>
 
 
-Command line: ``tango shell default`` without ipython installed
+Command line: ``tango shell simplesite`` without ipython installed
 
 >>> try:
 ...     import IPython
@@ -148,6 +150,7 @@ Called code.interact('', local={'app': <tango.app.Tango object at 0x...>})
 
 
 Test for cases where site does not exist.
+
 >>> from minimock import restore
 >>> restore()
 

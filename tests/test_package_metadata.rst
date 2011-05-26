@@ -1,5 +1,5 @@
-Testing: Package Metadata
-=========================
+Testing: Package Metadata of tango package
+==========================================
 
 Verify a version string is available.
 

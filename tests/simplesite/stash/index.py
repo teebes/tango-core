@@ -1,5 +1,5 @@
 """
-site: default
+site: simplesite
 routes:
  - index.html: /
 exports:

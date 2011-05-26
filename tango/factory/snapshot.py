@@ -12,7 +12,7 @@ def build_snapshot(app, directory='.'):
 
 
 def get_snapshot(import_name, directory='.'):
-    "Deserialize a snapshot image of a Tango stash package."
+    "Deserialize a snapshot image of a Tango stash."
     filename = get_snapshot_filename(import_name, directory)
     try:
         return pickle.load(open(filename, 'rb'))
