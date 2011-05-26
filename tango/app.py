@@ -5,6 +5,7 @@ from jinja2 import Environment, PackageLoader, TemplateNotFound
 from werkzeug import LocalProxy as Proxy
 
 import tango
+from tango.writers import TextWriter, JsonWriter
 
 
 __all__ = ['Tango', 'config', 'request', 'Proxy']
@@ -22,6 +23,8 @@ class Tango(Flask):
         __import__(import_name)
         Flask.__init__(self, import_name, *args, **kwargs)
         self.set_default_config()
+        self.writers = {}
+        self.register_default_writers()
 
     def set_default_config(self):
         self.config.from_object('tango.config')
@@ -33,6 +36,33 @@ class Tango(Flask):
         if 'autoescape' not in options:
             options['autoescape'] = self.select_jinja_autoescape
         return Environment(loader=TemplateLoader(self.import_name), **options)
+
+    def register_default_writers(self):
+        self.register_writer('text', TextWriter())
+        self.register_writer('json', JsonWriter())
+
+    def register_writer(self, name, writer):
+        self.writers[name] = writer
+
+    def writer(self, a_callable):
+        """Decorator to register a callable as a response writer.
+
+        The writer must take one argument, a template context dictionary,
+        and should return a unicode instance.
+
+        Test:
+        >>> app = Tango('simplesite')
+        >>> app.writers.get('my_writer')
+        >>> @app.writer
+        ... def my_writer(context):
+        ...     return unicode(context)
+        ...
+        >>> app.writers.get('my_writer') # doctest:+ELLIPSIS
+        <function my_writer at 0x...>
+        >>>
+        """
+        self.register_writer(a_callable.__name__, a_callable)
+        return a_callable
 
     @property
     def version(self):
