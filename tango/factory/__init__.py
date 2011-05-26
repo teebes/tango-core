@@ -4,6 +4,7 @@ from flask import request
 from werkzeug import create_environ
 
 from tango.app import Tango
+from tango.helpers import module_exists
 import tango
 import tango.filters
 
@@ -32,13 +33,8 @@ def build_app(import_name, use_snapshot=True):
     app = Tango(import_name)
 
     # Check for a site config.
-    try:
-        site_config = __import__(import_name, fromlist=['config']).config
-        app.config.from_object(site_config)
-        del site_config
-    except AttributeError:
-        # The site has no config, and that's okay.
-        pass
+    if module_exists(import_name + '.config'):
+        app.config.from_object(import_name + '.config')
 
     # Create app context, push it onto request stack for use in initialization.
     ctx = app.request_context(create_environ())
@@ -53,9 +49,9 @@ def build_app(import_name, use_snapshot=True):
         routes = get_snapshot(import_name)
 
     if routes is None:
-        try:
+        if module_exists(import_name + '.stash'):
             module = __import__(import_name, fromlist=['stash']).stash
-        except:
+        else:
             module = __import__(import_name)
         routes = build_module_routes(module)
     else:

@@ -1,6 +1,7 @@
 "Utilities for internal use within Tango framework."
 
 import imp
+import pkgutil
 import re
 
 
@@ -50,23 +51,51 @@ def module_exists(name):
     """Return True if a module by the given name exists, or False if not.
 
     Example:
+    >>> module_exists('doesnotexist')
+    False
     >>> module_exists('tango')
     True
     >>> module_exists('simplesite')
     True
+    >>> module_exists('simplesite.config')
+    True
     >>> module_exists('simplest')
     True
+    >>> module_exists('simplest.config')
+    False
     >>> module_exists('importerror')
     True
-    >>> module_exists('doesnotexist')
+    >>> module_exists('testsite.stash.package.module')
+    True
+    >>> module_exists('testsite.stash.package.doesnotexist')
+    False
+    >>> module_exists('doesnotexist.module')
     False
     >>>
     """
+    # This function must be very careful not to suppress real ImportErrors.
+    package, submodule = package_submodule(name)
+    if package is None:
+        try:
+            imp.find_module(name)
+        except ImportError:
+            return False
+        return True
+
+    root = root_package(package)
     try:
-        imp.find_module(name)
+        pkg = imp.find_module(root)
     except ImportError:
         return False
-    return True
+
+    pkg = __import__(root)
+    if not module_is_package(pkg):
+        return False
+    for _, x, _ in pkgutil.walk_packages(pkg.__path__, pkg.__name__+'.'):
+        if x == name:
+            return True
+    return False
+
 
 def module_is_package(module):
     """Return True if module is a Python package, or False if not.
@@ -102,6 +131,27 @@ def package_submodule(hierarchical_module_name):
     """
     tokens = hierarchical_module_name.split('.')
     return str('.'.join(tokens[:-1])) or None, str(tokens[-1]) or None
+
+
+def root_package(hierarchical_module_name):
+    """Provide the root package name from a dotted module name.
+
+    Example:
+    >>> root_package('tango.factory')
+    'tango'
+    >>> root_package('tango.helpers')
+    'tango'
+    >>> root_package('testsite')
+    'testsite'
+    >>> root_package('testsite.stash')
+    'testsite'
+    >>> root_package('testsite.stash.package')
+    'testsite'
+    >>> root_package('testsite.stash.package.module')
+    'testsite'
+    >>>
+    """
+    return hierarchical_module_name.split('.')[0]
 
 
 def url_parameter_match(route, parameter):
