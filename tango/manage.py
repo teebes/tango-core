@@ -52,10 +52,10 @@ def command(function):
 
 
 def require_site(function):
-    """Decorator to mark a function as requiring a Tango site package.
+    """Decorator to mark a function as requiring a Tango site module.
 
     The first argument of the decorated function is translated from a Tango
-    package name into a Tango app instance, i.e.
+    import name into a Tango app instance, i.e.
 
     sitename -> Tango('sitename')
     """

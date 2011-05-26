@@ -1,4 +1,4 @@
-"Package to instantiate a Tango object from a Tango stash package."
+"Package to instantiate a Tango object from a Tango stash module."
 
 from flask import jsonify, render_template, request
 from werkzeug import create_environ
@@ -7,7 +7,7 @@ from tango.app import Tango
 import tango
 import tango.filters
 
-from context import build_package_routes
+from context import build_module_routes
 from snapshot import get_snapshot
 
 
@@ -32,8 +32,15 @@ def build_view(app, route):
 def build_app(import_name, use_snapshot=True):
     """Create a Tango application object from a Python import name.
 
-    Example, using the simplesite package in this project:
+    Example, using the simplesite module in this project:
     >>> app = build_app('simplesite')
+    >>> app.url_map # doctest:+NORMALIZE_WHITESPACE
+    Map([[<Rule '/static/<filename>' (HEAD, OPTIONS, GET) -> static>,
+          <Rule '/' (HEAD, OPTIONS, GET) -> />]])
+    >>>
+
+    Example, using the a single module called simplest.py:
+    >>> app = build_app('simplest')
     >>> app.url_map # doctest:+NORMALIZE_WHITESPACE
     Map([[<Rule '/static/<filename>' (HEAD, OPTIONS, GET) -> static>,
           <Rule '/' (HEAD, OPTIONS, GET) -> />]])
@@ -70,8 +77,11 @@ def build_app(import_name, use_snapshot=True):
         routes = get_snapshot(import_name)
 
     if routes is None:
-        package = __import__(import_name, fromlist=['stash']).stash
-        routes = build_package_routes(package)
+        try:
+            module = __import__(import_name, fromlist=['stash']).stash
+        except:
+            module = __import__(import_name)
+        routes = build_module_routes(module)
     else:
         print 'Using snapshot with stashed template context.'
     app.routes = routes

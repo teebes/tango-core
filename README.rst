@@ -26,10 +26,10 @@ Initial focus is on the relationship between templates and data sources.  Tango
 completely separates site content from it's templates.  Template developers
 work in a ``templates`` directory with pure Jinja2 templates and a ``static``
 directory for assets, including but not limited to images, CSS, and JavaScript.
-Backend developers work in a site ``stash`` package which declaratively exports
-content into template contexts for given routes.
+Backend developers work in a site ``stash`` package or module which
+declaratively exports content into template contexts for given routes.
 
-The templates, static assets, and content package are discovered and integrated
+The templates, static assets, and stash modules are discovered and integrated
 by the Tango core with the help of ``config.py`` and headers written in YAML.
 
 See existing sites and examples for more detail.
@@ -107,17 +107,19 @@ Stashing Content
 Stashable content is that which can be fetched up front and served to all
 users.  In a Tango project, this content is scripted in Python modules, which
 have structured metadata written in yaml.  When serving an application, the
-Tango framework walks the ``sitename.stash`` package, building all of the
-application view functions based on the yaml metadata.  Simple Tango sites are
-just a ``stash`` package with a ``templates`` directory.  The simplest Tango
+Tango framework walks the ``sitename.stash`` package or module, building all of
+the application view functions based on the yaml metadata.  Simple Tango sites
+are just a ``stash`` package with a ``templates`` directory.  A simpler Tango
 site is just a ``stash`` package with a config telling Tango to return json.
+The simplest Tango site is single Python module, which is treated as a
+``stash`` and is useful in building light APIs.
 
 
 Dynamic Content
 ---------------
 
 Pure dynamic content and forms require custom view functions.  In this case,
-Tango builds an ``app`` object from the stash package, and this ``app`` object
+Tango builds an ``app`` object from the stash module, and this ``app`` object
 allows for additional routes, view functions, and other features as provided by
 Flask.  Projects without stashable content are effectively just Flask projects
 which use utilities/tools provided by Tango.

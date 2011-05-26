@@ -1,4 +1,4 @@
-"Marshal template contexts exported declaratively by Tango stash packages."
+"Marshal template contexts exported declaratively by Tango stash modules."
 
 import pkgutil
 import warnings
@@ -8,19 +8,20 @@ import yaml
 from tango.app import Route
 from tango.errors import DuplicateContextWarning, DuplicateExportWarning
 from tango.errors import DuplicateRouteWarning, HeaderException
-from tango.helpers import get_module, url_parameter_match
+from tango.helpers import get_module, module_is_package
+from tango.helpers import url_parameter_match
 
 
 HINT_DELIMITER = '<-'
 
 
-def build_package_routes(package, context=True, routing=True):
-    """Pull contexts from site package, discovering modules & parsing headers.
+def build_module_routes(module, context=True, routing=True):
+    """Pull contexts from a Tango stash, discovering modules & parsing headers.
 
     Returns list of Route objects with attributes via structured docstrings.
 
     >>> import testsite.stash
-    >>> build_package_routes(testsite.stash)
+    >>> build_module_routes(testsite.stash)
     ... # doctest: +ELLIPSIS, +NORMALIZE_WHITESPACE
     [<Route: />,
      <Route: /another/<argument>/, argument.html>,
@@ -31,14 +32,14 @@ def build_package_routes(package, context=True, routing=True):
      <Route: /routing/<parameter>/, parameter.html>]
     >>>
 
-    :param package: Tango site stash package object
-    :type package: module
+    :param module: Tango site stash module object
+    :type module: module
     :param context: flag whether to pull template contexts into route objects
     :param routing: flag whether to pull routing iterables into route objects
     """
     route_collection = []
 
-    for module in discover_modules(package):
+    for module in discover_modules(module):
         module_routes = parse_header(module)
         if module_routes is None:
             continue
@@ -98,17 +99,12 @@ def discover_modules(module):
     :param module: Tango site stash module object
     :type module: module
     """
-    if hasattr(module, '__path__'):
-        path = module.__path__
-        ispackage = True
-    else:
-        path = module.__file__
-        ispackage = False
+    ispackage = module_is_package(module)
     prefix = module.__name__ + '.'
     onerror = lambda args: None
     yield module
     if ispackage:
-        for _, name, _ in pkgutil.walk_packages(path, prefix, onerror):
+        for _, name, _ in pkgutil.walk_packages(module.__path__, prefix, onerror):
             yield get_module(name)
 
 
@@ -217,7 +213,7 @@ def pull_routing(route_objs):
 def parse_header(module):
     """Parse module header for template context metadata.
 
-    Modules in the site stash package must have these fields in the header:
+    Modules in the site stash must have these fields in the header:
 
     * site
     * routes
@@ -308,7 +304,7 @@ def parse_header(module):
     HeaderException: metadata docstring must be yaml or doc, but not both.
     >>>
 
-    :param module: Tango site stash package module object
+    :param module: Tango site stash module object
     :type module: module
     """
     try:
