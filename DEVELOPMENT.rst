@@ -20,9 +20,7 @@ Todos:
 * TODO: add simple unit test for simplesite '/' path.
 * TODO: support app.TAB tab completion with code.interact
 * TODO: test empty and sparse site packages.
-* TODO: Support regular expression route matches, using 'match' directive. (?)
-  This matches routes.py, not request URLs, to support exports across an
-  entire area of the app.
+* TODO: Support pattern matching in routes.
 * TODO: Build a utility to determine if a link is internal/external to app.
 * TODO: Provide an app-building option which only hits a specific context
   module, for testing data/template integration in isolation.
@@ -42,9 +40,6 @@ Open development topics:
   former can be slow (unless snapshots come through here).  In either case,
   there is a sense of hot-swapping content of production applications.
   This is where much of tango's optimization takes place.
-* If tango handles multiple app objects and static content, Flask's development
-  server isn't going to suffice.  What tools should ``tango serve`` use to
-  enable local development?
 
 
 Tool ideas:
@@ -52,9 +47,10 @@ Tool ideas:
 * ``tango report <site>`` - where template devs, data devs, & managers meet
 
  * routes
- * static exports (hint is 'constant')
- * variable exports (displaying hints)
- * callable exports (hint is function signature + docstring)
+ * static exports
+ * variable exports
+ * callable exports
+ * provide hints based on type of export
  * templates (displaying routes)
  * template variables
  * missing templates
@@ -80,6 +76,6 @@ Example header::
      - match: /pages/.*
     exports:
      - title: Page # static export
-     - content <- string # programmatic export with developer type hint
+     - content # programmatic export
     routing:
-     - title: get_page_titles # iterable or callable which returns an iterable
+     - title: get_page_titles # iterable
