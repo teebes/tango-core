@@ -1,4 +1,4 @@
-"Snapshot images of Tango content packages to speed up development cycles."
+"Snapshot images of Tango stash packages to speed up development cycles."
 
 import os.path
 import cPickle as pickle
@@ -12,7 +12,7 @@ def build_snapshot(app, directory='.'):
 
 
 def get_snapshot(import_name, directory='.'):
-    "Deserialize a snapshot image of a Tango context package."
+    "Deserialize a snapshot image of a Tango stash package."
     filename = get_snapshot_filename(import_name, directory)
     try:
         return pickle.load(open(filename, 'rb'))

@@ -26,8 +26,8 @@ def get_module(name):
     hierarchical module names (names containing dots).
 
     Example:
-    >>> get_module('simplesite.content') # doctest:+ELLIPSIS
-    <module 'simplesite.content' from '...'>
+    >>> get_module('simplesite.stash') # doctest:+ELLIPSIS
+    <module 'simplesite.stash' from '...'>
     >>> get_module('simplesite') # doctest:+ELLIPSIS
     <module 'simplesite' from '...'>
     >>> get_module('testsite') # doctest:+ELLIPSIS

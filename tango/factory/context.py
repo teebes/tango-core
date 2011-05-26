@@ -1,4 +1,4 @@
-"Marshal template contexts exported declaratively by Tango content packages."
+"Marshal template contexts exported declaratively by Tango stash packages."
 
 import pkgutil
 import re
@@ -20,8 +20,8 @@ def build_package_routes(package, context=True, routing=True):
 
     Returns list of Route objects with attributes via structured docstrings.
 
-    >>> import testsite.content
-    >>> build_package_routes(testsite.content)
+    >>> import testsite.stash
+    >>> build_package_routes(testsite.stash)
     ... # doctest: +ELLIPSIS, +NORMALIZE_WHITESPACE
     [<Route: />,
      <Route: /another/<argument>/, argument.html>,
@@ -32,7 +32,7 @@ def build_package_routes(package, context=True, routing=True):
      <Route: /routing/<parameter>/, parameter.html>]
     >>>
 
-    :param package: Tango site content package object
+    :param package: Tango site stash package object
     :type package: module
     :param context: flag whether to pull template contexts into route objects
     :param routing: flag whether to pull routing iterables into route objects
@@ -72,31 +72,31 @@ def build_package_routes(package, context=True, routing=True):
 
 
 def discover_modules(module):
-    """Discover content modules, returning iterable of module objects.
+    """Discover stash modules, returning iterable of module objects.
 
     Note that both packages and modules result in module objects.
     This searches all subpackages and includes __init__ modules.
 
     Example:
-    >>> import testsite.content
-    >>> discover_modules(testsite.content) # doctest:+ELLIPSIS
+    >>> import testsite.stash
+    >>> discover_modules(testsite.stash) # doctest:+ELLIPSIS
     <generator object discover_modules at 0x...>
-    >>> list(discover_modules(testsite.content))
+    >>> list(discover_modules(testsite.stash))
     ... # doctest: +ELLIPSIS, +NORMALIZE_WHITESPACE
-    [<module 'testsite.content' from '...'>,
-     <module 'testsite.content.index' from '...'>,
-     <module 'testsite.content.multiple' from '...'>,
-     <module 'testsite.content.package' from '...'>,
-     <module 'testsite.content.package.module' from '...'>]
+    [<module 'testsite.stash' from '...'>,
+     <module 'testsite.stash.index' from '...'>,
+     <module 'testsite.stash.multiple' from '...'>,
+     <module 'testsite.stash.package' from '...'>,
+     <module 'testsite.stash.package.module' from '...'>]
     >>>
 
     Modules are supported in addition to packages.
-    >>> import testsite.content.index
-    >>> list(discover_modules(testsite.content.index)) # doctest:+ELLIPSIS
-    [<module 'testsite.content.index' from '...'>]
+    >>> import testsite.stash.index
+    >>> list(discover_modules(testsite.stash.index)) # doctest:+ELLIPSIS
+    [<module 'testsite.stash.index' from '...'>]
     >>>
 
-    :param module: Tango site content module object
+    :param module: Tango site stash module object
     :type module: module
     """
     if hasattr(module, '__path__'):
@@ -117,7 +117,7 @@ def pull_context(route_objs):
     """Pull dict template context from module using Routes parsed from header.
 
     Examples:
-    >>> from testsite.content import index
+    >>> from testsite.stash import index
     >>> routes = pull_context(parse_header(index))
     >>> routes
     [<Route: /, index.html>]
@@ -125,7 +125,7 @@ def pull_context(route_objs):
     {'title': 'Tango'}
     >>>
 
-    >>> from testsite.content import multiple
+    >>> from testsite.stash import multiple
     >>> routes = pull_context(parse_header(multiple))
     >>> routes
     [<Route: /route1>, <Route: /route2>]
@@ -163,7 +163,7 @@ def pull_routing(route_objs):
     """Pull routing iterables from module using Routes parsed from header.
 
     Examples:
-    >>> from testsite.content import index
+    >>> from testsite.stash import index
     >>> routes = pull_routing(parse_header(index))
     >>> routes
     [<Route: /, index.html>]
@@ -173,7 +173,7 @@ def pull_routing(route_objs):
     {}
     >>>
 
-    >>> from testsite.content import routing
+    >>> from testsite.stash import routing
     >>> routes = pull_routing(parse_header(routing))
     >>> len(routes)
     3
@@ -218,7 +218,7 @@ def pull_routing(route_objs):
 def parse_header(module):
     """Parse module header for template context metadata.
 
-    Modules in the site content package must have these fields in the header:
+    Modules in the site stash package must have these fields in the header:
 
     * site
     * routes
@@ -229,7 +229,7 @@ def parse_header(module):
     Return None if module has no docstring or defines no routes.
 
     Examples:
-    >>> from testsite.content import index
+    >>> from testsite.stash import index
     >>> routes = parse_header(index)
     >>> routes
     [<Route: /, index.html>]
@@ -243,7 +243,7 @@ def parse_header(module):
     >>> route.context
     >>>
 
-    >>> from testsite.content import multiple
+    >>> from testsite.stash import multiple
     >>> routes = parse_header(multiple)
     >>> routes
     [<Route: /route1>, <Route: /route2>]
@@ -255,7 +255,7 @@ def parse_header(module):
     {'count': 'number', 'name': 'string', 'sequence': '[number]'}
     >>>
 
-    >>> from testsite.content.package import module
+    >>> from testsite.stash.package import module
     >>> routes = parse_header(module)
     >>> routes
     [<Route: />]
@@ -268,7 +268,7 @@ def parse_header(module):
     []
     >>>
 
-    >>> from testsite.content import routing
+    >>> from testsite.stash import routing
     >>> routes = parse_header(routing)
     >>> routes # doctest:+NORMALIZE_WHITESPACE
     [<Route: /another/<argument>/, argument.html>,
@@ -292,24 +292,24 @@ def parse_header(module):
     ['purpose']
     >>>
 
-    >>> import testsite.content.package
-    >>> parse_header(testsite.content.package) is None
+    >>> import testsite.stash.package
+    >>> parse_header(testsite.stash.package) is None
     True
     >>>
 
-    >>> from testsite.content import dummy
+    >>> from testsite.stash import dummy
     >>> parse_header(dummy) is None
     True
     >>>
 
-    >>> from errorsite.content import hybrid
+    >>> from errorsite.stash import hybrid
     >>> parse_header(hybrid)
     Traceback (most recent call last):
       ...
     HeaderException: metadata docstring must be yaml or doc, but not both.
     >>>
 
-    :param module: Tango site content package module object
+    :param module: Tango site stash package module object
     :type module: module
     """
     try:

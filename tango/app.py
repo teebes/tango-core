@@ -28,7 +28,7 @@ class Tango(Flask):
 
 
 class Route(object):
-    "Route metadata for a Tango context module."
+    "Route metadata for a Tango stashable context module."
 
     # required site field in the header
     site = None
@@ -51,10 +51,10 @@ class Route(object):
     # dict of url parameter names & export variables to import for routing
     routing_exports = None
 
-    # context as exported by context module, for template or serialization
+    # context as exported by stashable module, for template or serialization
     context = None
 
-    # modules from which this content module was constructed
+    # modules from which this stash module was constructed
     modules = None
 
     def __init__(self, site, route, exports, static=None, template=None,

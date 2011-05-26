@@ -1,4 +1,4 @@
-"Tools for generating context content from existing (X)HTML documents."
+"Tools for generating context from existing (X)HTML documents."
 
 import urllib2
 from urllib import quote
@@ -43,7 +43,7 @@ def get_with_selector(content, selector, text_only=False, content_type='string',
 
     If text_only is true, only the contents of the matched element will be
     returned
-    
+
     If content_type is `url, content will be treated as a URL and its contents
     will be loaded and processed with with the selector
 
@@ -63,7 +63,7 @@ def get_with_selector(content, selector, text_only=False, content_type='string',
         tree = etree.parse(urllib2.urlopen(content), loaded_parser)
     else:
         raise Exception("Invalid content type '%s'" % content_type)
-        
+
     cs = CSSSelector(selector)
     output = u''
     for branch in cs(tree):

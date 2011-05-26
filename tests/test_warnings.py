@@ -25,7 +25,7 @@ class FactoryWarningTestCase(TestCase):
 
     def testDuplicateContextWarning(self):
         with warnings.catch_warnings(record=True) as w:
-            context.build_package_routes(warningsite.content.context)
+            context.build_package_routes(warningsite.stash.context)
             assert len(w) == 1
             assert issubclass(w[0].category, DuplicateContextWarning)
             assert 'duplicate context' in str(w[0].message)
@@ -33,7 +33,7 @@ class FactoryWarningTestCase(TestCase):
 
     def testDuplicateRouteWarning(self):
         with warnings.catch_warnings(record=True) as w:
-            context.build_package_routes(warningsite.content.route)
+            context.build_package_routes(warningsite.stash.route)
             assert len(w) == 1
             assert issubclass(w[0].category, DuplicateRouteWarning)
             assert 'duplicate route' in str(w[0].message)
@@ -41,7 +41,7 @@ class FactoryWarningTestCase(TestCase):
 
     def testDuplicateExportWarning(self):
         with warnings.catch_warnings(record=True) as w:
-            context.build_package_routes(warningsite.content.export)
+            context.build_package_routes(warningsite.stash.export)
             assert len(w) == 1
             assert issubclass(w[0].category, DuplicateExportWarning)
             assert 'duplicate export' in str(w[0].message)
@@ -49,7 +49,7 @@ class FactoryWarningTestCase(TestCase):
 
     def testDuplicateMultipleWarnings(self):
         with warnings.catch_warnings(record=True) as w:
-            context.build_package_routes(warningsite.content)
+            context.build_package_routes(warningsite.stash)
             assert len(w) == 3
 
 

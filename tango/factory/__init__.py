@@ -1,4 +1,4 @@
-"Package to instantiate a Tango object from a Tango site package."
+"Package to instantiate a Tango object from a Tango stash package."
 
 from flask import jsonify, render_template, request
 from werkzeug import create_environ
@@ -32,7 +32,7 @@ def build_view(app, route):
 def build_app(import_name, use_snapshot=True):
     """Create a Tango application object from a Python import name.
 
-    Example, using the default site package in this project:
+    Example, using the simplesite package in this project:
     >>> app = build_app('simplesite')
     >>> app.config['SITE']
     'simplesite'
@@ -62,10 +62,10 @@ def build_app(import_name, use_snapshot=True):
         routes = get_snapshot(import_name)
 
     if routes is None:
-        package = __import__(import_name, fromlist=['content']).content
+        package = __import__(import_name, fromlist=['stash']).stash
         routes = build_package_routes(package)
     else:
-        print 'Using template context snapshot.'
+        print 'Using snapshot with stashed template context.'
     app.routes = routes
 
     # Stitch together context, template, and path.

@@ -39,7 +39,7 @@ Command line: ``tango``
 
 >>> call()
 ... # doctest:+NORMALIZE_WHITESPACE
-  snapshot  Build context from a Tango site package and store it into an image file.
+  snapshot  Pull context from a stashable Tango site and store it into an image file.
   shell     Runs a Python shell inside Tango application context.
   serve     Run a Tango site on the local machine, for development.
   version   Display this version of Tango.
@@ -84,14 +84,14 @@ Called tango.app.Tango.run(
 Command line: ``tango snapshot default``
 
 >>> call('snapshot simplesite')
-Snapshot of full template context: simplesite.dat
+Snapshot of full stashable template context: simplesite.dat
 >>>
 
 
 Command line: ``tango serve default`` with snapshot available
 
 >>> call('serve simplesite')
-Using template context snapshot.
+Using snapshot with stashed template context.
 Called tango.app.Tango.run(
     debug=True,
     host='127.0.0.1',
