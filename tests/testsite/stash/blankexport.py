@@ -1,7 +1,7 @@
 """
 site: test
 routes:
- - /plain/<routing>/
+ - /blank/export/
 exports:
-routing:
+ -
 """

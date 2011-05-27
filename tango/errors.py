@@ -18,7 +18,11 @@ class DuplicateRouteWarning(DuplicateWarning):
 
 
 class DuplicateExportWarning(DuplicateWarning):
-    "Route is declared multiple times in a module header."
+    "Export is declared multiple times in a module header."
+
+
+class DuplicateRoutingWarning(DuplicateWarning):
+    "Routing is declared multiple times in a module header."
 
 
 class DuplicateContextWarning(DuplicateWarning):

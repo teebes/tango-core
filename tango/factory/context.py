@@ -7,7 +7,8 @@ import yaml
 
 from tango.app import Route
 from tango.errors import DuplicateContextWarning, DuplicateExportWarning
-from tango.errors import DuplicateRouteWarning, HeaderException
+from tango.errors import DuplicateRouteWarning, DuplicateRoutingWarning
+from tango.errors import HeaderException
 from tango.helpers import get_module, module_is_package
 from tango.helpers import url_parameter_match
 
@@ -25,8 +26,12 @@ def build_module_routes(module, context=True, routing=True):
     ... # doctest: +ELLIPSIS, +NORMALIZE_WHITESPACE
     [<Route: />,
      <Route: /another/<argument>/, argument.html>,
+     <Route: /blank/export/>,
+     <Route: /blank/routing/>,
      <Route: /files/page-<parameter>.html, parameter.html>,
      <Route: /norouting/<parameter>/, parameter.html>,
+     <Route: /plain/<routing>/>,
+     <Route: /plain/exports/>,
      <Route: /route1>,
      <Route: /route2>,
      <Route: /routing/<parameter>/, parameter.html>]
@@ -41,7 +46,7 @@ def build_module_routes(module, context=True, routing=True):
 
     for module in discover_modules(module):
         module_routes = parse_header(module)
-        if module_routes is None:
+        if not module_routes:
             continue
         if context:
             module_routes = pull_context(module_routes)
@@ -128,6 +133,12 @@ def pull_context(route_objs):
     {'count': 2, 'name': 'multiple.py context', 'sequence': [4, 5, 6]}
     >>>
 
+    >>> pull_context([]) is None
+    True
+    >>> pull_context(None) is None
+    True
+    >>>
+
     :param route_objs: list of Route instances, provided by parse_header
     """
     if route_objs is None or len(route_objs) == 0:
@@ -182,6 +193,12 @@ def pull_routing(route_objs):
     '/routing/<parameter>/'
     >>> routes[2].routing
     {'parameter': [0, 1, 2]}
+    >>>
+
+    >>> pull_routing([]) is None
+    True
+    >>> pull_routing(None) is None
+    True
     >>>
 
     :param route_objs: list of Route instances, provided by parse_header
@@ -327,6 +344,14 @@ def parse_header(module):
     rawrouting = header.get('routing', [])
     static = []
 
+    # Ensure an iterable on raw values.
+    if rawroutes is None:
+        rawroutes = []
+    if rawexports is None:
+        rawexports = []
+    if rawrouting is None:
+        rawrouting = []
+
     # Coerce routes into a list.
     if isinstance(rawroutes, basestring):
         rawroutes = [rawroutes]
@@ -343,6 +368,8 @@ def parse_header(module):
     export_items = []
     export_static_names = set()
     for exportstmt in rawexports:
+        if exportstmt is None:
+            continue
         if isinstance(exportstmt, basestring):
             # Export statement includes a type hint.
             tokens = exportstmt.split(HINT_DELIMITER)
@@ -375,7 +402,7 @@ def parse_header(module):
         if routing_exports.has_key(url_parameter):
             msg = '{0} duplicate routing export: {1}'
             msg = msg.format(module.__name__, name)
-            warnings.warn(msg, DuplicateExportWarning)
+            warnings.warn(msg, DuplicateRoutingWarning)
         routing_exports[url_parameter] = export_variable
 
     # Build out list of Route instances.
