@@ -1,10 +1,10 @@
 """
 site: test
 routes:
- - parameter.html:
+ - template:parameter.html:
    - /routing/<parameter>/
    - /files/page-<parameter>.html
- - argument.html:
+ - template:argument.html:
    - /another/<argument>/
 exports:
  - purpose: Show that route parameters are implicitly added to context.

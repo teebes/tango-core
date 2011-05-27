@@ -1,8 +1,7 @@
 "Core Tango classes for creating applications from Tango sites."
 
 from flask import Flask, current_app, request
-from tango.custom.jinja2 import Environment
-from jinja2 import PackageLoader, TemplateNotFound
+from jinja2 import Environment, PackageLoader, TemplateNotFound
 from werkzeug import LocalProxy as Proxy
 
 import tango
@@ -66,11 +65,15 @@ class Tango(Flask):
         return a_callable
 
     def get_writer(self, name):
+        if name is None:
+            return self.config['DEFAULT_WRITER']
         writer = self.writers.get(name)
         if writer is not None:
             return writer
-        if self.jinja_env.has_template(name):
-            writer = TemplateWriter(name)
+        # A writer prefixed with 'template:' is for a template.
+        if name.startswith('template:'):
+            template_name = name.replace('template:', '', 1)
+            writer = TemplateWriter(template_name)
             self.register_writer(name, writer)
             return writer
         return self.config['DEFAULT_WRITER']

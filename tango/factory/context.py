@@ -25,16 +25,16 @@ def build_module_routes(module, context=True, routing=True):
     >>> build_module_routes(testsite.stash)
     ... # doctest: +ELLIPSIS, +NORMALIZE_WHITESPACE
     [<Route: />,
-     <Route: /another/<argument>/, argument.html>,
+     <Route: /another/<argument>/, template:argument.html>,
      <Route: /blank/export/>,
      <Route: /blank/routing/>,
-     <Route: /files/page-<parameter>.html, parameter.html>,
-     <Route: /norouting/<parameter>/, parameter.html>,
+     <Route: /files/page-<parameter>.html, template:parameter.html>,
+     <Route: /norouting/<parameter>/, template:parameter.html>,
      <Route: /plain/<routing>/>,
      <Route: /plain/exports/>,
      <Route: /route1>,
      <Route: /route2>,
-     <Route: /routing/<parameter>/, parameter.html>]
+     <Route: /routing/<parameter>/, template:parameter.html>]
     >>>
 
     :param module: Tango site stash module object
@@ -118,7 +118,7 @@ def pull_context(route_objs):
     >>> from testsite.stash import index
     >>> routes = pull_context(parse_header(index))
     >>> routes
-    [<Route: /, index.html>]
+    [<Route: /, template:index.html>]
     >>> routes[0].context
     {'title': 'Tango'}
     >>>
@@ -170,7 +170,7 @@ def pull_routing(route_objs):
     >>> from testsite.stash import index
     >>> routes = pull_routing(parse_header(index))
     >>> routes
-    [<Route: /, index.html>]
+    [<Route: /, template:index.html>]
     >>> routes[0].routing_exports
     {}
     >>> routes[0].routing
@@ -242,7 +242,7 @@ def parse_header(module):
     >>> from testsite.stash import index
     >>> routes = parse_header(index)
     >>> routes
-    [<Route: /, index.html>]
+    [<Route: /, template:index.html>]
     >>> route = routes[0]
     >>> route.exports
     {'title': 'Tango'}
@@ -281,9 +281,9 @@ def parse_header(module):
     >>> from testsite.stash import routing
     >>> routes = parse_header(routing)
     >>> routes # doctest:+NORMALIZE_WHITESPACE
-    [<Route: /another/<argument>/, argument.html>,
-     <Route: /files/page-<parameter>.html, parameter.html>,
-     <Route: /routing/<parameter>/, parameter.html>]
+    [<Route: /another/<argument>/, template:argument.html>,
+     <Route: /files/page-<parameter>.html, template:parameter.html>,
+     <Route: /routing/<parameter>/, template:parameter.html>]
     >>> routes[0].routing_exports
     {'argument': 'arguments'}
     >>> routes[1].routing_exports
