@@ -8,8 +8,8 @@ from tango.helpers import module_exists
 import tango
 import tango.filters
 
-from context import build_module_routes
-from snapshot import get_snapshot
+from tango.factory.context import build_module_routes
+from tango.factory.snapshot import get_snapshot
 
 
 def build_app(import_name, use_snapshot=True):
