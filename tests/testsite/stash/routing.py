@@ -13,7 +13,5 @@ routing:
  - argument: arguments
 """
 
-# TODO: Build a full test for this site. (Basico)
-
 parameters = range(3) # a list
 arguments = xrange(3,6) # a lazy iterable
