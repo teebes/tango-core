@@ -66,7 +66,7 @@ def build(site, output=None):
     "Build a Tango site into a collection of static files."
     app = build_app(site)
     build_static_site(app, output=output)
-    output_dir = app.config['FREEZER_DESTINATION']
+    output_dir = app.config['TANGO_BUILD_DIR']
     pwd = os.path.abspath(os.path.curdir)
     if not pwd.endswith('/'):
         pwd += '/'

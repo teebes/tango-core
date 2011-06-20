@@ -33,6 +33,7 @@ def build_static_site(app, output=None):
     # Ensure output directory is an absolute path.
     output = os.path.abspath(output)
     app.config['FREEZER_DESTINATION'] = output
+    app.config['TANGO_BUILD_DIR'] = app.config['FREEZER_DESTINATION']
     if not os.path.exists(output):
         os.makedirs(output)
     freezer = Freezer(app)
