@@ -60,12 +60,28 @@ Command line: ``tango build simplesite``
 
 >>> call('build simplesite')
 Successfully built site: simplesite
+Output directory: simplesite
 >>>
 
 
 Remove build.
 
 >>> os.system('rm -fr simplesite/')
+0
+>>>
+
+
+Command line: ``tango build simplesite -o myoutput/dir``
+
+>>> call('build simplesite -o myoutput/dir')
+Successfully built site: simplesite
+Output directory: myoutput/dir
+>>>
+
+
+Remove build.
+
+>>> os.system('rm -fr myoutput/dir/')
 0
 >>>
 
