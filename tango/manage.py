@@ -1,6 +1,5 @@
 "Console entry point and management & development tasks for Tango framework."
 
-from functools import update_wrapper
 import os
 import sys
 
@@ -49,21 +48,6 @@ def command(function):
     return function
 
 
-def require_site(function):
-    """Decorator to mark a function as requiring a Tango site module.
-
-    The first argument of the decorated function is translated from a Tango
-    import name into a Tango app instance, i.e.
-
-    sitename -> Tango('sitename')
-    """
-    def wrapper(site, *args, **kwargs):
-        app = build_app(site)
-        return function(app, *args, **kwargs)
-    update_wrapper(wrapper, function)
-    return wrapper
-
-
 @command
 def version():
     'Display this version of Tango.'
@@ -78,11 +62,10 @@ def snapshot(site):
 
 
 @command
-@require_site
-def build(app):
+def build(site, output=None):
     "Build a Tango site into a collection of static files."
-    # TODO: Provide for configurable output directory. (Basico)
-    build_static_site(app)
+    app = build_app(site)
+    build_static_site(app, output=output)
     print 'Successfully built site:', app.import_name
 
 
