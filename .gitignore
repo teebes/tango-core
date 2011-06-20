@@ -16,6 +16,7 @@
 HACKING.html
 local_config.py
 __MACOSX
+/myoutput/
 output/
 *.pyc
 README.html

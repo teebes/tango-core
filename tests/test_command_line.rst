@@ -81,7 +81,7 @@ Output directory: myoutput/dir
 
 Remove build.
 
->>> os.system('rm -fr myoutput/dir/')
+>>> os.system('rm -fr myoutput/')
 0
 >>>
 
