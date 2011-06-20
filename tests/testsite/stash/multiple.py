@@ -1,8 +1,8 @@
 """
 site: test
 routes:
- - /route1
- - /route2
+ - /route1/
+ - /route2/
 exports:
  - name <- string
  - count <- number

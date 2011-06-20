@@ -32,8 +32,8 @@ def build_module_routes(module, context=True, routing=True):
      <Route: /norouting/<parameter>/, template:parameter.html>,
      <Route: /plain/<routing>/>,
      <Route: /plain/exports/>,
-     <Route: /route1>,
-     <Route: /route2>,
+     <Route: /route1/>,
+     <Route: /route2/>,
      <Route: /routing/<parameter>/, template:parameter.html>]
     >>>
 
@@ -126,7 +126,7 @@ def pull_context(route_objs):
     >>> from testsite.stash import multiple
     >>> routes = pull_context(parse_header(multiple))
     >>> routes
-    [<Route: /route1>, <Route: /route2>]
+    [<Route: /route1/>, <Route: /route2/>]
     >>> routes[0].context == routes[1].context
     True
     >>> routes[0].context
@@ -256,7 +256,7 @@ def parse_header(module):
     >>> from testsite.stash import multiple
     >>> routes = parse_header(multiple)
     >>> routes
-    [<Route: /route1>, <Route: /route2>]
+    [<Route: /route1/>, <Route: /route2/>]
     >>> [route.site for route in routes]
     ['test', 'test']
     >>> routes[0].exports == routes[1].exports
