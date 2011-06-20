@@ -7,7 +7,7 @@ from flaskext.frozen import Freezer
 from tango.errors import ConfigurationError
 
 
-def build_static_site(app, output=None):
+def build_static_site(app, output=None, force_overwrite=False):
     """Build a Tango site into a collection of static files, based on routing.
 
     Uses Frozen-Flask to build the site.
@@ -34,6 +34,8 @@ def build_static_site(app, output=None):
     output = os.path.abspath(output)
     app.config['FREEZER_DESTINATION'] = output
     app.config['TANGO_BUILD_DIR'] = app.config['FREEZER_DESTINATION']
+    # Forked Frozen-Flask to add overwrite option, sent pull request.
+    app.config['FREEZER_OVERWRITE'] = force_overwrite
     if not os.path.exists(output):
         os.makedirs(output)
     freezer = Freezer(app)

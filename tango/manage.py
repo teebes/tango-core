@@ -62,10 +62,10 @@ def snapshot(site):
 
 
 @command
-def build(site, output=None):
+def build(site, output=None, force_overwrite=False):
     "Build a Tango site into a collection of static files."
     app = build_app(site)
-    build_static_site(app, output=output)
+    build_static_site(app, output=output, force_overwrite=force_overwrite)
     output_dir = app.config['TANGO_BUILD_DIR']
     pwd = os.path.abspath(os.path.curdir)
     if not pwd.endswith('/'):
