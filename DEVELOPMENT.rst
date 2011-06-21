@@ -58,7 +58,7 @@ Tool ideas:
  * static exports
  * variable exports
  * callable exports
- * provide hints based on type of export
+ * provide hints by inspecting exports
  * templates (displaying routes)
  * template variables
  * missing templates

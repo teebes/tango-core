@@ -111,7 +111,8 @@ class Route(object):
     # required url rule/path of this route
     rule = None
 
-    # required dict of variable names & hints to import into route's context
+    # required dict of variable names & values imported into route's context
+    # an export's value is None when it has not yet been imported
     exports = None
 
     # list of exports which are statically set in header

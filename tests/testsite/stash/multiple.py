@@ -4,9 +4,9 @@ routes:
  - /route1/
  - /route2/
 exports:
- - name <- string
- - count <- number
- - sequence <- [number]
+ - name
+ - count
+ - sequence
 """
 
 name = 'multiple.py context'

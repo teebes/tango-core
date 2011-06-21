@@ -13,9 +13,6 @@ from tango.helpers import get_module, module_is_package
 from tango.helpers import url_parameter_match
 
 
-HINT_DELIMITER = '<-'
-
-
 def build_module_routes(module, context=True, routing=True):
     """Pull contexts from a Tango stash, discovering modules & parsing headers.
 
@@ -262,7 +259,7 @@ def parse_header(module):
     >>> routes[0].exports == routes[1].exports
     True
     >>> routes[0].exports
-    {'count': 'number', 'name': 'string', 'sequence': '[number]'}
+    {'count': None, 'name': None, 'sequence': None}
     >>>
 
     >>> from testsite.stash.package import module
@@ -364,20 +361,16 @@ def parse_header(module):
     else:
         rawexports = list(rawexports)
 
-    # Collect export (name, hint) pairs, noting static exceptions.
+    # Collect export names and static values.
     export_items = []
     export_static_names = set()
     for exportstmt in rawexports:
         if exportstmt is None:
             continue
         if isinstance(exportstmt, basestring):
-            # Export statement includes a type hint.
-            tokens = exportstmt.split(HINT_DELIMITER)
-            if len(tokens) > 1:
-                hint = HINT_DELIMITER.join(tokens[1:]).strip()
-            else:
-                hint = None
-            export_items.append((tokens[0].strip(), hint))
+            # Export statement does not have a static value.
+            name = exportstmt
+            export_items.append((name, None))
         else:
             # Export statement resulted in a dict of name-to-static exports.
             for name in exportstmt:
@@ -386,12 +379,12 @@ def parse_header(module):
 
     # Test for and warn on export duplicates while constructing exports dict.
     for item in export_items:
-        name, hint = item
+        name, value = item
         if exports.has_key(name):
             msg = '{0} duplicate export: {1}'
             msg = msg.format(module.__name__, name)
             warnings.warn(msg, DuplicateExportWarning)
-        exports[name] = hint
+        exports[name] = value
     static = list(export_static_names)
 
     # Test for and warn on routing export duplicates while constructing dict.
