@@ -5,6 +5,7 @@ from jinja2 import Environment, PackageLoader, TemplateNotFound
 from werkzeug import LocalProxy as Proxy
 
 import tango
+from tango.errors import NoSuchWriterException
 from tango.writers import TemplateWriter, TextWriter, JsonWriter
 
 
@@ -65,6 +66,7 @@ class Tango(Flask):
         return a_callable
 
     def get_writer(self, name):
+        # Do not register writer for None, in case of config change.
         if name is None:
             return self.config['DEFAULT_WRITER']
         writer = self.writers.get(name)
@@ -76,7 +78,7 @@ class Tango(Flask):
             writer = TemplateWriter(template_name)
             self.register_writer(name, writer)
             return writer
-        return self.config['DEFAULT_WRITER']
+        raise NoSuchWriterException(name)
 
     def build_view(self, route):
         writer = self.get_writer(route.writer_name)

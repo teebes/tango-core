@@ -1,6 +1,10 @@
 "Errors and warnings reported by the Tango framework."
 
 
+class NoSuchWriterException(Exception):
+    "Error when getting a response writer by a name that is not registered."
+
+
 class HeaderException(Exception):
     "Error in parsing a module's metadata docstring."
 
