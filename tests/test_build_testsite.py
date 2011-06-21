@@ -10,7 +10,7 @@ from tango.build import build_static_site
 from tango.factory import build_app
 
 
-class AppInitTestCase(TestCase):
+class BuildTestsiteTestCase(TestCase):
 
     def create_app(self):
         output = tempfile.mkdtemp()
@@ -27,14 +27,19 @@ class AppInitTestCase(TestCase):
     def tearDown(self):
         shutil.rmtree(self.app.config['TANGO_BUILD_DIR'])
 
+    def assert_no_diffs_in_dircmp(self, dircmp_obj):
+        self.assertEqual(dircmp_obj.left_only, [])
+        self.assertEqual(dircmp_obj.right_only, [])
+        self.assertEqual(dircmp_obj.diff_files, [])
+        for subdircmp_obj in dircmp_obj.subdirs.itervalues():
+            self.assert_no_diffs_in_dircmp(subdircmp_obj)
+
+
     def test_consistent_build(self):
-        # TODO: Add recursive directory testing.
         orig = os.path.dirname(os.path.abspath(__file__)) + '/testsite-build'
         dest = self.app.config['TANGO_BUILD_DIR']
-        diff = filecmp.dircmp(orig, dest)
-        self.assertEqual(diff.left_only, [])
-        self.assertEqual(diff.right_only, [])
-        self.assertEqual(diff.diff_files, [])
+        dircmp_obj = filecmp.dircmp(orig, dest)
+        self.assert_no_diffs_in_dircmp(dircmp_obj)
 
 
 if __name__ == '__main__':
