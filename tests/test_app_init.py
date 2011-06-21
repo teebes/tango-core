@@ -16,11 +16,11 @@ class AppInitTestCase(TestCase):
     def tearDown(self):
         pass
 
-    def testStatic(self):
+    def test_static(self):
         response = self.client.get('/static/images/willowtree-avatar.png')
         self.assertEqual(response.status_code, 200)
 
-    def testConfig(self):
+    def test_config(self):
         self.assertEqual(self.app.config['TANGO_BUILD_DIR'], 'simplesite')
 
 if __name__ == '__main__':

@@ -23,7 +23,7 @@ class FactoryWarningTestCase(TestCase):
     def tearDown(self):
         warnings.simplefilter('ignore')
 
-    def testDuplicateContextWarning(self):
+    def test_duplicate_context_warning(self):
         with warnings.catch_warnings(record=True) as w:
             context.build_module_routes(warningsite.stash.context)
             assert len(w) == 1
@@ -31,7 +31,7 @@ class FactoryWarningTestCase(TestCase):
             assert 'duplicate context' in str(w[0].message)
 
 
-    def testDuplicateRouteWarning(self):
+    def test_duplicate_route_warning(self):
         with warnings.catch_warnings(record=True) as w:
             context.build_module_routes(warningsite.stash.route)
             assert len(w) == 1
@@ -39,7 +39,7 @@ class FactoryWarningTestCase(TestCase):
             assert 'duplicate route' in str(w[0].message)
 
 
-    def testDuplicateRoutingWarning(self):
+    def test_duplicate_routing_warning(self):
         with warnings.catch_warnings(record=True) as w:
             context.build_module_routes(warningsite.stash.routing)
             assert len(w) == 1
@@ -47,7 +47,7 @@ class FactoryWarningTestCase(TestCase):
             assert 'duplicate routing' in str(w[0].message)
 
 
-    def testDuplicateExportWarning(self):
+    def test_duplicate_export_warning(self):
         with warnings.catch_warnings(record=True) as w:
             context.build_module_routes(warningsite.stash.export)
             assert len(w) == 1
@@ -55,7 +55,7 @@ class FactoryWarningTestCase(TestCase):
             assert 'duplicate export' in str(w[0].message)
 
 
-    def testDuplicateMultipleWarnings(self):
+    def test_duplicate_multiple_warnings(self):
         with warnings.catch_warnings(record=True) as w:
             context.build_module_routes(warningsite.stash)
             assert len(w) == 4

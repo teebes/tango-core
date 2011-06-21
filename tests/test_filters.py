@@ -18,7 +18,7 @@ class FiltersTestCase(TestCase):
     def tearDown(self):
         pass
 
-    def testDatetime(self):
+    def test_datetime(self):
         dt = datetime.datetime(2010, 3, 12, 12, 34, 56)
 
         raw_datetime = filters.datetime
@@ -47,7 +47,7 @@ class FiltersTestCase(TestCase):
         self.assertEqual(raw_datetime(dt), '2010-03-12 12:34:56')
         self.assertEqual(app_datetime(dt), '2010-03-12 12:34:56')
 
-    def testDate(self):
+    def test_date(self):
         d = datetime.date(2010, 3, 12)
 
         raw_date = filters.date
@@ -76,7 +76,7 @@ class FiltersTestCase(TestCase):
         self.assertEqual(raw_date(d), '2010-03-12')
         self.assertEqual(app_date(d), '2010-03-12')
 
-    def testStructTime(self):
+    def test_struct_time(self):
         st = datetime.datetime(2010, 3, 12, 12, 34, 56).timetuple()
 
         raw_struct_time = filters.struct_time

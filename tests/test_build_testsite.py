@@ -13,13 +13,11 @@ from tango.factory import build_app
 class BuildTestsiteTestCase(TestCase):
 
     def create_app(self):
-        output = tempfile.mkdtemp()
-        options = {
-            'output': output,
+        self.options = {
+            'output': tempfile.mkdtemp(),
             'force_overwrite': True,
             }
-        app = build_app('testsite')
-        return build_static_site(app, **options)
+        return build_app('testsite')
 
     def setUp(self):
         pass
@@ -36,6 +34,7 @@ class BuildTestsiteTestCase(TestCase):
 
 
     def test_consistent_build(self):
+        build_static_site(self.app, **self.options)
         orig = os.path.dirname(os.path.abspath(__file__)) + '/testsite-build'
         dest = self.app.config['TANGO_BUILD_DIR']
         dircmp_obj = filecmp.dircmp(orig, dest)
