@@ -9,25 +9,27 @@ from time import mktime, strptime
 first_cap_re = re.compile('(.)([A-Z][a-z]+)')
 all_cap_re = re.compile('([a-z0-9])([A-Z])')
 
+
 def simple_text_to_html(content):
     """
     Puts <p> around lines of text, creates <ul> / <li> for lines that begin
     with *
-    
+
     >>> text = "Simple line of text."
     >>> print(simple_text_to_html(text))
     <p>Simple line of text.</p>
     <BLANKLINE>
     >>>
-    
+
     >>> text = '''Simple line of text.
+    ...
     ... And another line.'''
     >>> print(simple_text_to_html(text))
     <p>Simple line of text.</p>
     <p>And another line.</p>
     <BLANKLINE>
     >>>
-    
+
     >>> text = '''Simple line of text followed by a list:
     ... * with an item
     ... * and another item'''
@@ -38,7 +40,7 @@ def simple_text_to_html(content):
     <li>and another item</li>
     </ul>
     <BLANKLINE>
-    
+
     >>> text = '''A paragraph followed by a list:
     ... * item A
     ... * item B
@@ -65,14 +67,14 @@ def simple_text_to_html(content):
     </ul>
     <BLANKLINE>
     """
-    
+
     current_tag = None
     output = ""
-    
+
     for line in content.split('\n'):
         # strip precending empty characters
         re.sub('^\s', '', line)
-        
+
         if not line:
             # ignore empty lines, unless we were just in a list, in case of
             # which close the list
@@ -97,7 +99,7 @@ def simple_text_to_html(content):
     # if we're done with the content but still have an open list, close it
     if current_tag == 'ul':
         output += '</ul>\n'
-    
+
     return output
 
 def UnicodeDictReader(utf8_data, **kwargs):
@@ -105,7 +107,7 @@ def UnicodeDictReader(utf8_data, **kwargs):
 
     This function does not encode the header row, and there's likely a less
     fragile way to skin the proverbial cat. See: http://bit.ly/gR6qnN
-    
+
     >>> contents = [i for i in UnicodeDictReader(open(csv_test_file, 'rU'))]
     >>> contents[0]['colA']
     u'row1A'
@@ -115,7 +117,7 @@ def UnicodeDictReader(utf8_data, **kwargs):
     u'row2A'
     >>> contents[1]['colB']
     u'row2B'
-    
+
     """
     reader = csv.DictReader(utf8_data, **kwargs)
     for row in reader:
@@ -245,14 +247,10 @@ def date_from_string(string, formatter):
         return date(date.today().year, struct.tm_mon, struct.tm_mday)
     return date.fromtimestamp(mktime(struct))
 
+
 # For testing:
 import os.path
 
 directory = os.path.dirname(os.path.abspath(__file__))
 tests_directory = os.path.abspath(os.path.join(directory, '../../tests/'))
 csv_test_file = tests_directory + '/csv.csv' # for the UnicodeDictReader test
-
-if __name__ == "__main__":
-    import doctest
-    doctest.testmod()
-
