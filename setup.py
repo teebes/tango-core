@@ -43,4 +43,7 @@ setup(
         'Flask-Testing',
         ],
     test_suite='nose.collector',
+    dependency_links=[
+        'http://pypi:a0nyZbjtFanl@cherry.willowtreeapps.com/pypi/index/Flask-Script/',
+        ],
     )
