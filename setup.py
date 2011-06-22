@@ -7,6 +7,7 @@ from setuptools import setup, find_packages
 # Avoid importing tango here, to get accurate test coverage reports.
 # Test tango sites reside in the tests/ directory.
 sys.path.append('tests')
+sys.path.append('tests/errors')
 
 
 setup(

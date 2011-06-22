@@ -39,6 +39,7 @@ Command line: ``tango``
 
 >>> call()
 ... # doctest:+NORMALIZE_WHITESPACE
+ Please provide a command
   snapshot  Pull context from a stashable Tango site and store it into an image file.
   shell     Runs a Python shell inside Tango application context.
   serve     Run a Tango site on the local machine, for development.
@@ -203,6 +204,18 @@ Command line: ``tango shell doesnotexist``
 Traceback (most recent call last):
     ...
 SystemExit: 7
+>>>
+
+
+Flask-Script v0.3.1 was swallowing IndexError exceptions.  Verify that the
+current packaging scheme for this project flows an IndexError through.
+
+Command line: ``tango shell indexerror``
+
+>>> call('shell indexerror')
+Traceback (most recent call last):
+    ...
+IndexError: Flask-Script v0.3.1 was swallowing IndexError exceptions.
 >>>
 
 
