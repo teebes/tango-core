@@ -76,14 +76,4 @@ Ideas for test tools for Tango sites:
   looks for common errors.
 
 
-Example header::
-
-    site: sitename
-    routes:
-     - /page/<title>
-     - match: /pages/.*
-    exports:
-     - title: Page # static export
-     - content # programmatic export
-    routing:
-     - title: get_page_titles # iterable
+See test projects in ``tests/`` directory for example headers.
