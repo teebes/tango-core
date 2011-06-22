@@ -1,6 +1,7 @@
 """
 site: test
-routes: /
+routes:
+ - json: /index.json
 exports: hint
 """
 

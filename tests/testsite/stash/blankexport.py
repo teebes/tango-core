@@ -1,7 +1,7 @@
 """
 site: test
 routes:
- - /blank/export/
+ - /blank/export.txt
 exports:
  -
 """

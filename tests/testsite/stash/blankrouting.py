@@ -1,7 +1,7 @@
 """
 site: test
 routes:
- - /blank/routing/
+ - /blank/routing.txt
 exports:
  - purpose: Test empty routing item.
 routing:

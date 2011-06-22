@@ -1,6 +1,6 @@
 """
 site: test
 routes:
- - /plain/exports/
+ - text: /plain/exports.txt
 exports:
 """

@@ -1,8 +1,9 @@
 "Core Tango classes for creating applications from Tango sites."
 
-from flask import Flask, current_app, request
+from flask import Flask, current_app, request, _request_ctx_stack
 from jinja2 import Environment, PackageLoader, TemplateNotFound
 from werkzeug import LocalProxy as Proxy
+from werkzeug.utils import get_content_type
 
 import tango
 from tango.errors import NoSuchWriterException
@@ -83,9 +84,25 @@ class Tango(Flask):
     def build_view(self, route):
         writer = self.get_writer(route.writer_name)
         def view(*args, **kwargs):
+            ctx = _request_ctx_stack.top
+            ctx.mimetype = writer.mimetype
             return writer.write(route.context)
         view.__name__ = route.rule
         return self.route(route.rule)(view)
+
+    def process_response(self, response):
+        """Inject mimetype into response before it's sent to the WSGI server.
+
+        This is only intended for stashable view functions, created by
+        :meth:`Tango.build_view`.
+        """
+        Flask.process_response(self, response)
+        ctx = _request_ctx_stack.top
+        if hasattr(ctx, 'mimetype'):
+            mimetype, charset = (ctx.mimetype, response.charset)
+            response.content_type = get_content_type(mimetype, charset)
+            response.headers['Content-Type'] = response.content_type
+        return response
 
     @property
     def version(self):

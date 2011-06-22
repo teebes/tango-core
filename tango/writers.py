@@ -1,6 +1,7 @@
 "Response writers, which take a template context and return a string."
 
 import json
+import mimetypes
 import types
 
 from flask import render_template
@@ -128,6 +129,10 @@ class TemplateWriter(BaseWriter):
 
     def __init__(self, template_name):
         self.template_name = template_name
+        basename = self.template_name.rsplit('/', 1)[-1]
+        guessed_type, guessed_encoding = mimetypes.guess_type(basename)
+        if guessed_type:
+            self.mimetype = guessed_type
 
     def write(self, context):
         return render_template(self.template_name, **context)

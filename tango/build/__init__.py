@@ -34,7 +34,6 @@ def build_static_site(app, output=None, force_overwrite=False):
     output = os.path.abspath(output)
     app.config['FREEZER_DESTINATION'] = output
     app.config['TANGO_BUILD_DIR'] = app.config['FREEZER_DESTINATION']
-    # Forked Frozen-Flask to add overwrite option, sent pull request.
     app.config['FREEZER_OVERWRITE'] = force_overwrite
     if not os.path.exists(output):
         os.makedirs(output)

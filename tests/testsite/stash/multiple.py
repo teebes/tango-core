@@ -1,8 +1,8 @@
 """
 site: test
 routes:
- - /route1/
- - /route2/
+ - /route1.txt
+ - /route2.txt
 exports:
  - name
  - count

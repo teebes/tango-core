@@ -1,7 +1,7 @@
 """
 site: test
 routes:
- - /plain/<routing>/
+ - text: /plain/<routing>.txt
 exports:
 routing:
 """
