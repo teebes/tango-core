@@ -1,6 +1,10 @@
 "Errors and warnings reported by the Tango framework."
 
 
+class ParseError(Exception):
+    "Error when parsing markup or scraping screens."
+
+
 class NoSuchWriterException(Exception):
     "Error when getting a response writer by a name that is not registered."
 

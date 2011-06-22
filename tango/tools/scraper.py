@@ -8,6 +8,7 @@ from lxml.cssselect import CSSSelector
 # TODO: Factor out BeautifulSoup, replace with lxml.
 from BeautifulSoup import BeautifulSoup, NavigableString
 
+from tango.errors import ParseError
 
 parser = etree.HTMLParser()
 
@@ -29,40 +30,65 @@ def dict_zip(**kwargs):
     >>> roles = ('worker', 'empty')
     >>> dict_zip(name=names, role=roles)
     [{'role': 'worker', 'name': 'oilman'}]
-
+    >>>
     """
     return [dict(zip(kwargs.keys(), item)) for item in zip(*kwargs.values())]
 
-def get_with_selector(content, selector, text_only=False, content_type='string', parser='HTMLParser'):
-    """
-    Return the unicode representation of element `content` matched by
-    `selector`.
+
+def get_with_selector(content, selector, text_only=False, content_type='string',
+                      parser='HTMLParser'):
+    """Provide unicode of element `content` matched by `selector`.
 
     If `selector` matches multiple elements, they will be concatenated into a
-    single unicode string.
-
-    If text_only is true, only the contents of the matched element will be
-    returned
-
-    If content_type is `url, content will be treated as a URL and its contents
-    will be loaded and processed with with the selector
+    single unicode string. If text_only is true, only the contents of the
+    matched element will be returned.  If content_type is 'url', content will
+    be treated as a URL and its contents will be loaded and processed with with
+    the selector.
 
     >>> get_with_selector("<b>I am bold.</b>", 'b')
     u'<b>I am bold.</b>'
     >>> get_with_selector("<b>I am bold.</b>", 'b', True)
     u'I am bold.'
+    >>>
+
+    Provide a content_type of 'string' or 'url'.  The example above uses a
+    string.  When given a URL as content, and 'url' as the content_type, this
+    function opens the URL to get the content.
+
+    >>> get_with_selector(my_url, 'h1', content_type='url').strip()
+    u'<h1>This is just for testing.</h1>'
+    >>> get_with_selector("<b>I am bold.</b>", 'b', content_type='spam')
+    Traceback (most recent call last):
+        ...
+    ParseError: Invalid content type 'spam'
+    >>>
+
+    Expect unexpected return values or empty strings when content is a URL but
+    content_type is not set to 'url'.  This API is built for convenience.
+
+    >>> get_with_selector(my_url, 'h1')
+    u''
+    >>>
+
+    Provide a parser in the lxml.etree namespace.
+    See http://lxml.de/api/index.html for a full reference.
+    >>> get_with_selector("<b>I am bold.</b>", 'b', parser='NotAParser')
+    Traceback (most recent call last):
+        ...
+    ParseError: Invalid parser 'NotAParser'
+    >>>
     """
     try:
         loaded_parser = getattr(etree, parser)()
     except AttributeError:
-        raise Exception("Invalid parser '%s'" % parser)
+        raise ParseError("Invalid parser '%s'" % parser)
 
     if content_type == 'string':
         tree = etree.fromstring(content, loaded_parser)
     elif content_type == 'url':
         tree = etree.parse(urllib2.urlopen(content), loaded_parser)
     else:
-        raise Exception("Invalid content type '%s'" % content_type)
+        raise ParseError("Invalid content type '%s'" % content_type)
 
     cs = CSSSelector(selector)
     output = u''
@@ -73,9 +99,9 @@ def get_with_selector(content, selector, text_only=False, content_type='string',
             output += etree.tostring(branch)
     return output
 
+
 def url_selector(url, selector, text_only=False):
-    """Return the unicode representation of an HTML element from `url` matched
-    by `selector`.
+    """Provide unicode of HTML element from `url` matched by `selector`.
 
     If `selector` matches multiple elements, they will be concatenated into a
     single unicode string.
@@ -113,8 +139,7 @@ def url_selector(url, selector, text_only=False):
 
 
 def url_selector_list(url, selector, text_only=False):
-    """Return a list of HTML elements from `url` matched by `selector`, converted
-    to unicode strings.
+    """Provide unicode of HTML elements from `url` matched by `selector`.
 
     If `text_only` is True, only the text contents of the matched elements are
     included.
@@ -146,8 +171,7 @@ def url_selector_list(url, selector, text_only=False):
 
 
 def url_selector_values(url, selector, attr):
-    """Return a list of attributes of type `attr` from the set of elements
-    matched by `selector` from a given `url`.
+    """Provide attribute list of type `attr` from `selector` match at `url`.
 
     If an attribute is not present for a matched element, `None` is added to the
     returned list.
@@ -195,8 +219,9 @@ def strip_tags(tags, html):
 
 
 def escape_links(html):
-    """Escape unsafe charachters - primarily spaces and parens - in all href and
-    src paths in `html`.
+    """Escape unsafe characters in all href/src paths in `html`.
+
+    This is primarily useful for spaces and parentheses.
 
     Examples:
     >>> html = '<a href="/emily connolly/">Emily Connolly</a>'
@@ -218,8 +243,7 @@ def escape_links(html):
 
 
 def remove_attributes(tags, attrs, html):
-    """Remove attributes specified in list `attrs` from elements in list `tags`
-    contained in a chunk of html.
+    """Remove attributes `attrs` from elements in `tags` contained in `html`.
 
     If providing only one tag, `tags` may be a string.
 
