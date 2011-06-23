@@ -1,2 +1,3 @@
-include README*
-exclude tests
+include *.rst
+include Makefile
+recursive-include tests *
