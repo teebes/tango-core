@@ -6,6 +6,7 @@ setup = python setup.py
 nosetests = python -W ignore::DeprecationWarning setup.py nosetests
 tarball = `ls -1rt ./dist/*.tar* | tail -1`
 pypi_upload = cherry.willowtreeapps.com:/var/www/pypi/
+pypi_update = ssh cherry.willowtreeapps.com /var/www/pypi/update
 
 clean:
 	find . -name '*.py[co]' -delete
@@ -45,8 +46,10 @@ dist: develop
 
 distribute: dist
 
+# TODO: Remove PyPI update command when indexing is automated.
 publish: dist
 	scp $(tarball) $(pypi_upload)
+	$(pypi_update)
 
 doc_files := $(patsubst %.rst,%.html,$(wildcard *.rst))
 doc_deep_files := $(patsubst %.rst,%.html,$(wildcard **/*.rst))
