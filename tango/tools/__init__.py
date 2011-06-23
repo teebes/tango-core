@@ -31,6 +31,7 @@ def simple_text_to_html(content):
     >>>
 
     >>> text = '''Simple line of text followed by a list:
+    ...
     ... * with an item
     ... * and another item'''
     >>> print(simple_text_to_html(text))
@@ -40,6 +41,17 @@ def simple_text_to_html(content):
     <li>and another item</li>
     </ul>
     <BLANKLINE>
+    >>>
+
+    >>> text = '''
+    ...
+    ...
+    ...
+    ...
+    ... '''
+    >>> print(simple_text_to_html(text))
+    <BLANKLINE>
+    >>>
 
     >>> text = '''A paragraph followed by a list:
     ... * item A
@@ -66,6 +78,7 @@ def simple_text_to_html(content):
     <li>item delta</li>
     </ul>
     <BLANKLINE>
+    >>>
     """
 
     current_tag = None
@@ -76,25 +89,23 @@ def simple_text_to_html(content):
         re.sub('^\s', '', line)
 
         if not line:
-            # ignore empty lines, unless we were just in a list, in case of
-            # which close the list
+            # Ignore empty lines, but if in a list, close the list.
             if current_tag == 'ul':
                 output += "</ul>\n"
                 current_tag = None
-            continue
-
-        # * lines are list items, create list if necessary
-        if line[0] == '*':
-            if current_tag != 'ul':
-                output += "<ul>\n"
-                current_tag = 'ul'
-            output += "<li>%s</li>\n" % line[2:]
-        # everything else, for now, is a paragraph
         else:
-            if current_tag == 'ul':
-                output += '</ul>\n'
-                current_tag = None
-            output += '<p>%s</p>\n' % line
+            # * lines are list items, create list if necessary
+            if line[0] == '*':
+                if current_tag != 'ul':
+                    output += "<ul>\n"
+                    current_tag = 'ul'
+                output += "<li>%s</li>\n" % line[2:]
+            # everything else, for now, is a paragraph
+            else:
+                if current_tag == 'ul':
+                    output += '</ul>\n'
+                    current_tag = None
+                output += '<p>%s</p>\n' % line
 
     # if we're done with the content but still have an open list, close it
     if current_tag == 'ul':
