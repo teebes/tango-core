@@ -121,6 +121,22 @@ class TemplateWriter(BaseWriter):
     >>> response = template_writer(test_context)
     >>> '<title>Test Title</title>' in response
     True
+    >>> template_writer.mimetype
+    'text/html'
+    >>>
+
+    The template's mimetype is guessed based on the file extension.
+    >>> text_template_writer = TemplateWriter('index.txt')
+    >>> print text_template_writer(test_context)
+    Test Title
+    >>> text_template_writer.mimetype
+    'text/plain'
+    >>> xml_template_writer = TemplateWriter('index.xml')
+    >>> response = xml_template_writer(test_context)
+    >>> '<title>Test Title</title>' in response
+    True
+    >>> xml_template_writer.mimetype
+    'application/xml'
     >>> ctx.pop()
     >>>
     """
