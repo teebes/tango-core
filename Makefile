@@ -4,6 +4,8 @@ all: flakes test todo
 
 setup = python setup.py
 nosetests = python -W ignore::DeprecationWarning setup.py nosetests
+tarball = `ls -1rt ./dist/*.tar* | tail -1`
+pypi_upload = cherry.willowtreeapps.com:/var/www/pypi/
 
 clean:
 	find . -name '*.py[co]' -delete
@@ -36,13 +38,15 @@ smoke: develop
 coverage: test
 
 dist: develop
-	# TODO: Build GitHub upload task `make publish`? GitHub support yet?
 	$(setup) sdist
 	@echo
 	@echo Tarball for distribution:
-	@echo `ls -1rt ./dist/*.tar* | tail -1`
+	@echo $(tarball)
 
 distribute: dist
+
+publish: dist
+	scp $(tarball) $(pypi_upload)
 
 doc_files := $(patsubst %.rst,%.html,$(wildcard *.rst))
 doc_deep_files := $(patsubst %.rst,%.html,$(wildcard **/*.rst))
