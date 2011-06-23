@@ -30,6 +30,7 @@ setup(
         'Flask-Script',
         'Frozen-Flask',
         'lxml',
+        'pytest',
         'pyyaml',
         ],
     entry_points={
