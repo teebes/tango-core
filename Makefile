@@ -19,6 +19,7 @@ install:
 
 develop: setup.py
 	easy_install pip
+	easy_install tox
 	easy_install Flask-Testing
 	easy_install nose nose-exclude minimock==1.2.5
 	easy_install coverage
@@ -32,6 +33,9 @@ flakes: develop
 
 test: develop
 	$(nosetests) --with-coverage --cover-package=tango --cover-erase
+
+full-test: develop
+	tox
 
 smoke: develop
 	$(nosetests) --stop
