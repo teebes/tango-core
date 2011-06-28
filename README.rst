@@ -208,7 +208,7 @@ Tango is WillowTree's Flask platform, but is developed for general use.
 Releases
 ========
 
-The current target release is 0.1 (Basico) which establishes Tango conventions
+The current release is 0.1 (Basico) which establishes Tango conventions
 and package namespaces, supports building static sites, provides a pattern for
 mixing stashable/cachable content and dynamic view functions, and provides a
 solid codebase with 100% statement test coverage.

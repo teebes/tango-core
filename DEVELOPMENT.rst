@@ -12,9 +12,6 @@ You can add tests to docstrings or .rst documents.
 
 See the various .rst docs and read through the source & git log.
 
-For the Tango Basico release (``make todo | grep Basico``):
-
-
 Todos:
 
 * TODO: add simple unit test for simplesite '/' path.
