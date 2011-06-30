@@ -17,7 +17,7 @@ __all__ = ['abort', 'errors', 'request', 'session', 'app', 'build', 'config',
 
 
 # Keep this codename up-to-date; it's useful in common language.
-__codename__ = 'Basico'
+__codename__ = 'Salida'
 
 
 # Keep this maintainer contact up to date, it's used in a version label.
