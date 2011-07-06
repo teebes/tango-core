@@ -102,8 +102,7 @@ class JsonWriter(BaseWriter):
             except TypeError:
                 # value is not json serializable
                 pass
-        # ensure_ascii should indicate a unicode instance as return value.
-        return unicode(json.dumps(trimmed_context, ensure_ascii=False))
+        return unicode(json.dumps(trimmed_context))
 
 
 class TemplateWriter(BaseWriter):
