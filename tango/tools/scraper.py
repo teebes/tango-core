@@ -94,7 +94,11 @@ def get_with_selector(content, selector, text_only=False, content_type='string',
     output = u''
     for branch in cs(tree):
         if text_only:
-            output += branch.text
+            try:
+                output += branch.text
+            except TypeError:
+                # branch.text is empty
+                output = None
         else:
             output += etree.tostring(branch)
     return output
