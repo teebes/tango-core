@@ -29,7 +29,7 @@ develop: setup.py
 	touch develop
 
 flakes: develop
-	find . -name '*.py' | xargs pyflakes | grep -v local_config; true
+	find . -name '*.py' | grep -v .tox | xargs pyflakes | grep -v local_config; true
 
 test: develop
 	$(nosetests) --with-coverage --cover-package=tango --cover-erase
