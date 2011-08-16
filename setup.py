@@ -25,7 +25,7 @@ setup(
     zip_safe=False,
     install_requires=[
         'distribute',
-        'BeautifulSoup',
+        'BeautifulSoup<4.0',
         'Flask',
         'Flask-Script',
         'Frozen-Flask',
