@@ -49,6 +49,11 @@ def get_with_selector(content, selector, text_only=False, content_type='string',
     u'<b>I am bold.</b>'
     >>> get_with_selector("<b>I am bold.</b>", 'b', True)
     u'I am bold.'
+    >>> get_with_selector("<b></b>", 'b')
+    u'<b/>'
+    >>> get_with_selector("<b></b>", 'b', True)
+    >>> get_with_selector("<b/>", 'b')
+    u'<b/>'
     >>>
 
     Provide a content_type of 'string' or 'url'.  The example above uses a
