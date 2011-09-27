@@ -109,6 +109,7 @@ class Shell(BaseShell):
 
 
 def run():
+    sys.path.append('.')
     # Create a Manager instance to parse arguments & marshal commands.
     manager = Manager(Tango(__name__), with_default_commands=False)
 
