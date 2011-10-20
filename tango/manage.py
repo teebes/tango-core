@@ -9,7 +9,6 @@ from flaskext.script import Server as BaseServer
 from flaskext.script import Shell as BaseShell
 
 from tango.app import Tango
-from tango.build import build_static_site
 from tango.factory.snapshot import build_snapshot
 from tango.helpers import module_exists
 import tango
@@ -59,22 +58,6 @@ def snapshot(site):
     "Pull context from a stashable Tango site and store it into an image file."
     filename = build_snapshot(build_app(site, use_snapshot=False))
     print 'Snapshot of full stashable template context:', filename
-
-
-@command
-def build(site, output=None, force_overwrite=False):
-    "Build a Tango site into a collection of static files."
-    app = build_app(site)
-    build_static_site(app, output=output, force_overwrite=force_overwrite)
-    output_dir = app.config['TANGO_BUILD_DIR']
-    pwd = os.path.abspath(os.path.curdir)
-    if not pwd.endswith('/'):
-        pwd += '/'
-    # Strip current working directory from output directory, for help output.
-    if output_dir.startswith(pwd):
-        output_dir = output_dir[len(pwd):]
-    print 'Successfully built site:', app.import_name
-    print 'Output directory:', output_dir
 
 
 class Manager(BaseManager):

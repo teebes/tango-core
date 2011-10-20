@@ -44,7 +44,6 @@ Command line: ``tango``
   shell     Runs a Python shell inside Tango application context.
   serve     Run a Tango site on the local machine, for development.
   version   Display this version of Tango.
-  build     Build a Tango site into a collection of static files.
 >>>
 
 
@@ -54,36 +53,6 @@ Command line: ``tango version``
 ... # doctest:+ELLIPSIS
 Tango ...
 Maintainer: ...
->>>
-
-
-Command line: ``tango build simplesite``
-
->>> call('build simplesite')
-Successfully built site: simplesite
-Output directory: simplesite
->>>
-
-
-Remove build.
-
->>> os.system('rm -fr simplesite/')
-0
->>>
-
-
-Command line: ``tango build simplesite -o myoutput/dir``
-
->>> call('build simplesite -o myoutput/dir')
-Successfully built site: simplesite
-Output directory: myoutput/dir
->>>
-
-
-Remove build.
-
->>> os.system('rm -fr myoutput/')
-0
 >>>
 
 
@@ -170,14 +139,6 @@ Test for cases where site does not exist.
 
 >>> from minimock import restore
 >>> restore()
-
-Command line: ``tango build doesnotexist``
-
->>> call('build doesnotexist')
-Traceback (most recent call last):
-    ...
-SystemExit: 7
->>>
 
 
 Command line: ``tango serve doesnotexist``

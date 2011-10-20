@@ -3,7 +3,6 @@ from email.utils import formataddr
 from flask import abort, request, session
 
 import app
-import build
 import config
 import errors
 import factory

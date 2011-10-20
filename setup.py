@@ -28,7 +28,6 @@ setup(
         'BeautifulSoup<4.0',
         'Flask',
         'Flask-Script',
-        'Frozen-Flask',
         'lxml',
         'pytest',
         'pyyaml',
