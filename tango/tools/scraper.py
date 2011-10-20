@@ -35,6 +35,12 @@ def dict_zip(**kwargs):
     return [dict(zip(kwargs.keys(), item)) for item in zip(*kwargs.values())]
 
 
+# TODO: These functions should be replaced by a single-fetch DOM-based object
+# (lazy fetch on first time needed) which provides selector methods which can
+# be used multiple times against the same string data returned by the URL
+# (fetched once).
+
+
 def get_with_selector(content, selector, text_only=False, content_type='string',
                       parser='HTMLParser'):
     """Provide unicode of element `content` matched by `selector`.
