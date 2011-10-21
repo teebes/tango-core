@@ -1,25 +1,23 @@
 "Marshal template contexts exported declaratively by Tango stash modules."
 
-import pkgutil
 import warnings
 
 import yaml
 
 from tango.app import Route
 from tango.errors import DuplicateContextWarning, DuplicateExportWarning
-from tango.errors import DuplicateRouteWarning, DuplicateRoutingWarning
+from tango.errors import DuplicateRouteWarning
 from tango.errors import HeaderException
-from tango.helpers import get_module, module_is_package
-from tango.helpers import url_parameter_match
+from tango.imports import discover_modules, get_module
+from tango.imports import get_module_filepath, get_module_docstring
 
 
-def build_module_routes(module, context=False):
-    """Pull contexts from a Tango stash, discovering modules & parsing headers.
+def build_module_routes(import_name, import_stash=False):
+    """Discover modules & parse headers from a Tango stash import name.
 
     Returns list of Route objects with attributes via structured docstrings.
 
-    >>> import testsite.stash
-    >>> build_module_routes(testsite.stash)
+    >>> build_module_routes('testsite.stash')
     ... # doctest: +ELLIPSIS, +NORMALIZE_WHITESPACE
     [<Route: /, template:index.html>,
      <Route: /another/<argument>/, template:argument.html>,
@@ -35,25 +33,27 @@ def build_module_routes(module, context=False):
      <Route: /routing/<parameter>/, template:parameter.html>]
     >>>
 
-    :param module: Tango site stash module object
-    :type module: module
+    :param import_name: Tango site stash import name
+    :type import_name: str
     :param context: flag whether to pull template contexts into route objects
     """
     route_collection = []
 
-    for module in discover_modules(module):
-        module_routes = parse_header(module)
+    for name in discover_modules(import_name):
+        module_routes = parse_header(name)
         if not module_routes:
             continue
-        if context:
+        if import_stash:
             module_routes = pull_context(module_routes)
         route_collection += module_routes
 
     route_table = {}
     for route in route_collection:
+        # Currently, routes can be defined in multiple stash modules.
+        # Check to see if the route is already loaded and check for collisions.
         if route.rule in route_table:
-            route_context = route_table[route.rule].context
-            new_route_context = route.context
+            route_context = route_table[route.rule].context or {}
+            new_route_context = route.context or {}
 
             # Test for and warn on route context override.
             current_keys = set(route_context.keys())
@@ -71,55 +71,18 @@ def build_module_routes(module, context=False):
     return sorted(route_table.values(), key=lambda route: route.rule)
 
 
-def discover_modules(module):
-    """Discover stash modules, returning iterable of module objects.
-
-    Note that both packages and modules result in module objects.
-    This searches all subpackages and includes __init__ modules.
-
-    Example:
-    >>> import testsite.stash
-    >>> discover_modules(testsite.stash) # doctest:+ELLIPSIS
-    <generator object discover_modules at 0x...>
-    >>> list(discover_modules(testsite.stash))
-    ... # doctest: +ELLIPSIS, +NORMALIZE_WHITESPACE
-    [<module 'testsite.stash' from '...'>,
-     <module 'testsite.stash.index' from '...'>,
-     <module 'testsite.stash.multiple' from '...'>,
-     <module 'testsite.stash.package' from '...'>,
-     <module 'testsite.stash.package.module' from '...'>]
-    >>>
-
-    Modules are supported in addition to packages.
-    >>> import testsite.stash.index
-    >>> list(discover_modules(testsite.stash.index)) # doctest:+ELLIPSIS
-    [<module 'testsite.stash.index' from '...'>]
-    >>>
-
-    :param module: Tango site stash module object
-    :type module: module
-    """
-    yield module
-    if module_is_package(module):
-        prefix = module.__name__ + '.'
-        for _, name, _ in pkgutil.walk_packages(module.__path__, prefix):
-            yield get_module(name)
-
-
 def pull_context(route_objs):
     """Pull dict template context from module using Routes parsed from header.
 
-    Examples:
-    >>> from testsite.stash import index
-    >>> routes = pull_context(parse_header(index))
+    Examples, when using this function directly:
+    >>> routes = pull_context(parse_header('testsite.stash.index'))
     >>> routes
     [<Route: /, template:index.html>]
     >>> routes[0].context
     {'title': 'Tango'}
     >>>
 
-    >>> from testsite.stash import multiple
-    >>> routes = pull_context(parse_header(multiple))
+    >>> routes = pull_context(parse_header('testsite.stash.multiple'))
     >>> routes
     [<Route: /route1.txt>, <Route: /route2.txt>]
     >>> routes[0].context == routes[1].context
@@ -158,8 +121,8 @@ def pull_context(route_objs):
     return route_objs
 
 
-def parse_header(module):
-    """Parse module header for template context metadata.
+def parse_header(import_name):
+    """Parse docstring of module matching import name, for stash metadata.
 
     Modules in the site stash must have these fields in the header:
 
@@ -167,13 +130,12 @@ def parse_header(module):
     * routes
     * exports
 
+    Return None if module has no docstring or does not appear to be metadata.
     Raise KeyError if any of these fields are missing.
-    Raise HeaderException if header is not pure yaml.
-    Return None if module has no docstring or defines no routes.
+    Raise HeaderException if header is yaml but not pure yaml.
 
     Examples:
-    >>> from testsite.stash import index
-    >>> routes = parse_header(index)
+    >>> routes = parse_header('testsite.stash.index')
     >>> routes
     [<Route: /, template:index.html>]
     >>> route = routes[0]
@@ -186,8 +148,7 @@ def parse_header(module):
     >>> route.context
     >>>
 
-    >>> from testsite.stash import multiple
-    >>> routes = parse_header(multiple)
+    >>> routes = parse_header('testsite.stash.multiple')
     >>> routes
     [<Route: /route1.txt>, <Route: /route2.txt>]
     >>> [route.site for route in routes]
@@ -198,8 +159,7 @@ def parse_header(module):
     {'count': None, 'name': None, 'sequence': None}
     >>>
 
-    >>> from testsite.stash.package import module
-    >>> routes = parse_header(module)
+    >>> routes = parse_header('testsite.stash.package.module')
     >>> routes
     [<Route: /index.json, json>]
     >>> route = routes[0]
@@ -211,18 +171,11 @@ def parse_header(module):
     []
     >>>
 
-    >>> from testsite.stash import routing
-    >>> routes = parse_header(routing)
+    >>> routes = parse_header('testsite.stash.routing')
     >>> routes # doctest:+NORMALIZE_WHITESPACE
     [<Route: /another/<argument>/, template:argument.html>,
      <Route: /files/page-<parameter>.html, template:parameter.html>,
      <Route: /routing/<parameter>/, template:parameter.html>]
-    >>> routes[0].routing_exports
-    {'argument': 'arguments'}
-    >>> routes[1].routing_exports
-    {'parameter': 'parameters'}
-    >>> routes[2].routing_exports
-    {'parameter': 'parameters'}
     >>> routes[0].site == routes[1].site == routes[2].site == 'test'
     True
     >>> routes[0].exports == routes[1].exports == routes[2].exports
@@ -235,34 +188,33 @@ def parse_header(module):
     ['purpose']
     >>>
 
-    >>> import testsite.stash.package
-    >>> parse_header(testsite.stash.package) is None
+    >>> parse_header('testsite.stash.package') is None
     True
     >>>
 
-    >>> from testsite.stash import dummy
-    >>> parse_header(dummy) is None
+    >>> parse_header('testsite.stash.dummy') is None
     True
     >>>
 
-    >>> from errorsite.stash import hybrid
-    >>> parse_header(hybrid)
+    >>> parse_header('errorsite.stash.hybrid')
     Traceback (most recent call last):
       ...
     HeaderException: metadata docstring must be yaml or doc, but not both.
     >>>
 
-    :param module: Tango site stash module object
-    :type module: module
+    :param import_name: dotted name of Tango site stash module
+    :type import_name: str
     """
+    filepath = get_module_filepath(import_name)
+    doc = get_module_docstring(filepath)
+    if doc is None:
+        return None
+
     try:
-        header = yaml.load(module.__doc__)
+        header = yaml.load(doc)
     except yaml.scanner.ScannerError:
         raise HeaderException('metadata docstring must be yaml or doc, '
                               'but not both.')
-    except AttributeError:
-        # Not an error or a warning, just a module without a docstring.
-        return None
 
     if not isinstance(header, dict):
         # module has a docstring, but it's not yaml.
@@ -273,8 +225,6 @@ def parse_header(module):
     rawroutes = header['routes']
     exports = {}
     rawexports = header['exports']
-    routing_exports = {}
-    rawrouting = header.get('routing', [])
     static = []
 
     # Ensure an iterable on raw values.
@@ -282,8 +232,6 @@ def parse_header(module):
         rawroutes = []
     if rawexports is None:
         rawexports = []
-    if rawrouting is None:
-        rawrouting = []
 
     # Coerce routes into a list.
     if isinstance(rawroutes, basestring):
@@ -318,21 +266,10 @@ def parse_header(module):
         name, value = item
         if exports.has_key(name):
             msg = '{0} duplicate export: {1}'
-            msg = msg.format(module.__name__, name)
+            msg = msg.format(import_name, name)
             warnings.warn(msg, DuplicateExportWarning)
         exports[name] = value
     static = list(export_static_names)
-
-    # Test for and warn on routing export duplicates while constructing dict.
-    for export_dict in rawrouting:
-        if not export_dict:
-            continue
-        url_parameter, export_variable = export_dict.items()[0]
-        if routing_exports.has_key(url_parameter):
-            msg = '{0} duplicate routing export: {1}'
-            msg = msg.format(module.__name__, name)
-            warnings.warn(msg, DuplicateRoutingWarning)
-        routing_exports[url_parameter] = export_variable
 
     # Build out list of Route instances.
     routes_templates = []
@@ -357,14 +294,10 @@ def parse_header(module):
     for route, template in routes_templates:
         if route in route_table:
             msg = '{0} duplicate route: {1}'
-            msg = msg.format(module.__name__, route)
+            msg = msg.format(import_name, route)
             warnings.warn(msg, DuplicateRouteWarning)
         route_obj = Route(site, route, exports, static, template)
-        route_obj.modules = [module.__name__]
-        route_obj.routing_exports = {}
-        for param in routing_exports:
-            if url_parameter_match(route, param):
-                route_obj.routing_exports[param] = routing_exports[param]
+        route_obj.modules = [import_name]
         route_table[route] = route_obj
 
     return sorted(route_table.values(), key=lambda route: route.rule)

@@ -12,7 +12,7 @@ from tango.factory.context import build_module_routes
 from tango.factory.snapshot import get_snapshot
 
 
-def build_app(import_name, use_snapshot=True):
+def build_app(import_name, import_stash=False, use_snapshot=True):
     """Create a Tango application object from a Python import name.
 
     Example, using the simplesite module in this project:
@@ -53,7 +53,7 @@ def build_app(import_name, use_snapshot=True):
             module = __import__(import_name, fromlist=['stash']).stash
         else:
             module = __import__(import_name)
-        routes = build_module_routes(module)
+        routes = build_module_routes(module, import_stash=import_stash)
     else:
         print 'Using snapshot with stashed template context.'
     app.routes = routes

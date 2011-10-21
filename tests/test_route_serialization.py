@@ -11,7 +11,7 @@ from tango.factory import build_app
 class RouteSerializationTestCase(TestCase):
 
     def create_app(self):
-        return build_app('sampletypes')
+        return build_app('sampletypes', import_stash=True)
 
     def setUp(self):
         self.original_route = self.app.routes[0]
