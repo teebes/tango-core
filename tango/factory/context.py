@@ -13,7 +13,7 @@ from tango.helpers import get_module, module_is_package
 from tango.helpers import url_parameter_match
 
 
-def build_module_routes(module, context=True, routing=True):
+def build_module_routes(module, context=False):
     """Pull contexts from a Tango stash, discovering modules & parsing headers.
 
     Returns list of Route objects with attributes via structured docstrings.
@@ -38,7 +38,6 @@ def build_module_routes(module, context=True, routing=True):
     :param module: Tango site stash module object
     :type module: module
     :param context: flag whether to pull template contexts into route objects
-    :param routing: flag whether to pull routing iterables into route objects
     """
     route_collection = []
 
@@ -48,8 +47,6 @@ def build_module_routes(module, context=True, routing=True):
             continue
         if context:
             module_routes = pull_context(module_routes)
-        if routing:
-            module_routes = pull_routing(module_routes)
         route_collection += module_routes
 
     route_table = {}
@@ -157,68 +154,6 @@ def pull_context(route_objs):
             context[name] = getattr(module, name)
     for route_obj in route_objs:
         route_obj.context = context
-
-    return route_objs
-
-
-def pull_routing(route_objs):
-    """Pull routing iterables from module using Routes parsed from header.
-
-    Examples:
-    >>> from testsite.stash import index
-    >>> routes = pull_routing(parse_header(index))
-    >>> routes
-    [<Route: /, template:index.html>]
-    >>> routes[0].routing_exports
-    {}
-    >>> routes[0].routing
-    {}
-    >>>
-
-    >>> from testsite.stash import routing
-    >>> routes = pull_routing(parse_header(routing))
-    >>> len(routes)
-    3
-    >>> routes[0].rule
-    '/another/<argument>/'
-    >>> routes[0].routing
-    {'argument': xrange(3, 6)}
-    >>> routes[1].rule
-    '/files/page-<parameter>.html'
-    >>> routes[1].routing
-    {'parameter': [0, 1, 2]}
-    >>> routes[2].rule
-    '/routing/<parameter>/'
-    >>> routes[2].routing
-    {'parameter': [0, 1, 2]}
-    >>>
-
-    >>> pull_routing([]) is None
-    True
-    >>> pull_routing(None) is None
-    True
-    >>>
-
-    :param route_objs: list of Route instances, provided by parse_header
-    """
-    if route_objs is None or len(route_objs) == 0:
-        return None
-
-    # All route objects from a module have same exports, but diff routing.
-    routing = {}
-
-    for route_obj in route_objs:
-        assert len(route_obj.modules) == 1, "I'm confused by multiple modules."
-        module = get_module(route_objs[0].modules[0])
-        route_obj.routing = {}
-        for param in route_obj.routing_exports:
-            if routing.has_key(param):
-                route_obj.routing[param] = routing[param]
-            else:
-                name = route_obj.routing_exports[param]
-                param_iterable = getattr(module, name)
-                route_obj.routing[param] = param_iterable
-                routing[param] = param_iterable
 
     return route_objs
 

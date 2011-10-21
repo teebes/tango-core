@@ -138,12 +138,6 @@ class Route(object):
     # name of writer to use in rendering route, may be template name
     writer_name = None
 
-    # dict mapping url parameters to iterable exports providing values
-    routing = None
-
-    # dict of url parameter names & export variables to import for routing
-    routing_exports = None
-
     # context as exported by stashable module, for template or serialization
     context = None
 
@@ -151,16 +145,12 @@ class Route(object):
     modules = None
 
     def __init__(self, site, rule, exports, static=None, writer_name=None,
-                 routing=None, routing_exports=None, context=None,
-                 modules=None):
+                 context=None, modules=None):
         self.site = site
         self.rule = rule
         self.exports = exports
         self.static = static
         self.writer_name = writer_name
-
-        self.routing = routing
-        self.routing_exports = routing_exports
 
         self.context = context
         self.modules = modules
