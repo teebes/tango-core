@@ -1,5 +1,6 @@
 "Utilities for internal use within Tango framework."
 
+import code
 import imp
 import pkgutil
 import re
@@ -28,6 +29,40 @@ def get_module(name):
     return getattr(__import__(packagename, fromlist=[base]), base)
 
 
+def get_module_docstring(filepath):
+    """Get module-level docstring of Python module at filepath.
+
+    Get the docstring without running the code in the module, therefore
+    avoiding any side-effects in the file. This is particularly useful for
+    scripts with docstrings.
+
+    A filepath string is used instead of module object to avoid side-effects.
+
+    Example:
+    >>> filepath = find_module_filepath('testsite.stash.index')
+    >>> filepath # doctest:+ELLIPSIS
+    '.../tests/testsite/stash/index.py'
+    >>> print get_module_docstring(filepath).strip()
+    site: test
+    routes:
+     - template:index.html: /
+    exports:
+     - title: Tango
+    >>>
+
+    Example, module without a docstring:
+    >>> print get_module_docstring(find_module_filepath('empty'))
+    None
+    >>>
+    """
+    co = compile(open(filepath).read(), filepath, 'exec')
+    if co.co_consts and isinstance(co.co_consts[0], basestring):
+        docstring = co.co_consts[0]
+    else:
+        docstring = None
+    return docstring
+
+
 def get_module_filepath(module):
     """Get the file path of the given module.
 
@@ -45,6 +80,29 @@ def get_module_filepath(module):
         return module.__path__[0]
     else:
         return module.__file__
+
+
+def find_module_filepath(name):
+    """Get filepath of module matching the given name, or None if not found.
+
+    Example:
+    >>> find_module_filepath('testsite.stash') # doctest:+ELLIPSIS
+    '.../tests/testsite/stash'
+    >>> find_module_filepath('testsite.stash.index') # doctest:+ELLIPSIS
+    '.../tests/testsite/stash/index.py'
+    >>> find_module_filepath('simplest') # doctest:+ELLIPSIS
+    '.../tests/simplest.py'
+    >>> find_module_filepath('doesnotexist')
+    >>>
+    """
+    try:
+        loader = pkgutil.get_loader(name)
+    except ImportError:
+        return None
+    if loader is None:
+        return None
+    else:
+        return loader.filename
 
 
 def module_exists(name):
