@@ -42,8 +42,6 @@ class RouteSerializationTestCase(TestCase):
         self.assertEqual(route.exports, original_route.exports)
         self.assertEqual(route.static, original_route.static)
         self.assertEqual(route.writer_name, original_route.writer_name)
-        self.assertEqual(route.routing, original_route.routing)
-        self.assertEqual(route.routing_exports, original_route.routing_exports)
         # Unable to test context by simple equivalence.
         self.assertEqual(route.modules, original_route.modules)
 

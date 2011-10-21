@@ -29,9 +29,5 @@ class DuplicateExportWarning(DuplicateWarning):
     "Export is declared multiple times in a module header."
 
 
-class DuplicateRoutingWarning(DuplicateWarning):
-    "Routing is declared multiple times in a module header."
-
-
 class DuplicateContextWarning(DuplicateWarning):
     "Route context item is replaced by a new route context in same project."

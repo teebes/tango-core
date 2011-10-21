@@ -5,7 +5,7 @@ from flaskext.testing import TestCase
 
 from tango.app import Tango
 from tango.errors import DuplicateContextWarning, DuplicateExportWarning
-from tango.errors import DuplicateRouteWarning, DuplicateRoutingWarning
+from tango.errors import DuplicateRouteWarning
 from tango.factory import context
 
 import warningsite
@@ -39,14 +39,6 @@ class FactoryWarningTestCase(TestCase):
             assert 'duplicate route' in str(w[0].message)
 
 
-    def test_duplicate_routing_warning(self):
-        with warnings.catch_warnings(record=True) as w:
-            context.build_module_routes(warningsite.stash.routing)
-            assert len(w) == 1
-            assert issubclass(w[0].category, DuplicateRoutingWarning)
-            assert 'duplicate routing' in str(w[0].message)
-
-
     def test_duplicate_export_warning(self):
         with warnings.catch_warnings(record=True) as w:
             context.build_module_routes(warningsite.stash.export)
@@ -58,7 +50,7 @@ class FactoryWarningTestCase(TestCase):
     def test_duplicate_multiple_warnings(self):
         with warnings.catch_warnings(record=True) as w:
             context.build_module_routes(warningsite.stash)
-            assert len(w) == 4
+            assert len(w) == 3
 
 
 if __name__ == '__main__':
