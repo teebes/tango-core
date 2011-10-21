@@ -56,7 +56,8 @@ def version():
 @command
 def snapshot(site):
     "Pull context from a stashable Tango site and store it into an image file."
-    filename = build_snapshot(build_app(site, use_snapshot=False))
+    app = build_app(site, import_stash=True, use_snapshot=False)
+    filename = build_snapshot(app)
     print 'Snapshot of full stashable template context:', filename
 
 
