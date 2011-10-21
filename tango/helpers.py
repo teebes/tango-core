@@ -1,9 +1,9 @@
 "Utilities for internal use within Tango framework."
 
-import code
 import imp
 import pkgutil
 import re
+import types
 
 
 def get_module(name):
@@ -39,7 +39,7 @@ def get_module_docstring(filepath):
     A filepath string is used instead of module object to avoid side-effects.
 
     Example:
-    >>> filepath = find_module_filepath('testsite.stash.index')
+    >>> filepath = get_module_filepath('testsite.stash.index')
     >>> filepath # doctest:+ELLIPSIS
     '.../tests/testsite/stash/index.py'
     >>> print get_module_docstring(filepath).strip()
@@ -51,7 +51,7 @@ def get_module_docstring(filepath):
     >>>
 
     Example, module without a docstring:
-    >>> print get_module_docstring(find_module_filepath('empty'))
+    >>> print get_module_docstring(get_module_filepath('empty'))
     None
     >>>
     """
@@ -63,10 +63,10 @@ def get_module_docstring(filepath):
     return docstring
 
 
-def get_module_filepath(module):
-    """Get the file path of the given module.
+def get_module_filepath(module_or_name):
+    """Get the file path of the given module, or None if a name & not found.
 
-    Example:
+    Example, using modules:
     >>> import testsite # a Python package
     >>> import simplest # a single .py module
     >>> get_module_filepath(testsite) # doctest:+ELLIPSIS
@@ -74,35 +74,115 @@ def get_module_filepath(module):
     >>> 'tests/simplest.py' in get_module_filepath(simplest)
     True
     >>>
-    """
-    if hasattr(module, '__path__'):
-        # A package's __path__ attribute is a list. Use the first element.
-        return module.__path__[0]
-    else:
-        return module.__file__
 
 
-def find_module_filepath(name):
-    """Get filepath of module matching the given name, or None if not found.
-
-    Example:
-    >>> find_module_filepath('testsite.stash') # doctest:+ELLIPSIS
+    Example, using import names:
+    >>> get_module_filepath('testsite.stash') # doctest:+ELLIPSIS
     '.../tests/testsite/stash'
-    >>> find_module_filepath('testsite.stash.index') # doctest:+ELLIPSIS
+    >>> get_module_filepath('testsite.stash.index') # doctest:+ELLIPSIS
     '.../tests/testsite/stash/index.py'
-    >>> find_module_filepath('simplest') # doctest:+ELLIPSIS
+    >>> get_module_filepath('simplest') # doctest:+ELLIPSIS
     '.../tests/simplest.py'
-    >>> find_module_filepath('doesnotexist')
+    >>> get_module_filepath('doesnotexist')
     >>>
     """
-    try:
-        loader = pkgutil.get_loader(name)
-    except ImportError:
-        return None
-    if loader is None:
-        return None
+    if isinstance(module_or_name, types.ModuleType):
+        module = module_or_name
+        if hasattr(module, '__path__'):
+            # A package's __path__ attribute is a list. Use the first element.
+            return module.__path__[0]
+        else:
+            return module.__file__
     else:
-        return loader.filename
+        name = module_or_name
+        try:
+            loader = pkgutil.get_loader(name)
+        except ImportError:
+            return None
+        if loader is None:
+            return None
+        else:
+            return loader.filename
+
+
+def discover_modules(module_or_name):
+    """Given an import name, provide an iterable of module filepath,name pairs.
+
+    This function imports package __init__.py but does not import modules.
+
+    More specifically, given a package name, this function walks the package
+    (which requires importing the package __init__) and yields the filepath and
+    name of each module (as a tuple of strings) in the package.  Python treats
+    both packages and modules as module objects, and this function makes no
+    distinction.  Give this function an import name and it returns an iterable
+    regardless of whether the import name maps to a package or a module; in the
+    case of a module name, the iterable results in only one element.
+
+    Example:
+    >>> discover_modules('testsite.stash') # doctest:+ELLIPSIS
+    <generator object discover_modules at 0x...>
+    >>> for item in discover_modules('testsite.stash'):
+    ...     print item # doctest: +ELLIPSIS
+    ...
+    testsite.stash
+    testsite.stash.blank
+    testsite.stash.blankexport
+    testsite.stash.blankrouting
+    testsite.stash.dummy
+    testsite.stash.emptyrouting
+    testsite.stash.index
+    testsite.stash.multiple
+    testsite.stash.noexports
+    testsite.stash.norouting
+    testsite.stash.package
+    testsite.stash.package.module
+    testsite.stash.routing
+    >>> list(discover_modules('testsite.stash.index')) # doctest:+ELLIPSIS
+    ['testsite.stash.index']
+    >>>
+
+    For flexibility & support, a module may be used in addition to a string.
+    >>> import testsite.stash
+    >>> discover_modules(testsite.stash) # doctest:+ELLIPSIS
+    <generator object discover_modules at 0x...>
+    >>> for item in discover_modules(testsite.stash):
+    ...     print item # doctest: +ELLIPSIS
+    ...
+    testsite.stash
+    testsite.stash.blank
+    testsite.stash.blankexport
+    testsite.stash.blankrouting
+    testsite.stash.dummy
+    testsite.stash.emptyrouting
+    testsite.stash.index
+    testsite.stash.multiple
+    testsite.stash.noexports
+    testsite.stash.norouting
+    testsite.stash.package
+    testsite.stash.package.module
+    testsite.stash.routing
+    >>> import testsite.stash.index
+    >>> list(discover_modules(testsite.stash.index))
+    ['testsite.stash.index']
+    >>>
+
+    :param module_or_name: Tango site stash import name, or imported module
+    :type module_or_name: str
+    """
+    if isinstance(module_or_name, types.ModuleType):
+        module = module_or_name
+        name = module.__name__
+        yield name
+    else:
+        module = None
+        name = module_or_name
+        yield name
+    if module_is_package(name):
+        if module is None:
+            module = get_module(name)
+        prefix = name + '.'
+        for _, name, _ in pkgutil.walk_packages(module.__path__, prefix):
+            yield name
 
 
 def module_exists(name):
@@ -155,31 +235,20 @@ def module_exists(name):
     return False
 
 
-def name_is_package(name):
+def module_is_package(module_or_name):
     """Return True if import name is for a Python package, or False if not.
 
     Returns None if the package is not found.
 
-    Example:
-    >>> name_is_package('testsite')
+    Example, using import names:
+    >>> module_is_package('testsite')
     True
-    >>> name_is_package('simplest')
+    >>> module_is_package('simplest')
     False
-    >>> name_is_package('doesnotexist')
+    >>> module_is_package('doesnotexist')
     >>>
-    """
-    loader = pkgutil.get_loader(name)
-    if loader is None:
-        return None
-    # Provides a simpler interface to loader.is_package(fullname).
-    # loader.is_package requires fullname argument, even though it isn't used.
-    return loader.etc[2] == imp.PKG_DIRECTORY
 
-
-def module_is_package(module):
-    """Return True if module is a Python package, or False if not.
-
-    Example:
+    Example, using modules:
     >>> import testsite # a Python package
     >>> import simplest # a single .py module
     >>> module_is_package(testsite)
@@ -188,10 +257,20 @@ def module_is_package(module):
     False
     >>>
     """
-    if hasattr(module, '__path__'):
-        return True
+    if isinstance(module_or_name, types.ModuleType):
+        module = module_or_name
+        if hasattr(module, '__path__'):
+            return True
+        else:
+            return False
     else:
-        return False
+        name = module_or_name
+        loader = pkgutil.get_loader(name)
+        if loader is None:
+            return None
+        # Provides a simpler interface to loader.is_package(fullname).
+        # loader.is_package requires fullname argument, even though it isn't used.
+        return loader.etc[2] == imp.PKG_DIRECTORY
 
 
 def package_submodule(hierarchical_module_name):
