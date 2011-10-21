@@ -155,6 +155,27 @@ def module_exists(name):
     return False
 
 
+def name_is_package(name):
+    """Return True if import name is for a Python package, or False if not.
+
+    Returns None if the package is not found.
+
+    Example:
+    >>> name_is_package('testsite')
+    True
+    >>> name_is_package('simplest')
+    False
+    >>> name_is_package('doesnotexist')
+    >>>
+    """
+    loader = pkgutil.get_loader(name)
+    if loader is None:
+        return None
+    # Provides a simpler interface to loader.is_package(fullname).
+    # loader.is_package requires fullname argument, even though it isn't used.
+    return loader.etc[2] == imp.PKG_DIRECTORY
+
+
 def module_is_package(module):
     """Return True if module is a Python package, or False if not.
 
