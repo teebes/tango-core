@@ -1,8 +1,7 @@
-"Utilities for internal use within Tango framework."
+"Import utilities for internal use within Tango framework."
 
 import imp
 import pkgutil
-import re
 import types
 
 
@@ -297,7 +296,7 @@ def root_package(hierarchical_module_name):
     Example:
     >>> root_package('tango.factory')
     'tango'
-    >>> root_package('tango.helpers')
+    >>> root_package('tango.imports')
     'tango'
     >>> root_package('testsite')
     'testsite'
@@ -310,32 +309,3 @@ def root_package(hierarchical_module_name):
     >>>
     """
     return hierarchical_module_name.split('.')[0]
-
-
-def url_parameter_match(route, parameter):
-    """Determine whether a route contains a url parameter, return True if so.
-
-    Example:
-    >>> url_parameter_match('/<argument>', 'argument')
-    True
-    >>> url_parameter_match('/<argument>/', 'argument')
-    True
-    >>> url_parameter_match('/<int:argument>', 'argument')
-    True
-    >>> url_parameter_match('/int:<argument>/', 'argument')
-    True
-    >>> url_parameter_match('/path:<argument>/', 'argument')
-    True
-    >>> url_parameter_match('/path/to/<parameter>/', 'parameter')
-    True
-    >>> url_parameter_match('/path/to/<path:parameter>/', 'parameter')
-    True
-    >>> url_parameter_match('/path/to/<aparameter>/', 'parameter')
-    False
-    >>> url_parameter_match('/path/to/<path:aparameter>/', 'parameter')
-    False
-    >>> url_parameter_match('/', 'parameter')
-    False
-    >>>
-    """
-    return re.search('[<:]{0}>'.format(parameter), route) is not None

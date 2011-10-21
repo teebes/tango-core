@@ -4,7 +4,7 @@ from flask import request
 from werkzeug import create_environ
 
 from tango.app import Tango
-from tango.helpers import module_exists
+from tango.imports import module_exists
 import tango
 import tango.filters
 

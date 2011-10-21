@@ -10,7 +10,7 @@ from flaskext.script import Shell as BaseShell
 
 from tango.app import Tango
 from tango.factory.snapshot import build_snapshot
-from tango.helpers import module_exists
+from tango.imports import module_exists
 import tango
 import tango.factory
 

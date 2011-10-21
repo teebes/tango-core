@@ -259,6 +259,35 @@ def date_from_string(string, formatter):
     return date.fromtimestamp(mktime(struct))
 
 
+def url_parameter_match(route, parameter):
+    """Determine whether a route contains a url parameter, return True if so.
+
+    Example:
+    >>> url_parameter_match('/<argument>', 'argument')
+    True
+    >>> url_parameter_match('/<argument>/', 'argument')
+    True
+    >>> url_parameter_match('/<int:argument>', 'argument')
+    True
+    >>> url_parameter_match('/int:<argument>/', 'argument')
+    True
+    >>> url_parameter_match('/path:<argument>/', 'argument')
+    True
+    >>> url_parameter_match('/path/to/<parameter>/', 'parameter')
+    True
+    >>> url_parameter_match('/path/to/<path:parameter>/', 'parameter')
+    True
+    >>> url_parameter_match('/path/to/<aparameter>/', 'parameter')
+    False
+    >>> url_parameter_match('/path/to/<path:aparameter>/', 'parameter')
+    False
+    >>> url_parameter_match('/', 'parameter')
+    False
+    >>>
+    """
+    return re.search('[<:]{0}>'.format(parameter), route) is not None
+
+
 # For testing:
 import os.path
 
