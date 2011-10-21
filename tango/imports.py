@@ -1,6 +1,7 @@
 "Import utilities for internal use within Tango framework."
 
 import imp
+import os
 import pkgutil
 import types
 
@@ -54,7 +55,10 @@ def get_module_docstring(filepath):
     None
     >>>
     """
-    co = compile(open(filepath).read(), filepath, 'exec')
+    # Keep these operations on separate lines, for exception line numbers.
+    fd = open(filepath)
+    src = fd.read()
+    co = compile(src, filepath, 'exec')
     if co.co_consts and isinstance(co.co_consts[0], basestring):
         docstring = co.co_consts[0]
     else:
@@ -65,19 +69,21 @@ def get_module_docstring(filepath):
 def get_module_filepath(module_or_name):
     """Get the file path of the given module, or None if a name & not found.
 
+    If given module is a package, add __init__.py to filepath in order to
+    provide a path to a readable file and not a directory.
+
     Example, using modules:
     >>> import testsite # a Python package
     >>> import simplest # a single .py module
     >>> get_module_filepath(testsite) # doctest:+ELLIPSIS
-    '...tests/testsite'
+    '.../tests/testsite'
     >>> 'tests/simplest.py' in get_module_filepath(simplest)
     True
     >>>
 
-
     Example, using import names:
     >>> get_module_filepath('testsite.stash') # doctest:+ELLIPSIS
-    '.../tests/testsite/stash'
+    '.../tests/testsite/stash/__init__.py'
     >>> get_module_filepath('testsite.stash.index') # doctest:+ELLIPSIS
     '.../tests/testsite/stash/index.py'
     >>> get_module_filepath('simplest') # doctest:+ELLIPSIS
@@ -89,19 +95,25 @@ def get_module_filepath(module_or_name):
         module = module_or_name
         if hasattr(module, '__path__'):
             # A package's __path__ attribute is a list. Use the first element.
-            return module.__path__[0]
+            filepath = module.__path__[0]
         else:
-            return module.__file__
+            filepath = module.__file__
     else:
         name = module_or_name
         try:
             loader = pkgutil.get_loader(name)
         except ImportError:
-            return None
+            filepath = None
         if loader is None:
-            return None
+            filepath = None
         else:
-            return loader.filename
+            if module_is_package(name):
+                filepath = os.path.join(loader.filename, '__init__.py')
+            else:
+                filepath = loader.filename
+    if filepath is not None:
+        filepath = os.path.abspath(filepath)
+    return filepath
 
 
 def discover_modules(module_or_name):
