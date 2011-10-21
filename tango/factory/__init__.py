@@ -3,11 +3,10 @@
 from flask import request
 from werkzeug import create_environ
 
-import tango
-import tango.filters
 from tango.app import Tango
 from tango.helpers import module_exists
-from tango.templating import get_global_context, get_context_processors
+import tango
+import tango.filters
 
 from tango.factory.context import build_module_routes
 from tango.factory.snapshot import get_snapshot
@@ -62,13 +61,6 @@ def build_app(import_name, use_snapshot=True):
     # Stitch together context, template, and path.
     for route in app.routes:
         app.build_view(route)
-
-    # Add templating utilities contained in package.
-    if module_exists(import_name + '.templating'):
-        module = __import__(import_name, fromlist=['templating']).templating
-        app.context_processor(lambda: get_global_context(module))
-        for function in get_context_processors(module):
-            app.context_processor(function)
 
     # Pop app request context.
     ctx.pop()
