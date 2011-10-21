@@ -100,10 +100,7 @@ def get_module_filepath(module_or_name):
             filepath = module.__file__
     else:
         name = module_or_name
-        try:
-            loader = pkgutil.get_loader(name)
-        except ImportError:
-            filepath = None
+        loader = pkgutil.get_loader(name)
         if loader is None:
             filepath = None
         else:
