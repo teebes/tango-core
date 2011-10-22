@@ -81,12 +81,18 @@ class Tango(Flask):
             return writer
         raise NoSuchWriterException(name)
 
+    @property
+    def connector(self):
+        return self.config['SHELF_CONNECTOR_CLASS'](self)
+
     def build_view(self, route):
+        site = route.site
+        rule = route.rule
         writer = self.get_writer(route.writer_name)
         def view(*args, **kwargs):
             ctx = _request_ctx_stack.top
             ctx.mimetype = writer.mimetype
-            return writer.write(route.context)
+            return writer.write(self.connector.get(site, rule))
         view.__name__ = route.rule
         return self.route(route.rule)(view)
 
