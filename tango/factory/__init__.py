@@ -12,6 +12,34 @@ from tango.factory.context import build_module_routes
 from tango.factory.snapshot import get_snapshot
 
 
+def get_app(site, **options):
+    """Get a Tango app object from a site by the given import name.
+
+    This function looks for an object named app in the package or module
+    matching the import name provided by the given argument, and if it does not
+    exist, builds an app from the stash inside the package or module.
+
+    Hybrid apps, those with both stash and dynamic views, start with an app
+    built from stash, then extend the app through the Flask API.
+
+    >>> get_app('simplesite') # doctest:+ELLIPSIS
+    <tango.app.Tango object at 0x...>
+    >>> get_app('testsite') # doctest:+ELLIPSIS
+    <tango.app.Tango object at 0x...>
+    >>> get_app('importerror') # doctest:+ELLIPSIS
+    Traceback (most recent call last):
+      ...
+    ImportError: No module named doesnotexist
+    >>>
+    """
+    module = __import__(site)
+    # Prefer app defined in module over a newly built app from the site stash.
+    app = getattr(module, 'app', None)
+    if app is not None:
+        return app
+    return build_app(site, **options)
+
+
 def build_app(import_name, import_stash=False, use_snapshot=True,
               report_file=None):
     """Create a Tango application object from a Python import name.

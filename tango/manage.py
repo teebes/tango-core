@@ -9,10 +9,10 @@ from flaskext.script import Server as BaseServer
 from flaskext.script import Shell as BaseShell
 
 from tango.app import Tango
+from tango.factory import get_app
 from tango.factory.snapshot import build_snapshot
 from tango.imports import module_exists
 import tango
-import tango.factory
 import tango.factory.stash
 
 commands = []
@@ -24,23 +24,6 @@ def validate_site(site):
         print "Cannot find site '%s'." % site
         # /usr/include/sysexits.h defines EX_NOINPUT 66 as: cannot open input
         sys.exit(66)
-
-
-def build_app(site, **options):
-    """Build a Tango app object from a site name, long or short name.
-
-    >>> build_app('simplesite') # doctest:+ELLIPSIS
-    <tango.app.Tango object at 0x...>
-    >>> build_app('testsite') # doctest:+ELLIPSIS
-    <tango.app.Tango object at 0x...>
-    >>> build_app('importerror') # doctest:+ELLIPSIS
-    Traceback (most recent call last):
-      ...
-    ImportError: No module named doesnotexist
-    >>>
-    """
-    validate_site(site)
-    return tango.factory.build_app(site, **options)
 
 
 def command(function):
@@ -62,7 +45,8 @@ def version():
 @command
 def snapshot(site):
     "Pull context from a stashable Tango site and store it into an image file."
-    app = build_app(site, import_stash=True, use_snapshot=False)
+    validate_site(site)
+    app = get_app(site, import_stash=True, use_snapshot=False)
     filename = build_snapshot(app)
     print 'Snapshot of full stashable template context:', filename
 
@@ -81,8 +65,6 @@ class Manager(BaseManager):
         return BaseManager.handle(self, prog, *args, **kwargs)
 
 
-# TODO: Server & Shell should look for app in site before using build_app.
-# Developers are free to extend app as desired beyond build_app.
 class Server(BaseServer):
     description = "Run a Tango site on the local machine, for development."
 
@@ -90,7 +72,8 @@ class Server(BaseServer):
         return (Option('site'),) + BaseServer.get_options(self)
 
     def handle(self, _, site, host, port, use_debugger, use_reloader):
-        app = build_app(site)
+        validate_site(site)
+        app = get_app(site)
         app.run(host=host, port=port, debug=use_debugger,
                 use_debugger=use_debugger, use_reloader=use_reloader,
                 **self.server_options)
@@ -103,7 +86,8 @@ class Shell(BaseShell):
         return (Option('site'),) + BaseShell.get_options(self)
 
     def handle(self, _, site, *args, **kwargs):
-        app = build_app(site)
+        validate_site(site)
+        app = get_app(site)
         Command.handle(self, app, *args, **kwargs)
 
 

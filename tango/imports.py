@@ -284,11 +284,18 @@ def module_is_package(module_or_name):
 def package_submodule(hierarchical_module_name):
     """Provide package name, submodule name from dotted module name.
 
+    Could also be called module_attr or object_attr, but is intended for
+    handling dotted module names.
+
+    Contrast with root_package.
+
     Example:
     >>> package_submodule('simplesite')
     (None, 'simplesite')
     >>> package_submodule('tango.factory')
     ('tango', 'factory')
+    >>> package_submodule('tango.factory.stash')
+    ('tango.factory', 'stash')
     >>> package_submodule('tango')
     (None, 'tango')
     >>> package_submodule('')
