@@ -1,9 +1,12 @@
 "Core configuration directives for Tango framework and new Tango objects."
 
-import os
-
+from tango.shelf import SqliteConnector
 from tango.writers import TextWriter
 
+
+# Default stash shelf configuration.
+SHELF_CONNECTOR_CLASS = SqliteConnector
+SQLITE_FILEPATH = '/tmp/tango.db'
 
 # Response defaults.
 DEFAULT_WRITER = TextWriter()
