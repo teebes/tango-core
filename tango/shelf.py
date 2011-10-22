@@ -48,7 +48,7 @@ class SqliteConnector(BaseConnector):
                                 'ORDER BY id DESC;', (site, rule))
             result = cursor.fetchone()
             if result is None:
-                return None
+                return {}
             return pickle.loads(str(result[0]))
 
     def put(self, site, rule, context):
