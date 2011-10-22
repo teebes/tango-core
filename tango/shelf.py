@@ -4,7 +4,9 @@ import os
 import cPickle as pickle
 import pickletools
 from contextlib import closing
+from cPickle import HIGHEST_PROTOCOL
 from sqlite3 import dbapi2 as sqlite3
+from sqlite3 import Binary as blobify
 
 
 class BaseConnector(object):
@@ -56,7 +58,9 @@ class SqliteConnector(BaseConnector):
             # Check to see if the context is already shelved.
             cursor = db.execute('SELECT id FROM contexts '
                                 'WHERE site = ? AND rule = ?;', (site, rule))
-            serialized = pickletools.optimize(pickle.dumps(context))
+            serialized = pickle.dumps(context, HIGHEST_PROTOCOL)
+            # Optimize pickle size, and conform it to sqlite's BLOB type.
+            serialized = blobify(pickletools.optimize(serialized))
             if cursor.fetchone() is None:
                 db.execute('INSERT INTO contexts '
                            '(site, rule, context) VALUES (?, ?, ?);',
