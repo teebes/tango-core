@@ -21,7 +21,7 @@ class AppInitTestCase(TestCase):
         self.assertEqual(response.status_code, 200)
 
     def test_config(self):
-        self.assertEqual(self.app.config['TANGO_BUILD_DIR'], 'simplesite')
+        self.assertEqual(self.app.config['DEFAULT_DATE_FORMAT'], '%Y-%m-%d')
 
 if __name__ == '__main__':
     unittest.main()
