@@ -18,6 +18,14 @@ import tango.factory.stash
 commands = []
 
 
+def validate_site(site):
+    "Verify site exists, and abort if it does not."
+    if not module_exists(site):
+        print "Cannot find site '%s'." % site
+        # /usr/include/sysexits.h defines EX_NOINPUT 66 as: cannot open input
+        sys.exit(66)
+
+
 def build_app(site, **options):
     """Build a Tango app object from a site name, long or short name.
 
@@ -31,9 +39,7 @@ def build_app(site, **options):
     ImportError: No module named doesnotexist
     >>>
     """
-    if not module_exists(site):
-        print "Cannot find site '%s'." % site
-        sys.exit(7)
+    validate_site(site)
     return tango.factory.build_app(site, **options)
 
 
@@ -64,6 +70,7 @@ def snapshot(site):
 @command
 def shelve(site, outfile=None):
     "Shelve an application's stash, as a worker process."
+    validate_site(site)
     if outfile is None:
         report_file = sys.stdout
     else:
