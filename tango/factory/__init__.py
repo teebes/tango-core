@@ -1,6 +1,6 @@
 "Package to instantiate a Tango object from a Tango stash module."
 
-from sys import stderr
+from sys import stdout
 
 from flask import request
 from werkzeug import create_environ
@@ -58,7 +58,7 @@ def build_app(import_name, import_stash=False, use_snapshot=True,
             module = __import__(import_name)
         build_options = {'import_stash': import_stash}
         if verbose:
-            build_options['report_file'] = stderr
+            build_options['report_file'] = stdout
         routes = build_module_routes(module, **build_options)
     else:
         print 'Using snapshot with stashed template context.'
