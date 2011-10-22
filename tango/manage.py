@@ -62,9 +62,13 @@ def snapshot(site):
 
 
 @command
-def shelve(site):
+def shelve(site, outfile=None):
     "Shelve an application's stash, as a worker process."
-    tango.factory.stash.shelve(site)
+    if outfile is None:
+        report_file = sys.stdout
+    else:
+        report_file = open(outfile, 'w')
+    tango.factory.stash.shelve(site, report_file=report_file)
 
 
 class Manager(BaseManager):
