@@ -6,7 +6,7 @@ In production, use the sitename appropriate to your project.
 
 Import Tango's command-line module.
 
->>> from tango import manage
+>>> import tango.manage
 
 
 Build a test harness.
@@ -19,8 +19,8 @@ Build a test harness.
 ...     if command is not None:
 ...         args = command.split(' ')
 ...     previous_argv = sys.argv
-...     sys.argv = ['tango/manage.py'] + args
-...     manage.run()
+...     sys.argv = ['tango'] + args
+...     tango.manage.run()
 ...     sys.argv = previous_argv
 >>>
 
@@ -97,6 +97,35 @@ Remove snapshot.
 >>>
 
 
+Command line: ``tango shelve testsite`` (twice)
+
+>>> call('shelve testsite')
+Stashing testsite.stash ... done.
+Stashing testsite.stash.blankexport ... done.
+Stashing testsite.stash.blankrouting ... done.
+Stashing testsite.stash.emptyrouting ... done.
+Stashing testsite.stash.index ... done.
+Stashing testsite.stash.multiple ... done.
+Stashing testsite.stash.noexports ... done.
+Stashing testsite.stash.norouting ... done.
+Stashing testsite.stash.package.module ... done.
+Stashing testsite.stash.routing ... done.
+>>>
+
+>>> call('shelve testsite')
+Stashing testsite.stash ... done.
+Stashing testsite.stash.blankexport ... done.
+Stashing testsite.stash.blankrouting ... done.
+Stashing testsite.stash.emptyrouting ... done.
+Stashing testsite.stash.index ... done.
+Stashing testsite.stash.multiple ... done.
+Stashing testsite.stash.noexports ... done.
+Stashing testsite.stash.norouting ... done.
+Stashing testsite.stash.package.module ... done.
+Stashing testsite.stash.routing ... done.
+>>>
+
+
 Command line: ``tango shell --no-ipython simplesite``
 
 >>> call('shell --no-ipython simplesite')
@@ -163,6 +192,15 @@ SystemExit: 7
 Command line: ``tango shell doesnotexist``
 
 >>> call('shell doesnotexist')
+Traceback (most recent call last):
+    ...
+SystemExit: 7
+>>>
+
+
+Command line: ``tango shelve doesnotexist``
+
+>>> call('shelve doesnotexist')
 Traceback (most recent call last):
     ...
 SystemExit: 7
