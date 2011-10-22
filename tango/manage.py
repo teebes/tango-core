@@ -74,6 +74,8 @@ class Manager(BaseManager):
         return BaseManager.handle(self, prog, *args, **kwargs)
 
 
+# TODO: Server & Shell should look for app in site before using build_app.
+# Developers are free to extend app as desired beyond build_app.
 class Server(BaseServer):
     description = "Run a Tango site on the local machine, for development."
 
