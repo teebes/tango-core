@@ -44,6 +44,7 @@ Command line: ``tango``
   shell     Runs a Python shell inside Tango application context.
   serve     Run a Tango site on the local machine, for development.
   version   Display this version of Tango.
+  shelve    Shelve an application's stash, as a worker process.
 >>>
 
 

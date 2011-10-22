@@ -13,7 +13,7 @@ from tango.factory.snapshot import build_snapshot
 from tango.imports import module_exists
 import tango
 import tango.factory
-
+import tango.factory.stash
 
 commands = []
 
@@ -59,6 +59,12 @@ def snapshot(site):
     app = build_app(site, import_stash=True, use_snapshot=False)
     filename = build_snapshot(app)
     print 'Snapshot of full stashable template context:', filename
+
+
+@command
+def shelve(site):
+    "Shelve an application's stash, as a worker process."
+    tango.factory.stash.shelve(site)
 
 
 class Manager(BaseManager):
