@@ -1,6 +1,5 @@
 "Shelf connectors for persisting stashed template context variables."
 
-import os
 import cPickle as pickle
 import pickletools
 from contextlib import closing
@@ -22,10 +21,10 @@ class BaseConnector(object):
 
 class SqliteConnector(BaseConnector):
     def initialize(self):
-        try:
-            os.stat(self.app.config['SQLITE_FILEPATH'])
-        except OSError:
-            with self.connect(initialize=False) as db:
+        with self.connect(initialize=False) as db:
+            cursor = db.execute("SELECT name FROM sqlite_master "
+                                "WHERE type='table' AND name='contexts';")
+            if cursor.fetchone() is None:
                 db.cursor().executescript("""
                     CREATE TABLE contexts (
                         id INTEGER PRIMARY KEY AUTOINCREMENT,
