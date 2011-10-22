@@ -9,7 +9,7 @@ from flaskext.script import Server as BaseServer
 from flaskext.script import Shell as BaseShell
 
 from tango.app import Tango
-from tango.factory import get_app
+from tango.factory.app import get_app
 from tango.factory.snapshot import build_snapshot
 from tango.imports import module_exists
 import tango

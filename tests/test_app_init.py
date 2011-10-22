@@ -2,7 +2,7 @@ import unittest
 
 from flaskext.testing import TestCase
 
-from tango.factory import build_app
+from tango.factory.app import build_app
 
 
 class AppInitTestCase(TestCase):

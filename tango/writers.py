@@ -112,7 +112,7 @@ class TemplateWriter(BaseWriter):
     register as a writer under the name of the template.
 
     Test:
-    >>> from tango.factory import build_app
+    >>> from tango.factory.app import build_app
     >>> app = build_app('simplesite')
     >>> ctx = app.test_request_context()
     >>> ctx.push()

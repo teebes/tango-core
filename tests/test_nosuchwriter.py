@@ -1,7 +1,7 @@
 import unittest
 
 from tango.errors import NoSuchWriterException
-from tango.factory import build_app
+from tango.factory.app import build_app
 
 
 class NoSuchWriterTestCase(unittest.TestCase):

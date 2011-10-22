@@ -1,6 +1,6 @@
 "Shelve an application's stash."
 
-from tango.factory import build_app
+from tango.factory.app import build_app
 
 
 def shelve(import_name, report_file=None):
