@@ -100,29 +100,53 @@ Remove snapshot.
 Command line: ``tango shelve testsite`` (twice)
 
 >>> call('shelve testsite')
-Stashing testsite.stash ... done.
-Stashing testsite.stash.blankexport ... done.
-Stashing testsite.stash.blankrouting ... done.
-Stashing testsite.stash.emptyrouting ... done.
-Stashing testsite.stash.index ... done.
-Stashing testsite.stash.multiple ... done.
-Stashing testsite.stash.noexports ... done.
-Stashing testsite.stash.norouting ... done.
-Stashing testsite.stash.package.module ... done.
-Stashing testsite.stash.routing ... done.
+Loading testsite.stash ... done.
+Loading testsite.stash.blankexport ... done.
+Loading testsite.stash.blankrouting ... done.
+Loading testsite.stash.emptyrouting ... done.
+Loading testsite.stash.index ... done.
+Loading testsite.stash.multiple ... done.
+Loading testsite.stash.noexports ... done.
+Loading testsite.stash.norouting ... done.
+Loading testsite.stash.package.module ... done.
+Loading testsite.stash.routing ... done.
+Stashing test / ... done.
+Stashing test /another/<argument>/ ... done.
+Stashing test /blank/export.txt ... done.
+Stashing test /blank/routing.txt ... done.
+Stashing test /files/page-<parameter>.html ... done.
+Stashing test /index.json ... done.
+Stashing test /norouting/<parameter>/ ... done.
+Stashing test /plain/<routing>.txt ... done.
+Stashing test /plain/exports.txt ... done.
+Stashing test /route1.txt ... done.
+Stashing test /route2.txt ... done.
+Stashing test /routing/<parameter>/ ... done.
 >>>
 
 >>> call('shelve testsite')
-Stashing testsite.stash ... done.
-Stashing testsite.stash.blankexport ... done.
-Stashing testsite.stash.blankrouting ... done.
-Stashing testsite.stash.emptyrouting ... done.
-Stashing testsite.stash.index ... done.
-Stashing testsite.stash.multiple ... done.
-Stashing testsite.stash.noexports ... done.
-Stashing testsite.stash.norouting ... done.
-Stashing testsite.stash.package.module ... done.
-Stashing testsite.stash.routing ... done.
+Loading testsite.stash ... done.
+Loading testsite.stash.blankexport ... done.
+Loading testsite.stash.blankrouting ... done.
+Loading testsite.stash.emptyrouting ... done.
+Loading testsite.stash.index ... done.
+Loading testsite.stash.multiple ... done.
+Loading testsite.stash.noexports ... done.
+Loading testsite.stash.norouting ... done.
+Loading testsite.stash.package.module ... done.
+Loading testsite.stash.routing ... done.
+Stashing test / ... done.
+Stashing test /another/<argument>/ ... done.
+Stashing test /blank/export.txt ... done.
+Stashing test /blank/routing.txt ... done.
+Stashing test /files/page-<parameter>.html ... done.
+Stashing test /index.json ... done.
+Stashing test /norouting/<parameter>/ ... done.
+Stashing test /plain/<routing>.txt ... done.
+Stashing test /plain/exports.txt ... done.
+Stashing test /route1.txt ... done.
+Stashing test /route2.txt ... done.
+Stashing test /routing/<parameter>/ ... done.
 >>>
 
 

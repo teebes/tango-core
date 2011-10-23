@@ -45,7 +45,7 @@ def build_module_routes(import_name, import_stash=False, report_file=None):
             continue
         if import_stash:
             if report_file is not None:
-                report_file.write('Stashing {0} ... '.format(name))
+                report_file.write('Loading {0} ... '.format(name))
             module_routes = pull_context(module_routes)
             if report_file is not None:
                 report_file.write('done.\n')

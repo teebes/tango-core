@@ -7,4 +7,9 @@ def shelve(import_name, report_file=None):
     app = build_app(import_name, import_stash=True, use_snapshot=False,
                     report_file=report_file)
     for route in app.routes:
-        app.connector.put(route.site, route.rule, route.context)
+        site, rule, context = route.site, route.rule, route.context
+        if report_file is not None:
+            report_file.write('Stashing {0} {1} ... '.format(site, rule))
+        app.connector.put(site, rule, context)
+        if report_file is not None:
+            report_file.write('done.\n')
