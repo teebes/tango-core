@@ -9,6 +9,8 @@ SHELF_CONNECTOR_CLASS = SqliteConnector
 SQLITE_FILEPATH = '/tmp/tango.db'
 
 # Response defaults.
+# It might be tempting to use a default writer class and not instance.
+# But the writer is a callable not a data structure.
 DEFAULT_WRITER = TextWriter()
 
 # Date formats.
