@@ -32,6 +32,14 @@ def get_app(site, **options):
       ...
     ImportError: No module named doesnotexist
     >>>
+
+    Here's a simple app which has both a stash and app additions:
+    >>> app = get_app('hybrid')
+    >>> app # doctest:+ELLIPSIS
+    <tango.app.Tango object at 0x...>
+    >>> app.this_was_added_after_stash
+    'Hello, world!'
+    >>>
     """
     module = __import__(site)
     # Prefer app defined in module over a newly built app from the site stash.
