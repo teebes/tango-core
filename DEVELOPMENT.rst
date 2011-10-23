@@ -16,8 +16,6 @@ Todos:
 
 * TODO: support app.TAB tab completion with code.interact
 * TODO: Build a utility to determine if a link is internal/external to app.
-* TODO: Provide an app-building option which only hits a specific context
-  module, for testing data/template integration in isolation.
 
 
 Tool ideas:

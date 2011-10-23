@@ -4,7 +4,8 @@ from flask import request
 from werkzeug import create_environ
 
 from tango.app import Tango
-from tango.imports import module_exists
+from tango.imports import get_module, module_exists
+from tango.imports import package_submodule, root_package
 import tango
 import tango.filters
 
@@ -44,22 +45,67 @@ def build_app(import_name, import_stash=False, use_snapshot=True,
               report_file=None):
     """Create a Tango application object from a Python import name.
 
-    Example, using the simplesite module in this project:
+    This function accepts three kinds of import names:
+
+    1. a single module name where the module is itself a stash
+    2. a package name which has a submodule or sub-package named 'stash'.
+    3. a dotted module name referring to a module inside a package's stash.
+
+    In case #1, the module is a self-contained application in one .py file.
+
+    In case #2, the package is arbitrarily laid out, but the stash module
+    inside it is one or more modules conforming to Tango's stash conventions.
+
+    In case #3, the module is inside a package matching case #2, but the import
+    name refers to a module which by itself would otherwise match case #1.
+    Case #3 is treated like case #1 with one important exception.  Since the
+    module is inside a package, that package is used as the application
+    object's import name for the purposes of loading configuration directives,
+    as stash modules are allowed to and encouraged to use their projects
+    config.py.  This is essential to shelving modules in isolation when working
+    with a stash package with more than one stash module.
+
+    Example, using the a single module called simplest.py (case #1):
+    >>> app = build_app('simplest')
+    >>> app.url_map # doctest:+NORMALIZE_WHITESPACE
+    Map([[<Rule '/static/<filename>' (HEAD, OPTIONS, GET) -> static>,
+          <Rule '/' (HEAD, OPTIONS, GET) -> />]])
+    >>>
+
+    Example, using the simplesite module in this project (case #2):
     >>> app = build_app('simplesite')
     >>> app.url_map # doctest:+NORMALIZE_WHITESPACE
     Map([[<Rule '/static/<filename>' (HEAD, OPTIONS, GET) -> static>,
           <Rule '/' (HEAD, OPTIONS, GET) -> />]])
     >>>
 
-    Example, using the a single module called simplest.py:
-    >>> app = build_app('simplest')
+    Example, using submodule in the stash in a package with config (case #3):
+    >>> app = build_app('simplesite.stash.index')
     >>> app.url_map # doctest:+NORMALIZE_WHITESPACE
     Map([[<Rule '/static/<filename>' (HEAD, OPTIONS, GET) -> static>,
           <Rule '/' (HEAD, OPTIONS, GET) -> />]])
     >>>
+
+    Example, using submodule in the stash in a package without config
+    (case #3 but identical to case #1):
+    >>> app = build_app('testsite.stash.package.module')
+    >>> app.url_map # doctest:+NORMALIZE_WHITESPACE
+    Map([[<Rule '/static/<filename>' (HEAD, OPTIONS, GET) -> static>,
+          <Rule '/index.json' (HEAD, OPTIONS, GET) -> /index.json>]])
+    >>>
     """
-    # Initialize application.
-    app = Tango(import_name)
+    # Initialize application. See docstring above for construction logic.
+    app = None
+    package_name, module_name = package_submodule(import_name)
+    if package_name and module_name:
+        # import_name points to submodule, look for package config.
+        root_package_name = root_package(import_name)
+        if module_exists(root_package_name + '.config'):
+            app = Tango(root_package_name)
+            app.config.from_object(root_package_name + '.config')
+
+    if app is None:
+        app = Tango(import_name)
 
     # Check for a site config.
     if module_exists(import_name + '.config'):
@@ -81,7 +127,7 @@ def build_app(import_name, import_stash=False, use_snapshot=True,
         if module_exists(import_name + '.stash'):
             module = __import__(import_name, fromlist=['stash']).stash
         else:
-            module = __import__(import_name)
+            module = get_module(import_name)
         build_options = {'import_stash': import_stash}
         build_options['report_file'] = report_file
         routes = build_module_routes(module, **build_options)

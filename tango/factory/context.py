@@ -211,6 +211,7 @@ def parse_header(import_name):
     """
     filepath = get_module_filepath(import_name)
     doc = get_module_docstring(filepath)
+
     if doc is None:
         return None
 
