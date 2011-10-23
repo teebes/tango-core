@@ -4,8 +4,8 @@ import cPickle as pickle
 import pickletools
 from contextlib import closing
 from cPickle import HIGHEST_PROTOCOL
-from sqlite3 import dbapi2 as sqlite3
 from sqlite3 import Binary as blobify
+from sqlite3 import dbapi2 as sqlite3
 
 
 class BaseConnector(object):
@@ -21,18 +21,19 @@ class BaseConnector(object):
 
 class SqliteConnector(BaseConnector):
     def initialize(self):
+        """ -- schema:
+        CREATE TABLE contexts (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            site TEXT NOT NULL,
+            rule TEXT NOT NULL,
+            context BLOB NOT NULL
+        );
+        """
         with self.connect(initialize=False) as db:
             cursor = db.execute("SELECT name FROM sqlite_master "
                                 "WHERE type='table' AND name='contexts';")
             if cursor.fetchone() is None:
-                db.cursor().executescript("""
-                    CREATE TABLE contexts (
-                        id INTEGER PRIMARY KEY AUTOINCREMENT,
-                        site TEXT NOT NULL,
-                        rule TEXT NOT NULL,
-                        context BLOB NOT NULL
-                    );
-                """)
+                db.cursor().executescript(self.initialize.func_doc)
 
     def connect(self, initialize=True):
         if initialize:
