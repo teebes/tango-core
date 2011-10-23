@@ -22,14 +22,16 @@ Create a test client.
 
 >>> client = app.test_client()
 
-Our route is ``/routing/<parameter>`` and the routed template only contains::
+Our route is ``/argument/<argument>/`` and the routed template only contains::
 
-    parameter: {{ parameter }}
+    argument: {{ argument }}
 
->>> client.get('/routing/testing/').data
-'parameter: testing'
+>>> client.get('/argument/testing/').data
+'argument: testing'
+>>>
 
->>> client.get('/routing/this_is_my_parameter/').data
-'parameter: this_is_my_parameter'
+>>> client.get('/argument/this_is_my_argument/').data
+'argument: this_is_my_argument'
+>>>
 
 I'm convinced this works.  Are you convinced?

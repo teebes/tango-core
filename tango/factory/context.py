@@ -20,17 +20,12 @@ def build_module_routes(import_name, import_stash=False, report_file=None):
     >>> build_module_routes('testsite.stash')
     ... # doctest: +ELLIPSIS, +NORMALIZE_WHITESPACE
     [<Route: /, template:index.html>,
-     <Route: /another/<argument>/, template:argument.html>,
+     <Route: /argument/<argument>/, template:argument.html>,
      <Route: /blank/export.txt>,
-     <Route: /blank/routing.txt>,
-     <Route: /files/page-<parameter>.html, template:parameter.html>,
      <Route: /index.json, json>,
-     <Route: /norouting/<parameter>/, template:parameter.html>,
-     <Route: /plain/<routing>.txt, text>,
      <Route: /plain/exports.txt, text>,
      <Route: /route1.txt>,
-     <Route: /route2.txt>,
-     <Route: /routing/<parameter>/, template:parameter.html>]
+     <Route: /route2.txt>]
     >>>
 
     :param import_name: Tango site stash import name
@@ -91,8 +86,11 @@ def pull_context(route_objs):
     [<Route: /route1.txt>, <Route: /route2.txt>]
     >>> routes[0].context == routes[1].context
     True
-    >>> routes[0].context
-    {'count': 2, 'name': 'multiple.py context', 'sequence': [4, 5, 6]}
+    >>> routes[0].context # doctest: +ELLIPSIS, +NORMALIZE_WHITESPACE
+    {'count': 2,
+     'purpose': '...',
+     'name': 'multiple.py context',
+     'sequence': [4, 5, 6]}
     >>>
 
     >>> pull_context([]) is None
@@ -152,17 +150,6 @@ def parse_header(import_name):
     >>> route.context
     >>>
 
-    >>> routes = parse_header('testsite.stash.multiple')
-    >>> routes
-    [<Route: /route1.txt>, <Route: /route2.txt>]
-    >>> [route.site for route in routes]
-    ['test', 'test']
-    >>> routes[0].exports == routes[1].exports
-    True
-    >>> routes[0].exports
-    {'count': None, 'name': None, 'sequence': None}
-    >>>
-
     >>> routes = parse_header('testsite.stash.package.module')
     >>> routes
     [<Route: /index.json, json>]
@@ -175,18 +162,16 @@ def parse_header(import_name):
     []
     >>>
 
-    >>> routes = parse_header('testsite.stash.routing')
-    >>> routes # doctest:+NORMALIZE_WHITESPACE
-    [<Route: /another/<argument>/, template:argument.html>,
-     <Route: /files/page-<parameter>.html, template:parameter.html>,
-     <Route: /routing/<parameter>/, template:parameter.html>]
-    >>> routes[0].site == routes[1].site == routes[2].site == 'test'
+    >>> routes = parse_header('testsite.stash.multiple')
+    >>> routes
+    [<Route: /route1.txt>, <Route: /route2.txt>]
+    >>> routes[0].site == routes[1].site
     True
-    >>> routes[0].exports == routes[1].exports == routes[2].exports
+    >>> routes[0].exports == routes[1].exports
     True
     >>> routes[0].exports # doctest:+ELLIPSIS
-    {'purpose': '...'}
-    >>> routes[0].static == routes[1].static == routes[2].static
+    {'count': None, 'sequence': None, 'name': None, 'purpose': '...'}
+    >>> routes[0].static == routes[1].static
     True
     >>> routes[0].static
     ['purpose']

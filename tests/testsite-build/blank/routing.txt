@@ -1,1 +1,0 @@
-{'purpose': 'Test empty routing item.'}

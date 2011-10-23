@@ -23,5 +23,6 @@ class AppInitTestCase(TestCase):
     def test_config(self):
         self.assertEqual(self.app.config['DEFAULT_DATE_FORMAT'], '%Y-%m-%d')
 
+
 if __name__ == '__main__':
     unittest.main()

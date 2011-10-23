@@ -135,16 +135,13 @@ def discover_modules(module_or_name):
     testsite.stash
     testsite.stash.blank
     testsite.stash.blankexport
-    testsite.stash.blankrouting
     testsite.stash.dummy
-    testsite.stash.emptyrouting
     testsite.stash.index
     testsite.stash.multiple
     testsite.stash.noexports
-    testsite.stash.norouting
     testsite.stash.package
     testsite.stash.package.module
-    testsite.stash.routing
+    testsite.stash.view_arg
     >>> list(discover_modules('testsite.stash.index')) # doctest:+ELLIPSIS
     ['testsite.stash.index']
     >>>
@@ -159,16 +156,13 @@ def discover_modules(module_or_name):
     testsite.stash
     testsite.stash.blank
     testsite.stash.blankexport
-    testsite.stash.blankrouting
     testsite.stash.dummy
-    testsite.stash.emptyrouting
     testsite.stash.index
     testsite.stash.multiple
     testsite.stash.noexports
-    testsite.stash.norouting
     testsite.stash.package
     testsite.stash.package.module
-    testsite.stash.routing
+    testsite.stash.view_arg
     >>> import testsite.stash.index
     >>> list(discover_modules(testsite.stash.index))
     ['testsite.stash.index']
