@@ -41,6 +41,7 @@ def get_app(site, **options):
     'Hello, world!'
     >>>
     """
+    # TODO: Support single module stash without import.
     module = __import__(site)
     # Prefer app defined in module over a newly built app from the site stash.
     app = getattr(module, 'app', None)
