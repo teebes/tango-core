@@ -6,8 +6,8 @@ import yaml
 
 from tango.app import Route
 from tango.errors import DuplicateContextWarning, DuplicateExportWarning
-from tango.errors import DuplicateRouteWarning
-from tango.errors import HeaderException
+from tango.errors import DuplicateRouteWarning, HeaderException
+from tango.errors import ModuleNotFound
 from tango.imports import discover_modules, get_module
 from tango.imports import get_module_filepath, get_module_docstring
 
@@ -195,12 +195,26 @@ def parse_header(import_name):
     HeaderException: metadata docstring must be yaml or doc, but not both.
     >>>
 
+    >>> parse_header(None)
+    >>>
+
+    >>> parse_header('doesnotexist')
+    Traceback (most recent call last):
+      ...
+    ModuleNotFound: 'doesnotexist' cannot be found
+    >>>
+
     :param import_name: dotted name of Tango site stash module
     :type import_name: str
     """
-    filepath = get_module_filepath(import_name)
-    doc = get_module_docstring(filepath)
+    if import_name is None:
+        return None
 
+    filepath = get_module_filepath(import_name)
+    if filepath is None:
+        raise ModuleNotFound("'{0}' cannot be found".format(import_name))
+
+    doc = get_module_docstring(filepath)
     if doc is None:
         return None
 

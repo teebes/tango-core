@@ -17,6 +17,10 @@ class ConfigurationError(Exception):
     "Error in app.config, either a missing or wrongly set value."
 
 
+class ModuleNotFound(Exception):
+    "Error when requiring a Python module, but it's filepath cannot be found."
+
+
 class DuplicateWarning(Warning):
     "Base warning for reporting duplicates."
 
