@@ -218,9 +218,9 @@ SystemExit: 66
 Flask-Script v0.3.1 was swallowing IndexError exceptions.  Verify that the
 current packaging scheme for this project flows an IndexError through.
 
-Command line: ``tango shell indexerror``
+Command line: ``tango shelve indexerror``
 
->>> call('shell indexerror')
+>>> call('shelve indexerror')
 Traceback (most recent call last):
     ...
 IndexError: Flask-Script v0.3.1 was swallowing IndexError exceptions.

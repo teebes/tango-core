@@ -4,8 +4,8 @@ from flask import request
 from werkzeug import create_environ
 
 from tango.app import Tango
-from tango.imports import get_module, module_exists
-from tango.imports import package_submodule, root_package
+from tango.imports import module_exists, module_is_package
+from tango.imports import package_submodule, namespace_segments
 import tango
 import tango.filters
 
@@ -13,7 +13,7 @@ from tango.factory.context import build_module_routes
 from tango.factory.snapshot import get_snapshot
 
 
-def get_app(site, **options):
+def get_app(import_name, **options):
     """Get a Tango app object from a site by the given import name.
 
     This function looks for an object named app in the package or module
@@ -27,10 +27,8 @@ def get_app(site, **options):
     <tango.app.Tango object at 0x...>
     >>> get_app('testsite') # doctest:+ELLIPSIS
     <tango.app.Tango object at 0x...>
-    >>> get_app('importerror') # doctest:+ELLIPSIS
-    Traceback (most recent call last):
-      ...
-    ImportError: No module named doesnotexist
+    >>> get_app('simplest') # doctest:+ELLIPSIS
+    <tango.app.Tango object at 0x...>
     >>>
 
     Here's a simple app which has both a stash and app additions:
@@ -41,13 +39,15 @@ def get_app(site, **options):
     'Hello, world!'
     >>>
     """
-    # TODO: Support single module stash without import.
-    module = __import__(site)
-    # Prefer app defined in module over a newly built app from the site stash.
-    app = getattr(module, 'app', None)
-    if app is not None:
-        return app
-    return build_app(site, **options)
+    if module_is_package(import_name):
+        # This if-condition helps avoid importing single-module sites.
+        module = __import__(import_name)
+        # Prefer app defined in module over a newly built app from site stash.
+        app = getattr(module, 'app', None)
+        if app is not None:
+            return app
+    # Build the app if a single-module site, or no app is found in package.
+    return build_app(import_name, **options)
 
 
 def build_app(import_name, import_stash=False, use_snapshot=True,
@@ -108,7 +108,7 @@ def build_app(import_name, import_stash=False, use_snapshot=True,
     package_name, module_name = package_submodule(import_name)
     if package_name and module_name:
         # import_name points to submodule, look for package config.
-        root_package_name = root_package(import_name)
+        root_package_name = namespace_segments(import_name)[0]
         if module_exists(root_package_name + '.config'):
             app = Tango(root_package_name)
             app.config.from_object(root_package_name + '.config')
@@ -125,7 +125,9 @@ def build_app(import_name, import_stash=False, use_snapshot=True,
     ctx.push()
 
     # Load Tango filters.
-    tango.filters.init_app(app)
+    # Only needed for packages; single modules do not have implicit templates.
+    if module_is_package(import_name):
+        tango.filters.init_app(app)
 
     # Build application routes, checking for a snapshot first.
     routes = None
@@ -133,13 +135,13 @@ def build_app(import_name, import_stash=False, use_snapshot=True,
         routes = get_snapshot(import_name)
 
     if routes is None:
-        if module_exists(import_name + '.stash'):
-            module = __import__(import_name, fromlist=['stash']).stash
-        else:
-            module = get_module(import_name)
         build_options = {'import_stash': import_stash}
         build_options['report_file'] = report_file
-        routes = build_module_routes(module, **build_options)
+        if module_exists(import_name + '.stash'):
+            module = __import__(import_name, fromlist=['stash']).stash
+            routes = build_module_routes(module, **build_options)
+        else:
+            routes = build_module_routes(import_name, **build_options)
     else:
         print 'Using snapshot with stashed template context.'
     app.routes = routes

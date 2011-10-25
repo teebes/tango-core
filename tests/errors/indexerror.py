@@ -1,6 +1,6 @@
 """
 site: indexerror
-routes:
+routes: /
 exports:
 """
 

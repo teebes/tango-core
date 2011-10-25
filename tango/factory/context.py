@@ -12,7 +12,7 @@ from tango.imports import discover_modules, get_module
 from tango.imports import get_module_filepath, get_module_docstring
 
 
-def build_module_routes(import_name, import_stash=False, report_file=None):
+def build_module_routes(module_or_name, import_stash=False, report_file=None):
     """Discover modules & parse headers from a Tango stash import name.
 
     Returns list of Route objects with attributes via structured docstrings.
@@ -34,7 +34,7 @@ def build_module_routes(import_name, import_stash=False, report_file=None):
     """
     route_collection = []
 
-    for name in discover_modules(import_name):
+    for name in discover_modules(module_or_name):
         module_routes = parse_header(name)
         if not module_routes:
             continue

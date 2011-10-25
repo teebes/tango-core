@@ -54,6 +54,14 @@ def get_module_docstring(filepath):
     >>> print get_module_docstring(get_module_filepath('empty'))
     None
     >>>
+
+    This function must accept modules which have runtime errors.
+    >>> filepath = get_module_filepath('importerror')
+    >>> print get_module_docstring(filepath).strip()
+    site: importerror
+    routes:
+    exports:
+    >>>
     """
     # Keep these operations on separate lines, for exception line numbers.
     fd = open(filepath)
@@ -203,8 +211,6 @@ def module_exists(name):
     True
     >>> module_exists('simplest.config')
     False
-    >>> module_exists('importerror')
-    True
     >>> module_exists('testsite.stash.package.module')
     True
     >>> module_exists('testsite.stash.package.doesnotexist')
@@ -212,29 +218,49 @@ def module_exists(name):
     >>> module_exists('doesnotexist.module')
     False
     >>>
+
+    This function must work in the face of errors:
+    >>> module_exists('importerror')
+    True
+    >>> module_exists('importerror.config')
+    False
+    >>> module_exists('errorsite.stash')
+    True
+    >>> module_exists('errorsite.stash.importerror')
+    True
+    >>> module_exists('indexerror')
+    True
+    >>> module_exists('indexerror.config')
+    False
+    >>>
+
+    This function must also avoid supressing real ImportErrors.
+    In this example, importerror imports doesnotexist.
+    >>> module_exists('errorsite.stash.importerror.exists')
+    Traceback (most recent call last):
+       ...
+    ImportError: No module named doesnotexist
+    >>> module_exists('errorsite.stash.importerror.alsodoesnotexist')
+    Traceback (most recent call last):
+       ...
+    ImportError: No module named doesnotexist
+    >>>
     """
     # This function must be very careful not to suppress real ImportErrors.
-    package, submodule = package_submodule(name)
-    if package is None:
-        try:
-            imp.find_module(name)
-        except ImportError:
+    #
+    # pkgutil.get_loader triggers an ImportError when:
+    # * a package does not exist
+    # * the module matching root namespace in dotted name has an ImportError
+    names = namespace_segments(name)
+    name_count = len(names)
+    for x in range(1, name_count + 1):
+        loader = pkgutil.get_loader('.'.join(names[:x]))
+        if x == name_count:
+            return loader is not None
+        elif loader is None:
             return False
-        return True
-
-    root = root_package(package)
-    try:
-        pkg = imp.find_module(root)
-    except ImportError:
-        return False
-
-    pkg = __import__(root)
-    if not module_is_package(pkg):
-        return False
-    for _, x, _ in pkgutil.walk_packages(pkg.__path__, pkg.__name__+'.'):
-        if x == name:
-            return True
-    return False
+        elif loader.etc[2] != imp.PKG_DIRECTORY:
+            return False
 
 
 def module_is_package(module_or_name):
@@ -246,6 +272,8 @@ def module_is_package(module_or_name):
     >>> module_is_package('testsite')
     True
     >>> module_is_package('simplest')
+    False
+    >>> module_is_package('importerror')
     False
     >>> module_is_package('doesnotexist')
     >>>
@@ -281,7 +309,7 @@ def package_submodule(hierarchical_module_name):
     Could also be called module_attr or object_attr, but is intended for
     handling dotted module names.
 
-    Contrast with root_package.
+    Contrast with namespace_segments function.
 
     Example:
     >>> package_submodule('simplesite')
@@ -300,22 +328,31 @@ def package_submodule(hierarchical_module_name):
     return str('.'.join(tokens[:-1])) or None, str(tokens[-1]) or None
 
 
-def root_package(hierarchical_module_name):
-    """Provide the root package name from a dotted module name.
+def namespace_segments(hierarchical_module_name):
+    """Provide the namespace segments from a dotted module name.
 
     Example:
-    >>> root_package('tango.factory')
-    'tango'
-    >>> root_package('tango.imports')
-    'tango'
-    >>> root_package('testsite')
-    'testsite'
-    >>> root_package('testsite.stash')
-    'testsite'
-    >>> root_package('testsite.stash.package')
-    'testsite'
-    >>> root_package('testsite.stash.package.module')
-    'testsite'
+    >>> namespace_segments('tango.factory')
+    ('tango', 'factory')
+    >>> namespace_segments('tango.factory.stash')
+    ('tango', 'factory', 'stash')
+    >>> namespace_segments('tango.imports')
+    ('tango', 'imports')
+    >>> namespace_segments('simplesite')
+    ('simplesite',)
+    >>> namespace_segments('testsite')
+    ('testsite',)
+    >>> namespace_segments('testsite.stash')
+    ('testsite', 'stash')
+    >>> namespace_segments('testsite.stash.package')
+    ('testsite', 'stash', 'package')
+    >>> namespace_segments('testsite.stash.package.module')
+    ('testsite', 'stash', 'package', 'module')
+    >>>
+
+    It does not matter if the identified module does not exist:
+    >>> namespace_segments('errorsite.stash.importerror.doesnotexist')
+    ('errorsite', 'stash', 'importerror', 'doesnotexist')
     >>>
     """
-    return hierarchical_module_name.split('.')[0]
+    return tuple(hierarchical_module_name.split('.'))

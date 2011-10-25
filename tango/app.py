@@ -7,6 +7,7 @@ from werkzeug.utils import get_content_type
 
 import tango
 from tango.errors import NoSuchWriterException
+from tango.imports import module_is_package
 from tango.writers import TemplateWriter, TextWriter, JsonWriter
 
 
@@ -20,9 +21,10 @@ class Tango(Flask):
     "Application class for a Tango site."
 
     def __init__(self, import_name, *args, **kwargs):
-        # Flask.__init__ sets static path based on sys.modules.
-        # As such, import the package here to ensure it's in sys.modules.
-        __import__(import_name)
+        if module_is_package(import_name):
+            # Flask.__init__ sets static path based on sys.modules.
+            # As such, import the package here to ensure it's in sys.modules.
+            __import__(import_name)
         Flask.__init__(self, import_name, *args, **kwargs)
         self.set_default_config()
         self.writers = {}
