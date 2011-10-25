@@ -373,3 +373,28 @@ def namespace_segments(hierarchical_module_name):
     >>>
     """
     return tuple(hierarchical_module_name.split('.'))
+
+
+def fix_import_name_if_pyfile(import_name):
+    """Fix the import name if it's actually a module filename.
+
+    Example:
+    >>> fix_import_name_if_pyfile('simplest.py')
+    'simplest'
+    >>> fix_import_name_if_pyfile('simplest')
+    'simplest'
+    >>> fix_import_name_if_pyfile('simplesite')
+    'simplesite'
+    >>>
+
+    Again, does not import modules:
+    >>> fix_import_name_if_pyfile('importerror.py')
+    'importerror'
+    >>> fix_import_name_if_pyfile('importerror')
+    'importerror'
+    >>>
+    """
+    package, submodule = package_submodule(import_name)
+    if package and submodule == 'py' and not module_is_package(package):
+        import_name = package
+    return import_name

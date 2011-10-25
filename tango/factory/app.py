@@ -6,6 +6,7 @@ from werkzeug import create_environ
 from tango.app import Tango
 from tango.imports import module_exists, module_is_package
 from tango.imports import package_submodule, namespace_segments
+from tango.imports import fix_import_name_if_pyfile
 import tango
 import tango.filters
 
@@ -38,9 +39,23 @@ def get_app(import_name, **options):
     >>> app.this_was_added_after_stash
     'Hello, world!'
     >>>
+
+    For convenience in development, particularly with shell tab completion,
+    a .py module name is also accepted:
+    >>> get_app('simplest.py') # doctest:+ELLIPSIS
+    <tango.app.Tango object at 0x...>
+    >>>
+
+    Avoids import side effects:
+    >>> get_app('importerror.py') # doctest:+ELLIPSIS
+    <tango.app.Tango object at 0x...>
+    >>> get_app('importerror') # doctest:+ELLIPSIS
+    <tango.app.Tango object at 0x...>
+    >>>
     """
+    import_name = fix_import_name_if_pyfile(import_name)
+    # If import is a package, see use it's app if it has one.
     if module_is_package(import_name):
-        # This if-condition helps avoid importing single-module sites.
         module = __import__(import_name)
         # Prefer app defined in module over a newly built app from site stash.
         app = getattr(module, 'app', None)
@@ -106,7 +121,22 @@ def build_app(import_name, import_stash=False, use_snapshot=True,
     [<Rule '/index.json' (HEAD, OPTIONS, GET) -> /index.json>,
      <Rule '/static/<filename>' (HEAD, OPTIONS, GET) -> static>]
     >>>
+
+    For convenience in development, particularly with shell tab completion,
+    a .py module name is also accepted:
+    >>> build_app('simplest.py') # doctest:+ELLIPSIS
+    <tango.app.Tango object at 0x...>
+    >>>
+
+    Avoids import side effects:
+    >>> build_app('importerror.py') # doctest:+ELLIPSIS
+    <tango.app.Tango object at 0x...>
+    >>> build_app('importerror') # doctest:+ELLIPSIS
+    <tango.app.Tango object at 0x...>
+    >>>
     """
+    import_name = fix_import_name_if_pyfile(import_name)
+
     # Initialize application. See docstring above for construction logic.
     app = None
     package_name, module_name = package_submodule(import_name)

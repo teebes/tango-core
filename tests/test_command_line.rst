@@ -69,10 +69,47 @@ Called tango.app.Tango.run(
 >>>
 
 
+Command line: ``tango serve simplest``
+
+>>> call('serve simplest')
+Called tango.app.Tango.run(
+    debug=True,
+    host='127.0.0.1',
+    port=5000,
+    use_debugger=True,
+    use_reloader=True)
+>>>
+
+
+Command line: ``tango serve simplest.py``
+
+>>> call('serve simplest.py')
+Called tango.app.Tango.run(
+    debug=True,
+    host='127.0.0.1',
+    port=5000,
+    use_debugger=True,
+    use_reloader=True)
+>>>
+
+
 Command line: ``tango snapshot simplesite``
 
 >>> call('snapshot simplesite')
 Snapshot of full stashable template context: simplesite.dat
+
+
+Command line: ``tango snapshot simplest``
+
+>>> call('snapshot simplest')
+Snapshot of full stashable template context: simplest.dat
+>>>
+
+
+Command line: ``tango snapshot simplest.py``
+
+>>> call('snapshot simplest.py')
+Snapshot of full stashable template context: simplest.dat
 >>>
 
 
@@ -89,10 +126,38 @@ Called tango.app.Tango.run(
 >>>
 
 
+Command line: ``tango serve simplest`` with snapshot available
+
+>>> call('serve simplest')
+Using snapshot with stashed routes.
+Called tango.app.Tango.run(
+    debug=True,
+    host='127.0.0.1',
+    port=5000,
+    use_debugger=True,
+    use_reloader=True)
+>>>
+
+
+Command line: ``tango serve simplest.py`` with snapshot available
+
+>>> call('serve simplest.py')
+Using snapshot with stashed routes.
+Called tango.app.Tango.run(
+    debug=True,
+    host='127.0.0.1',
+    port=5000,
+    use_debugger=True,
+    use_reloader=True)
+>>>
+
+
 Remove snapshot.
 
 >>> import os
 >>> os.system('rm -f simplesite.dat')
+0
+>>> os.system('rm -f simplest.dat')
 0
 >>>
 
@@ -134,9 +199,41 @@ Stashing test /route2.txt ... done.
 >>>
 
 
+Command line: ``tango shelve simplest``
+
+>>> call('shelve simplest')
+Loading simplest ... done.
+Stashing simplest / ... done.
+>>>
+
+
+Command line: ``tango shelve simplest.py``
+
+>>> call('shelve simplest.py')
+Loading simplest ... done.
+Stashing simplest / ... done.
+>>>
+
+
 Command line: ``tango shell --no-ipython simplesite``
 
 >>> call('shell --no-ipython simplesite')
+... # doctest:+ELLIPSIS
+Called code.interact('', local={'app': <tango.app.Tango object at 0x...>})
+>>>
+
+
+Command line: ``tango shell --no-ipython simplest``
+
+>>> call('shell --no-ipython simplest')
+... # doctest:+ELLIPSIS
+Called code.interact('', local={'app': <tango.app.Tango object at 0x...>})
+>>>
+
+
+Command line: ``tango shell --no-ipython simplest.py``
+
+>>> call('shell --no-ipython simplest.py')
 ... # doctest:+ELLIPSIS
 Called code.interact('', local={'app': <tango.app.Tango object at 0x...>})
 >>>
