@@ -259,7 +259,7 @@ def module_exists(name):
             return loader is not None
         elif loader is None:
             return False
-        elif loader.etc[2] != imp.PKG_DIRECTORY:
+        elif not loader_is_for_package(loader):
             return False
 
 
@@ -298,9 +298,26 @@ def module_is_package(module_or_name):
         loader = pkgutil.get_loader(name)
         if loader is None:
             return None
-        # Provides a simpler interface to loader.is_package(fullname).
-        # loader.is_package requires fullname argument, even though it isn't used.
-        return loader.etc[2] == imp.PKG_DIRECTORY
+        return loader_is_for_package(loader)
+
+
+def loader_is_for_package(loader):
+    """Provides a simpler interface to loader.is_package(fullname).
+
+    loader.is_package requires fullname argument, even though it isn't used.
+
+    Example:
+    >>> loader_is_for_package(pkgutil.get_loader('simplesite'))
+    True
+    >>> loader_is_for_package(pkgutil.get_loader('simplest'))
+    False
+    >>> loader_is_for_package(None)
+    False
+    >>>
+    """
+    if loader is None:
+        return False
+    return loader.etc[2] == imp.PKG_DIRECTORY
 
 
 def package_submodule(hierarchical_module_name):
