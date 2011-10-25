@@ -76,31 +76,35 @@ def build_app(import_name, import_stash=False, use_snapshot=True,
 
     Example, using a single module called simplest.py (case #1):
     >>> app = build_app('simplest')
-    >>> app.url_map # doctest:+NORMALIZE_WHITESPACE
-    Map([[<Rule '/static/<filename>' (HEAD, OPTIONS, GET) -> static>,
-          <Rule '/' (HEAD, OPTIONS, GET) -> />]])
+    >>> sorted(app.url_map.iter_rules(), key=lambda rule: rule.rule)
+    ... # doctest:+NORMALIZE_WHITESPACE
+    [<Rule '/' (HEAD, OPTIONS, GET) -> />,
+     <Rule '/static/<filename>' (HEAD, OPTIONS, GET) -> static>]
     >>>
 
     Example, using the simplesite module in this project (case #2):
     >>> app = build_app('simplesite')
-    >>> app.url_map # doctest:+NORMALIZE_WHITESPACE
-    Map([[<Rule '/static/<filename>' (HEAD, OPTIONS, GET) -> static>,
-          <Rule '/' (HEAD, OPTIONS, GET) -> />]])
+    >>> sorted(app.url_map.iter_rules(), key=lambda rule: rule.rule)
+    ... # doctest:+NORMALIZE_WHITESPACE
+    [<Rule '/' (HEAD, OPTIONS, GET) -> />,
+     <Rule '/static/<filename>' (HEAD, OPTIONS, GET) -> static>]
     >>>
 
     Example, using submodule in the stash in a package with config (case #3):
     >>> app = build_app('simplesite.stash.index')
-    >>> app.url_map # doctest:+NORMALIZE_WHITESPACE
-    Map([[<Rule '/static/<filename>' (HEAD, OPTIONS, GET) -> static>,
-          <Rule '/' (HEAD, OPTIONS, GET) -> />]])
+    >>> sorted(app.url_map.iter_rules(), key=lambda rule: rule.rule)
+    ... # doctest:+NORMALIZE_WHITESPACE
+    [<Rule '/' (HEAD, OPTIONS, GET) -> />,
+     <Rule '/static/<filename>' (HEAD, OPTIONS, GET) -> static>]
     >>>
 
     Example, using submodule in the stash in a package without config
     (case #3 but identical to case #1):
     >>> app = build_app('testsite.stash.package.module')
-    >>> app.url_map # doctest:+NORMALIZE_WHITESPACE
-    Map([[<Rule '/static/<filename>' (HEAD, OPTIONS, GET) -> static>,
-          <Rule '/index.json' (HEAD, OPTIONS, GET) -> /index.json>]])
+    >>> sorted(app.url_map.iter_rules(), key=lambda rule: rule.rule)
+    ... # doctest:+NORMALIZE_WHITESPACE
+    [<Rule '/index.json' (HEAD, OPTIONS, GET) -> /index.json>,
+     <Rule '/static/<filename>' (HEAD, OPTIONS, GET) -> static>]
     >>>
     """
     # Initialize application. See docstring above for construction logic.
