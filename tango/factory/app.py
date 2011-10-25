@@ -143,7 +143,7 @@ def build_app(import_name, import_stash=False, use_snapshot=True,
         else:
             routes = build_module_routes(import_name, **build_options)
     else:
-        print 'Using snapshot with stashed template context.'
+        print 'Using snapshot with stashed routes.'
     app.routes = routes
 
     # Stitch together context, template, and path.

@@ -79,7 +79,7 @@ Snapshot of full stashable template context: simplesite.dat
 Command line: ``tango serve simplesite`` with snapshot available
 
 >>> call('serve simplesite')
-Using snapshot with stashed template context.
+Using snapshot with stashed routes.
 Called tango.app.Tango.run(
     debug=True,
     host='127.0.0.1',
