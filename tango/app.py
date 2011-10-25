@@ -87,7 +87,7 @@ class Tango(Flask):
     def connector(self):
         return self.config['SHELF_CONNECTOR_CLASS'](self)
 
-    def build_view(self, route):
+    def build_view(self, route, **options):
         site = route.site
         rule = route.rule
         writer = self.get_writer(route.writer_name)
@@ -96,7 +96,7 @@ class Tango(Flask):
             ctx.mimetype = writer.mimetype
             return writer.write(self.connector.get(site, rule))
         view.__name__ = route.rule
-        return self.route(route.rule)(view)
+        return self.route(route.rule, **options)(view)
 
     def process_response(self, response):
         """Inject mimetype into response before it's sent to the WSGI server.
