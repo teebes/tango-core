@@ -26,8 +26,8 @@ setup(
     install_requires=[
         'distribute',
         'BeautifulSoup<4.0',
-        'Flask',
-        'Flask-Script',
+        'Flask==0.7.2',
+        'Flask-Script>0.3.1',
         'lxml',
         'pytest',
         'pyyaml',
