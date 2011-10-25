@@ -41,6 +41,10 @@ def build_module_routes(module_or_name, import_stash=False, report_file=None):
         if import_stash:
             if report_file is not None:
                 report_file.write('Loading {0} ... '.format(name))
+                # Flush report file to keep user posted on what is processing;
+                # otherwise no guarantee that anything is displayed in the
+                # report file until an implicit flush.
+                report_file.flush()
             module_routes = pull_context(module_routes)
             if report_file is not None:
                 report_file.write('done.\n')
