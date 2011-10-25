@@ -56,7 +56,7 @@ def build_app(import_name, import_stash=False, use_snapshot=True,
 
     This function accepts three kinds of import names:
 
-    1. a single module name where the module is itself a stash
+    1. a single-module name where the module is itself a stash
     2. a package name which has a submodule or sub-package named 'stash'.
     3. a dotted module name referring to a module inside a package's stash.
 
@@ -74,7 +74,7 @@ def build_app(import_name, import_stash=False, use_snapshot=True,
     config.py.  This is essential to shelving modules in isolation when working
     with a stash package with more than one stash module.
 
-    Example, using the a single module called simplest.py (case #1):
+    Example, using a single module called simplest.py (case #1):
     >>> app = build_app('simplest')
     >>> app.url_map # doctest:+NORMALIZE_WHITESPACE
     Map([[<Rule '/static/<filename>' (HEAD, OPTIONS, GET) -> static>,
