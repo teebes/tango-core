@@ -1,27 +1,35 @@
 "Errors and warnings reported by the Tango framework."
 
 
-class ParseError(Exception):
+class TangoException(Exception):
+    "Base exception for Tango-specific errors."
+
+
+class ParseError(TangoException):
     "Error when parsing markup or scraping screens."
 
 
-class NoSuchWriterException(Exception):
+class NoSuchWriterException(TangoException):
     "Error when getting a response writer by a name that is not registered."
 
 
-class HeaderException(Exception):
+class HeaderException(TangoException):
     "Error in parsing a module's metadata docstring."
 
 
-class ConfigurationError(Exception):
+class ConfigurationError(TangoException):
     "Error in app.config, either a missing or wrongly set value."
 
 
-class ModuleNotFound(Exception):
+class ModuleNotFound(TangoException):
     "Error when requiring a Python module, but it's filepath cannot be found."
 
 
-class DuplicateWarning(Warning):
+class TangoWarning(Warning):
+    "Base warning for Tango-specific warnings."
+
+
+class DuplicateWarning(TangoWarning):
     "Base warning for reporting duplicates."
 
 
