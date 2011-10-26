@@ -66,7 +66,7 @@ def get_app(import_name, **options):
 
 
 def build_app(import_name, import_stash=False, use_snapshot=True,
-              report_file=None):
+              logfile=None):
     """Create a Tango application object from a Python import name.
 
     This function accepts three kinds of import names:
@@ -170,7 +170,7 @@ def build_app(import_name, import_stash=False, use_snapshot=True,
 
     if routes is None:
         build_options = {'import_stash': import_stash}
-        build_options['report_file'] = report_file
+        build_options['logfile'] = logfile
         if module_exists(import_name + '.stash'):
             module = __import__(import_name, fromlist=['stash']).stash
             routes = build_module_routes(module, **build_options)

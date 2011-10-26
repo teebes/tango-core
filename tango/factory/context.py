@@ -12,7 +12,7 @@ from tango.imports import discover_modules, get_module
 from tango.imports import get_module_filepath, get_module_docstring
 
 
-def build_module_routes(module_or_name, import_stash=False, report_file=None):
+def build_module_routes(module_or_name, import_stash=False, logfile=None):
     """Discover modules & parse headers from a Tango stash import name.
 
     Returns list of Route objects with attributes via structured docstrings.
@@ -39,15 +39,15 @@ def build_module_routes(module_or_name, import_stash=False, report_file=None):
         if not module_routes:
             continue
         if import_stash:
-            if report_file is not None:
-                report_file.write('Loading {0} ... '.format(name))
-                # Flush report file to keep user posted on what is processing;
+            if logfile is not None:
+                logfile.write('Loading {0} ... '.format(name))
+                # Flush log file to keep user posted on what is processing;
                 # otherwise no guarantee that anything is displayed in the
-                # report file until an implicit flush.
-                report_file.flush()
+                # log file until an implicit flush.
+                logfile.flush()
             module_routes = pull_context(module_routes)
-            if report_file is not None:
-                report_file.write('done.\n')
+            if logfile is not None:
+                logfile.write('done.\n')
         route_collection += module_routes
 
     route_table = {}
