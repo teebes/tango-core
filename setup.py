@@ -26,7 +26,7 @@ setup(
     install_requires=[
         'distribute',
         'BeautifulSoup<4.0',
-        'Flask==0.7.2',
+        'Flask<0.8', # Skip 0.8 for 0.9. Flask 0.8 imports in app constructor.
         'Flask-Script>0.3.1',
         'lxml',
         'pytest',
