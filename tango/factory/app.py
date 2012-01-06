@@ -155,37 +155,33 @@ def build_app(import_name, import_stash=False, use_snapshot=True,
         app.config.from_object(import_name + '.config')
 
     # Create app context, push it onto request stack for use in initialization.
-    ctx = app.request_context(create_environ())
-    ctx.push()
+    # Use `with` or try-finally to ensure context is popped in case of error.
+    with app.request_context(create_environ()):
+        # Load Tango filters.
+        # Only needed for packages; single modules do not have implicit templates.
+        if module_is_package(import_name):
+            tango.filters.init_app(app)
 
-    # Load Tango filters.
-    # Only needed for packages; single modules do not have implicit templates.
-    if module_is_package(import_name):
-        tango.filters.init_app(app)
+        # Build application routes, checking for a snapshot first.
+        routes = None
+        if use_snapshot:
+            routes = get_snapshot(import_name)
 
-    # Build application routes, checking for a snapshot first.
-    routes = None
-    if use_snapshot:
-        routes = get_snapshot(import_name)
-
-    if routes is None:
-        build_options = {'import_stash': import_stash}
-        build_options['logfile'] = logfile
-        if module_exists(import_name + '.stash'):
-            module = __import__(import_name, fromlist=['stash']).stash
-            routes = build_module_routes(module, **build_options)
+        if routes is None:
+            build_options = {'import_stash': import_stash}
+            build_options['logfile'] = logfile
+            if module_exists(import_name + '.stash'):
+                module = __import__(import_name, fromlist=['stash']).stash
+                routes = build_module_routes(module, **build_options)
+            else:
+                routes = build_module_routes(import_name, **build_options)
         else:
-            routes = build_module_routes(import_name, **build_options)
-    else:
-        print 'Using snapshot with stashed routes.'
-    app.routes = routes
+            print 'Using snapshot with stashed routes.'
+        app.routes = routes
 
-    # Stitch together context, template, and path.
-    for route in app.routes:
-        app.build_view(route)
-
-    # Pop app request context.
-    ctx.pop()
+        # Stitch together context, template, and path.
+        for route in app.routes:
+            app.build_view(route)
 
     app.context_processor(lambda: request.view_args)
     return app
