@@ -112,10 +112,7 @@ def get_module_filepath(module_or_name):
         if loader is None:
             filepath = None
         else:
-            if module_is_package(name):
-                filepath = os.path.join(loader.filename, '__init__.py')
-            else:
-                filepath = loader.filename
+            filepath = loader.get_filename(name)
     if filepath is not None:
         filepath = os.path.abspath(filepath)
     return filepath
