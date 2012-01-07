@@ -1,8 +1,6 @@
 import re
-import time
 from urllib import urlencode
 
-import simplejson
 import oauth2 as oauth
 
 class TwitterApiCallFailed(Exception): pass
@@ -17,7 +15,7 @@ def parse_link(text):
         lambda x: "<a href='%s'>%s</a>" % (x.group(), x.group()),
         text
     )
-        
+
         # parse @tweeter
 def parse_at(text):
     """
@@ -53,12 +51,9 @@ class TwitterApi(object):
         self.oauth_token_secret = kwargs.get('OAUTH_TOKEN_SECRET', '')
 
     def __call__(self, url, method='GET', params=None):
-        oauth_timestamp    = int(time.time())
-        oauth_nonce        = oauth.generate_nonce
-
-        token = oauth.Token(key=self.oauth_token, 
+        token = oauth.Token(key=self.oauth_token,
                             secret=self.oauth_token_secret)
-        consumer = oauth.Consumer(key=self.consumer_key, 
+        consumer = oauth.Consumer(key=self.consumer_key,
                                   secret=self.consumer_secret)
         client = oauth.Client(consumer, token)
 
