@@ -1,14 +1,22 @@
+"Tools for interacting with the Twitter API and parsing tweets."
+
 import re
 from urllib import urlencode
 
 import oauth2 as oauth
 
-class TwitterApiCallFailed(Exception): pass
+
+class TwitterAPICallFailed(Exception):
+    "Error when calling twitter API."
+
 
 def parse_link(text):
-    """
+    """Parse a tweet and add a link tag where text is a link.
+
+    Example:
     >>> parse_link('A link to http://battle.net')
     "A link to <a href='http://battle.net'>http://battle.net</a>"
+    >>>
     """
     return re.sub(
         r"(http(s)?://[\w./?=%&amp;\-]+)",
@@ -16,11 +24,14 @@ def parse_link(text):
         text
     )
 
-        # parse @tweeter
+
 def parse_at(text):
-    """
+    """Parse a tweet and add links for @mentions.
+
+    Example:
     >>> parse_at('A reference to @teebesz')
     "A reference to <a href='http://twitter.com/teebesz'>@teebesz</a>"
+    >>>
     """
     return re.sub(
         r'@(\w+)',
@@ -29,10 +40,14 @@ def parse_at(text):
         text
     )
 
+
 def parse_hashtag(text):
-    """
+    """Parse a tweet and add links for each #hashtag.
+
+    Example:
     >>> parse_hashtag('A twitter #hashtag')
     "A twitter <a href='http://twitter.com/search?q=%23hashtag'>#hashtag</a>"
+    >>>
     """
     return re.sub(
         r'#(\w+)',
@@ -41,13 +56,16 @@ def parse_hashtag(text):
         text
     )
 
-class TwitterApi(object):
+
+class TwitterAPI(object):
+    "Simple API wrapper for api.twitter.com using oauth."
+
     BASE_URI = 'https://api.twitter.com/1'
 
     def __init__(self, **kwargs):
-        self.consumer_secret    = kwargs.get('CONSUMER_SECRET', '')
-        self.consumer_key       = kwargs.get('CONSUMER_KEY', '')
-        self.oauth_token        = kwargs.get('OAUTH_TOKEN', '')
+        self.consumer_secret = kwargs.get('CONSUMER_SECRET', '')
+        self.consumer_key = kwargs.get('CONSUMER_KEY', '')
+        self.oauth_token = kwargs.get('OAUTH_TOKEN', '')
         self.oauth_token_secret = kwargs.get('OAUTH_TOKEN_SECRET', '')
 
     def __call__(self, url, method='GET', params=None):
@@ -57,7 +75,8 @@ class TwitterApi(object):
                                   secret=self.consumer_secret)
         client = oauth.Client(consumer, token)
 
-        if url[0] != '/': url = '/' + url
+        if url[0] != '/':
+            url = '/' + url
         url = "%s%s" % (self.BASE_URI, url)
 
         if params:
@@ -70,10 +89,6 @@ class TwitterApi(object):
             resp, content = client.request(url, method)
 
         if int(resp.get('status', 0)) != 200:
-            raise TwitterApiCallFailed(resp, content)
+            raise TwitterAPICallFailed(resp, content)
 
         return resp, content
-
-if __name__ == "__main__":
-    import doctest
-    doctest.testmod()
