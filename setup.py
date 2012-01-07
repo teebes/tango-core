@@ -29,6 +29,7 @@ setup(
         'Flask<0.8', # Skip 0.8 for 0.9. Flask 0.8 imports in app constructor.
         'Flask-Script>0.3.1',
         'lxml',
+        'oauth2',
         'pytest',
         'pyyaml',
         ],
