@@ -92,3 +92,96 @@ class TwitterAPI(object):
             raise TwitterAPICallFailed(resp, content)
 
         return resp, content
+
+
+def _test():
+    """Test the Twitter API wrapper by verifying it's oauth client calls.
+
+    Mock the OAuth client used by TwitterAPI.
+    >>> from minimock import Mock, restore
+    >>> mock_client = Mock('oauth_client')
+    >>> oauth.Client = Mock('oauth.Client')
+    >>> oauth.Client.mock_returns = mock_client
+    >>> mock_request = Mock('oauth.Client.request')
+    >>> mock_client.request = mock_request
+    >>> mock_request.mock_returns = {'status': 200}, 'Hello!'
+    >>>
+
+    Create a twitter API client as an instance of the TwitterAPI wrapper.
+    >>> twitter = TwitterAPI(
+    ...     CONSUMER_SECRET='MY_CONSUMER_SECRET',
+    ...     CONSUMER_KEY='MY_CONSUMER_KEY',
+    ...     OAUTH_TOKEN='MY_OAUTH_TOKEN',
+    ...     OAUTH_TOKEN_SECRET='MY_OAUTH_TOKEN_SECRET',
+    ... )
+    ...
+    >>>
+
+    Now test TwitterAPI for how it marshals calls through the OAuth client.
+    Test the simplest call.
+    >>> twitter('/') # doctest:+ELLIPSIS
+    Called oauth.Client(
+        <oauth2.Consumer object at 0x...>,
+        <oauth2.Token object at 0x...>)
+    Called oauth.Client.request('https://api.twitter.com/1/', 'GET')
+    ({'status': 200}, 'Hello!')
+    >>>
+
+    Test for how the wrapper handles no slash in front.
+    >>> twitter('no-slash-in-front') # doctest:+ELLIPSIS
+    Called oauth.Client(
+        <oauth2.Consumer object at 0x...>,
+        <oauth2.Token object at 0x...>)
+    Called oauth.Client.request(
+        'https://api.twitter.com/1/no-slash-in-front',
+        'GET')
+    ({'status': 200}, 'Hello!')
+    >>>
+
+    Test GET calls with parameters.
+    >>> twitter('/foo', params={'q': 'spam'}) # doctest:+ELLIPSIS
+    Called oauth.Client(
+        <oauth2.Consumer object at 0x...>,
+        <oauth2.Token object at 0x...>)
+    Called oauth.Client.request('https://api.twitter.com/1/foo?q=spam', 'GET')
+    ({'status': 200}, 'Hello!')
+    >>> twitter('/foo', params={'q': 'spam', 'hl': 'en'})
+    ... # doctest:+ELLIPSIS,+NORMALIZE_WHITESPACE
+    Called oauth.Client(
+        <oauth2.Consumer object at 0x...>,
+        <oauth2.Token object at 0x...>)
+    Called oauth.Client.request('https://api.twitter.com/1/foo?q=spam&hl=en',
+        'GET')
+    ({'status': 200}, 'Hello!')
+
+    Test POST calls.
+    >>> twitter('/foo', method='POST') # doctest:+ELLIPSIS
+    Called oauth.Client(
+        <oauth2.Consumer object at 0x...>,
+        <oauth2.Token object at 0x...>)
+    Called oauth.Client.request('https://api.twitter.com/1/foo', 'POST')
+    ({'status': 200}, 'Hello!')
+    >>> twitter('/foo', method='POST', params={'q': 'spam', 'hl': 'en'})
+    ... # doctest:+ELLIPSIS
+    Called oauth.Client(
+        <oauth2.Consumer object at 0x...>,
+        <oauth2.Token object at 0x...>)
+    Called oauth.Client.request(
+        'https://api.twitter.com/1/foo',
+        'POST',
+        'q=spam&hl=en')
+    ({'status': 200}, 'Hello!')
+    >>>
+
+    Test a non-200 HTTP OK response.
+    >>> mock_request.mock_returns = {'status': 404}, 'Not Found'
+    >>> twitter('/nutrition-in-fast-food-hamburger') # doctest:+ELLIPSIS
+    Traceback (most recent call last):
+        ...
+    TwitterAPICallFailed: ({'status': 404}, 'Not Found')
+    >>>
+
+    Restore mocked objects to their originals.
+    >>> restore()
+    >>>
+    """
