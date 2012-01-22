@@ -31,11 +31,14 @@ develop: setup.py
 flakes: develop
 	find . -name '*.py' | grep -v .tox | xargs pyflakes | grep -v local_config; true
 
-test: develop
+test: test_flask develop
 	$(nosetests) --with-coverage --cover-package=tango --cover-erase
 
 full-test: develop
 	tox
+
+test_flask: develop
+	python tests/test_flask.py
 
 smoke: develop
 	$(nosetests) --stop
