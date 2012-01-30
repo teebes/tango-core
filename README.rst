@@ -1,8 +1,12 @@
-=============================
- Tango: Mobile Web Framework
-=============================
+========================================
+ Tango: Scripting Framework for the Web
+========================================
 
-Tango is a web framework for mobile web development shops, built with Flask.
+Reflow web content, one Python script at a time.
+
+Tango is a web framework for reflowing data, great for respinning content for
+mobile web sites or repurposing upstream data (no matter how messy) for new and
+improved APIs, built with Python and Flask.
 
 
 Overview
@@ -11,10 +15,9 @@ Overview
 Tango targets users who are:
 
 * template developers who implement mobile website designs.
+* application developers who need a clean JSON feed from upstream sources.
 * backend developers who source data for mobile websites.
 * client developers who'd like to manage their own templates.
-
-Initial focus is on template developers and backend developers.
 
 Tango supports activities of:
 
@@ -22,15 +25,16 @@ Tango supports activities of:
 * sourcing site data from a mashup of sources,
   and building tools without any concern for web details.
 
-Initial focus is on the relationship between templates and data sources.  Tango
-completely separates site content from it's templates.  Template developers
-work in a ``templates`` directory with pure Jinja2 templates and a ``static``
-directory for assets, including but not limited to images, CSS, and JavaScript.
-Backend developers work in a site ``stash`` package or module which
-declaratively exports content into template contexts for given routes.
+Tango completely separates site content from it's templates.  Template
+developers work in a ``templates`` directory with pure Jinja2 templates and a
+``static`` directory for assets, including but not limited to images, CSS, and
+JavaScript.  Backend developers work in a site ``stash`` package or module
+which declaratively exports content into template contexts for given routes.
+These ``stash`` module are pure Python scripts with structured yaml metadata in
+module docstring.
 
 The templates, static assets, and stash modules are discovered and integrated
-by the Tango core with the help of ``config.py`` and headers written in YAML.
+by the Tango core with the help of ``config.py`` and headers written in yaml.
 
 See existing sites and examples for more detail.
 
@@ -38,18 +42,16 @@ See existing sites and examples for more detail.
 What is Tango?
 ==============
 
-Here is Tango's plan.
+Here is Tango's plan:
 
 
 At a glance, Tango...
 ---------------------
 
-* is a mobile web framework built on Python
-* is a site-builder: follow a few simple conventions in a project and Tango
-  builds a web application pushing scripted content into simple templates.
-* provides device detection and capabilities, chooses template based on the
-  user's device & browser
-* includes general purpose automated testing for unit and functional tests
+* is a mobile web framework built with Python
+* is a scripting layer for reflowing data...
+  if you can pull your data via a Python script, you can serve it for free
+* provides a basis for testing data integrity with unit and functional tests
 
 
 Benefits
@@ -82,14 +84,15 @@ Specifics
 
  * complies with the WSGI web standard.
  * most deployments use mod_wsgi under Apache httpd.
- * can also deploy under ISAPI interface on Microsoft's IIS platform.
+ * if needed, can readily port to ISAPI interface on Microsoft's IIS platform.
 
 * Tango automates content and deployment on a schedule, including:
 
  * automated deploy using Python standards & automated upgrade using git
    revision control
- * cron static builds where possible
- * dynamic views with caching -- cached on a time-to-live schedule
+ * dynamic views with caching -- cached on a time-to-live schedule via cron
+ * failsafe -- data updates which fail do not overwrite production data
+   (essential in productions where an API is built from screen scraping)
 
 * Tango site packages include
 
@@ -97,6 +100,8 @@ Specifics
  * a stash package in Python, using yaml headers, includes stashable content
  * static assets - images, CSS, JavaScript
  * config.py using simple key/value pairs
+
+* Tango supports stand-alone Python scripts where full packages are not needed.
 
 * Templating: Tango uses Python's highly regarded Jinja2 (inspired by Django).
 
@@ -107,12 +112,13 @@ Stashing Content
 Stashable content is that which can be fetched up front and served to all
 users.  In a Tango project, this content is scripted in Python modules, which
 have structured metadata written in yaml.  When serving an application, the
-Tango framework walks the ``sitename.stash`` package or module, building all of
-the application view functions based on the yaml metadata.  Simple Tango sites
-are just a ``stash`` package with a ``templates`` directory.  A simpler Tango
-site is just a ``stash`` package with a config telling Tango to return json.
-The simplest Tango site is single Python module, which is treated as a
-``stash`` and is useful in building light APIs.
+Tango framework walks the ``sitename.stash`` package or module (or accepts a
+single Python module for small projects), building all of the application view
+functions based on the yaml metadata.  Simple Tango sites are just a ``stash``
+package with a ``templates`` directory.  A simpler Tango site is just a
+``stash`` package with a config telling Tango to return json.  The simplest
+Tango site is single Python module, which is treated as a ``stash`` and is
+useful in building light APIs.
 
 
 Dynamic Content
@@ -124,6 +130,15 @@ allows for additional routes, view functions, and other features as provided by
 Flask.  Projects without stashable content are effectively just Flask projects
 which use utilities/tools provided by Tango.
 
+Need to drop into Flask development?  Simply::
+
+    from tango.factory.app import build_app
+    app = build_app('sitename')
+
+This app is a flask.Flask instance ready for any of the APIs provided by `Flask
+<http://flask.pocoo.org/docs/>`_, a full web framework with a small accessible
+core.
+
 
 Other Notes
 -----------
@@ -134,8 +149,8 @@ Tango:
 * developers can theme sites easily using template inheritance and CSS.
 * is a rapid prototyping framework (think *very* rapid), but is ready for
   primetime & full applications.
-* automates unit and functional tests, testing all the way up to (but not
-  including) browser quirks.
+* provides for automated unit and functional tests, testing all the way up to
+  (but not including) browser quirks.
 
 On redirecting users from the desktop site:
 
@@ -191,41 +206,28 @@ Yet Another Web Framework?
 No, Tango extends Flask, or rather, Tango *builds* Flask, Flask WSGI
 application objects to be exact.  Flask:
 
-* builds on Werkzeug, a WSGI implementation
+* builds on Werkzeug, a WSGI implementation and toolkit
 * builds on Jinja2, a templating platform
 * allows for a Pythonic app-building pattern
 * provides for extensions with clear conventions
   (and the Flask committers review & approve these extensions)
 
-Tango focuses on the templating platform, completely hides the WSGI layer,
-establishes a spec-first development pattern on top of Flask, leverages
-Flask-related tools & extensions, and as a result, makes the Tango developers
-more productive in building mobile web sites.
+Tango focuses on the templating platform, completely hides the WSGI layer (but
+exposes APIs to WSGI if needed), establishes a spec-first development pattern
+on top of Flask, leverages Flask-related tools & extensions, and as a result,
+makes the Tango developers more productive in building mobile web sites.
 
-Tango is WillowTree's Flask platform, but is developed for general use.
+Tango is WillowTree's platform on Flask, but is developed for general use.
 
 
 Releases
 ========
 
-The current release is 0.1 (Basico) which establishes Tango conventions
-and package namespaces, supports building static sites, provides a pattern for
-mixing stashable/cachable content and dynamic view functions, and provides a
-solid codebase with 100% statement test coverage.
+The current release is 0.2 (Salida), released on Oct 26, 2011.
+All releases are guaranteed with 100% statement test coverage.
 
-Further development beyond Tango Basico will support:
-
-* utilities determining whether URL is internal or external to the mobile site.
-
-Future development:
-
-* Establish and implement simple conventions for partial templates targeting
-  specific devices.
-* Provide a configurable pipeline for common optimizations of responses.
-* Provide a configurable pipeline for integrating addons into responses.
-* Dynamic view caching, on an expiration schedule.
-* Static context updates on a schedule, for example, fetch a feed every 5 min.
-* Consider developing an interface for clients to manage templates and content.
+Tango is built for CPython (the reference Python implementation),
+for versions 2.6 and 2.7.
 
 
 License
