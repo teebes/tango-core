@@ -8,6 +8,7 @@
 *.db
 *.db-journal
 /develop
+/DEVELOPMENT.html
 /dist/
 .DS_Store
 *.egg
@@ -29,4 +30,5 @@ output/
 *.sqlite
 *.sqlite3
 *.swp
+/tests/*.html
 /.tox/
