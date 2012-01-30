@@ -19,7 +19,13 @@ __MACOSX
 /myoutput/
 output/
 *.pyc
-README.html
+/README.aux
+/README.dvi
+/README.html
+/README.log
+/README.out
+/README.pdf
+/README.tex
 *.sqlite
 *.sqlite3
 *.swp

@@ -11,6 +11,7 @@ pypi_update = ssh cherry.willowtreeapps.com /var/www/pypi/update
 clean:
 	find . -name '*.py[co]' -delete
 	rm -f develop README.html DEVELOPMENT.html tests/test_*.html
+	rm -f README.aux README.dvi README.log README.out README.pdf README.tex
 	rm -fr *.egg *.egg-info dist build
 	rm -f *.dat
 
@@ -61,11 +62,19 @@ publish: dist
 doc_files := $(patsubst %.rst,%.html,$(wildcard *.rst))
 doc_deep_files := $(patsubst %.rst,%.html,$(wildcard **/*.rst))
 
-doc: $(doc_files) $(doc_deep_files)
+doc: $(doc_files) $(doc_deep_files) README.pdf
 
 %.html: %.rst develop
 	rst2html $< > $@
 
+README.pdf: README.dvi
+	dvipdf $<
+
+README.dvi: README.tex
+	latex $<
+
+README.tex: README.rst
+	rst2newlatex $< > $@
 
 # Here is a custom todo tool, documented clearly so you know it works.
 # If we write capital tee oh dee oh literally, `make todo` will list Makefile.
