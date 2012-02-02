@@ -2,7 +2,7 @@
  Tango: Scripting Framework for the Web
 ========================================
 
-Reflow web content, one Python script at a time.
+Restock web content from a variety of sources, one Python script at a time.
 
 Tango is a web framework for reflowing data, great for respinning content for
 mobile web sites or repurposing upstream data (no matter how messy) for new and
