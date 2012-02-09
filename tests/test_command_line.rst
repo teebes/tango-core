@@ -270,6 +270,21 @@ Called code.interact('', local={'app': <tango.app.Tango object at 0x...>})
 >>>
 
 
+Verify that shelving avoids generating .pyc files, which inevitably get stale
+and frustrate developers. A simple dummy.py is sitting in the tests/errors/
+directory, which is not-automatically imported by the test runner (otherwise,
+the auto-import from the test runner might create a .pyc).
+
+>>> call('shelve dummy')
+Loading dummy ... done.
+Stashing dummy / ... done.
+>>> os.stat('tests/errors/dummy.pyc')
+Traceback (most recent call last):
+    ...
+OSError: [Errno 2] No such file or directory: 'tests/errors/dummy.pyc'
+>>>
+
+
 Test for cases where site does not exist.
 
 >>> from minimock import restore

@@ -1,5 +1,6 @@
 "Console entry point and management & development tasks for Tango framework."
 
+from contextlib import contextmanager
 import os
 import sys
 
@@ -33,9 +34,20 @@ def command(function):
 
     The function's docstring is its usage string;
     its function signature, its command-line arguments.
+
+    Note: this decorator must be inner-most to pick up function signature.
     """
     commands.append(function)
     return function
+
+
+@contextmanager
+def no_pyc():
+    "Context manager to execute a block without writing .pyc files."
+    old_dont_write_bytecode = sys.dont_write_bytecode
+    sys.dont_write_bytecode = True
+    yield
+    sys.dont_write_bytecode = old_dont_write_bytecode
 
 
 @command
@@ -47,17 +59,19 @@ def version():
 @command
 def snapshot(site):
     "Pull context from a stashable Tango site and store it into an image file."
-    site = validate_site(site)
-    app = get_app(site, import_stash=True, use_snapshot=False)
-    filename = build_snapshot(app)
-    print 'Snapshot of full stashable template context:', filename
+    with no_pyc():
+        site = validate_site(site)
+        app = get_app(site, import_stash=True, use_snapshot=False)
+        filename = build_snapshot(app)
+        print 'Snapshot of full stashable template context:', filename
 
 
 @command
 def shelve(site):
     "Shelve an application's stash, as a worker process."
-    site = validate_site(site)
-    tango.factory.stash.shelve(site, logfile=sys.stdout)
+    with no_pyc():
+        site = validate_site(site)
+        tango.factory.stash.shelve(site, logfile=sys.stdout)
 
 
 class Manager(BaseManager):
@@ -88,9 +102,10 @@ class Shell(BaseShell):
         return (Option('site'),) + BaseShell.get_options(self)
 
     def handle(self, _, site, *args, **kwargs):
-        site = validate_site(site)
-        app = get_app(site)
-        Command.handle(self, app, *args, **kwargs)
+        with no_pyc():
+            site = validate_site(site)
+            app = get_app(site)
+            Command.handle(self, app, *args, **kwargs)
 
 
 def run():
