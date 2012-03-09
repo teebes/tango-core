@@ -7,6 +7,13 @@ exports:
  - gists
 """
 
+# Quickstart:
+#
+#     python setup.py develop
+#     cd examples
+#     tango serve gists # in one terminal
+#     tango shelve gists # in another, shelves to /tmp/tango.db.
+
 import requests
 import json
 
