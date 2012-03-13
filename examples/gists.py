@@ -7,9 +7,10 @@ exports:
  - gists
 """
 
-# Quickstart:
+# Quickstart, in the root tango-core directory:
 #
 #     python setup.py develop
+#     pip install requests
 #     cd examples
 #     tango serve gists # in one terminal
 #     tango shelve gists # in another, shelves to /tmp/tango.db.
