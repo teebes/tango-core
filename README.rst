@@ -2,11 +2,11 @@
  Tango: Scripting Framework for the Web
 ========================================
 
-Restock web content from a variety of sources, one Python script at a time.
+Pre-process web content from a variety of sources, one Python script at a time.
 
-Tango is a web framework for reflowing data, great for respinning content for
-mobile web sites or repurposing upstream data (no matter how messy) for new and
-improved APIs, built with Python and Flask.
+Tango is a web framework for content middleware, great for respinning content
+for mobile web sites or repurposing upstream data (no matter how messy) for new
+and improved APIs, built with Python and Flask.
 
 
 Overview
@@ -14,16 +14,16 @@ Overview
 
 Tango targets users who are:
 
-* template developers who implement mobile website designs.
 * application developers who need a clean JSON feed from upstream sources.
-* backend developers who source data for mobile websites.
+* backend developers who have to reuse data from the wild.
+* template developers who implement mobile website designs.
 * client developers who'd like to manage their own templates.
 
 Tango supports activities of:
 
 * developing templates in a sandbox environment.
 * sourcing site data from a mashup of sources,
-  and building tools without any concern for web details.
+  and building tools without any concern for request/response details.
 
 Tango completely separates site content from it's templates.  Template
 developers work in a ``templates`` directory with pure Jinja2 templates and a
