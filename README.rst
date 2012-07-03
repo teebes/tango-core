@@ -233,6 +233,4 @@ for versions 2.6 and 2.7.
 License
 =======
 
-Commercial.
-
-Copyright 2010-2011, WillowTree Apps, Inc.  All rights reserved.  DO NOT COPY.
+BSD.
