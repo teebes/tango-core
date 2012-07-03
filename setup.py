@@ -14,7 +14,7 @@ setup(
     name='Tango',
     version='0.2.2',
     url='http://www.willowtreeapps.com',
-    license='Commercial',
+    license='BSD',
     author='Ron DuPlain',
     author_email='ron.duplain@willowtreeapps.com',
     description=__doc__,
