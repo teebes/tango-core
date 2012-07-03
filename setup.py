@@ -26,8 +26,8 @@ setup(
     install_requires=[
         'distribute',
         'BeautifulSoup<4.0',
-        'Flask<0.8', # Skip 0.8 for 0.9. Flask 0.8 imports in app constructor.
-        'Flask-Script>0.3.1',
+        'Flask==0.9',
+        'Flask-Script==0.3.2',
         'lxml',
         'oauth2',
         'pytest',
@@ -44,7 +44,4 @@ setup(
         'Flask-Testing',
         ],
     test_suite='nose.collector',
-    dependency_links=[
-        'http://pypi:a0nyZbjtFanl@cherry.willowtreeapps.com/pypi/index/Flask-Script/',
-        ],
-    )
+)

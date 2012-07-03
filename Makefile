@@ -32,7 +32,7 @@ develop: setup.py
 flakes: develop
 	find . -name '*.py' | grep -v .tox | xargs pyflakes | grep -v local_config; true
 
-test: test_flask develop
+test: develop
 	$(nosetests) --with-coverage --cover-package=tango --cover-erase
 
 full-test: develop
